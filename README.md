@@ -1,2 +1,2 @@
 # CareVision_LK
-Smart Hospital Surveillance and Safety Management System
+Frontend - Smart Hospital Surveillance and Safety Management System
