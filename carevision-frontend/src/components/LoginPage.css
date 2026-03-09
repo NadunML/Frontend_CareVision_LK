@@ -1,0 +1,152 @@
+* {
+  box-sizing: border-box;
+  font-family: 'Inter', 'Segoe UI', sans-serif;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+}
+
+.login-container {
+  background-color: #EBF3FA; 
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.login-card {
+  background: white;
+  width: 400px;
+  padding: 40px;
+  border-radius: 8px;
+  border: 1px solid #4A85F6; 
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+  text-align: center;
+}
+
+.logo-container {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 15px;
+}
+
+.logo-box {
+  background: #0D6EFD;
+  width: 48px;
+  height: 48px;
+  border-radius: 8px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+h2 {
+  margin: 0;
+  color: #111;
+  font-size: 24px;
+  font-weight: 600;
+}
+
+.subtitle {
+  color: #888;
+  font-size: 13px;
+  margin-top: 5px;
+  margin-bottom: 30px;
+}
+
+.input-group {
+  text-align: left;
+  margin-bottom: 15px;
+}
+
+.input-group label {
+  display: block;
+  font-size: 12px;
+  color: #333;
+  margin-bottom: 5px;
+  font-weight: 600;
+}
+
+.input-wrapper {
+  display: flex;
+  align-items: center;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  padding: 0 10px;
+}
+
+.input-wrapper .icon {
+  font-size: 14px;
+  margin-right: 8px;
+  color: #666;
+}
+
+.input-wrapper input {
+  border: none;
+  outline: none;
+  padding: 10px 0;
+  width: 100%;
+  font-size: 13px;
+}
+
+.forgot-password {
+  text-align: right;
+  margin-bottom: 20px;
+}
+
+.forgot-password a {
+  font-size: 12px;
+  color: #111;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.sign-in-btn {
+  width: 100%;
+  background: #0D6EFD;
+  color: white;
+  border: none;
+  padding: 10px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 10px;
+  transition: background 0.3s;
+}
+
+.sign-in-btn:hover {
+  background: #0b5ed7;
+}
+
+.google-sign-in-btn {
+  width: 100%;
+  background: white;
+  color: #333;
+  border: 1px solid #ccc;
+  padding: 10px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  transition: background 0.3s;
+}
+
+.google-sign-in-btn:hover {
+  background: #f8f9fa;
+}
+
+.google-sign-in-btn img {
+  width: 18px;
+  height: 18px;
+}
