@@ -1,7 +1,7 @@
 import React from 'react';
 import './LoginPage.css';
 
-const LoginPage = () => {
+const LoginPage = ({ onLogin }) => {
   return (
     <div className="login-container">
       <div className="login-card">
@@ -38,9 +38,9 @@ const LoginPage = () => {
           <a href="#">Forgot Password?</a>
         </div>
 
-        <button className="sign-in-btn">
-          <span className="icon">🔑</span> Sign In
-        </button>
+        <button className="sign-in-btn" onClick={onLogin}>
+  <span className="icon">🔑</span> Sign In
+</button>
 
         <button className="google-sign-in-btn">
           <img src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg" alt="Google" />
