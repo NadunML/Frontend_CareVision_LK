@@ -556,3 +556,50 @@
 .btn-cancel:hover {
   background-color: #7497ec;
 }
+/* ==========================================
+   Access Control Styles
+   ========================================== */
+
+/* Align card text and icons to the top */
+.align-start {
+  align-items: flex-start;
+}
+
+/* Outline icon box style for Access Control cards */
+.outline-icon-box {
+  width: 45px;
+  height: 45px;
+  border-radius: 8px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 20px;
+  border: 1.5px solid;
+  background-color: transparent;
+}
+
+/* Border and text colors for status icons */
+.border-blue { 
+  border-color: #0D6EFD; 
+  color: #0D6EFD; 
+}
+.border-green { 
+  border-color: #198754; 
+  color: #198754; 
+}
+.border-red { 
+  border-color: #dc3545; 
+  color: #dc3545; 
+}
+.border-yellow { 
+  border-color: #ffc107; 
+  color: #ffc107; 
+}
+
+/* Utility classes for margins */
+.mt-4 {
+  margin-top: 30px;
+}
+.mb-4 {
+  margin-bottom: 25px;
+}
