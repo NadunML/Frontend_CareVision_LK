@@ -837,5 +837,88 @@
   background-color: #0b5ed7;
   transform: translateY(-2px);
   box-shadow: 0 6px 10px rgba(13, 110, 253, 0.3);
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
+}
+
+/* ==========================================
+   Fire Monitoring Styles
+   ========================================== */
+
+/* Red alert banner for active fire/smoke detection */
+.fire-alert-banner {
+  background-color: #ffcccc; /* Light red background */
+  border: 1px solid #ff4d4d;
+  border-radius: 8px;
+  padding: 20px 25px;
+  margin-top: 25px;
+}
+
+.alert-title {
+  color: #cc0000;
+  margin-top: 0;
+  margin-bottom: 20px;
+  font-size: 18px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Grid layout for the details inside the red banner */
+.alert-details-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 15px;
+  margin-bottom: 25px;
+}
+
+.detail-label {
+  font-size: 12px;
+  color: #555;
+  margin-bottom: 5px;
+}
+
+.detail-value {
+  font-size: 14px;
+  font-weight: 700;
+  color: #111;
+}
+
+/* Action buttons inside the alert banner */
+.alert-actions {
+  display: flex;
+  gap: 15px;
+}
+
+.btn-notify {
+  background-color: #ff0000;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 2px 4px rgba(255, 0, 0, 0.2);
+}
+
+.btn-notify:hover {
+  background-color: #cc0000;
+}
+
+.btn-resolve {
+  background-color: transparent;
+  color: #ff0000;
+  border: 1px solid #ff0000;
+  padding: 10px 20px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.btn-resolve:hover {
+  background-color: #ffe6e6;
 >>>>>>> Stashed changes
 }
