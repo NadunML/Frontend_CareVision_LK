@@ -2,13 +2,9 @@ import React, { useState } from 'react';
 import './Dashboard.css';
 
 const Dashboard = ({ onLogout }) => {
-  // State to track the currently active tab
   const [activeTab, setActiveTab] = useState('dashboard');
-  
-  // State to toggle the patient registration form visibility
   const [showRegisterForm, setShowRegisterForm] = useState(false);
 
-  // Function to switch tabs and hide the registration form
   const handleTabChange = (tabName) => {
     setActiveTab(tabName);
     setShowRegisterForm(false);
@@ -41,17 +37,9 @@ const Dashboard = ({ onLogout }) => {
           <li className={activeTab === 'patient' ? 'active' : ''} onClick={() => handleTabChange('patient')}>
             <span>👥</span> Patient Management
           </li>
-          {/* Access Control Navigation Link */}
           <li className={activeTab === 'access' ? 'active' : ''} onClick={() => handleTabChange('access')}>
             <span>🛡️</span> Access Control
           </li>
-<<<<<<< Updated upstream
-          <li><span>🔥</span> Fire Monitoring</li>
-          <li><span>🔔</span> Alerts</li>
-          <li><span>📄</span> Reports & Logs</li>
-          <li><span>👤</span> User Management</li>
-          <li><span>⚙️</span> Setting</li>
-=======
           <li className={activeTab === 'fire' ? 'active' : ''} onClick={() => handleTabChange('fire')}>
             <span>🔥</span> Fire Monitoring
           </li>
@@ -64,11 +52,9 @@ const Dashboard = ({ onLogout }) => {
           <li className={activeTab === 'user' ? 'active' : ''} onClick={() => handleTabChange('user')}>
             <span>👤</span> User Management
           </li>
-          {/* Setting Navigation Link (UPDATED) */}
           <li className={activeTab === 'setting' ? 'active' : ''} onClick={() => handleTabChange('setting')}>
             <span>⚙️</span> Setting
           </li>
->>>>>>> Stashed changes
         </ul>
 
         <div className="sidebar-footer">
@@ -219,62 +205,13 @@ const Dashboard = ({ onLogout }) => {
               <p>Real-time hospital monitoring and security status</p>
             </div>
             <div className="stats-grid">
-<<<<<<< Updated upstream
-              
-              <div className="stat-card">
-                <div className="flex-between align-start">
-                  <div>
-                    <h4>Total Access Attempts</h4>
-                    <h2>234</h2>
-                    <p className="stat-sub">+28 this week</p>
-                  </div>
-                  <div className="outline-icon-box border-blue">👤</div>
-                </div>
-              </div>
-
-              <div className="stat-card">
-                <div className="flex-between align-start">
-                  <div>
-                    <h4>Access Granted</h4>
-                    <h2>198</h2>
-                    <p className="stat-sub">84.6% compliance</p>
-                  </div>
-                  <div className="outline-icon-box border-green">🛡️</div>
-                </div>
-              </div>
-
-              <div className="stat-card">
-                <div className="flex-between align-start">
-                  <div>
-                    <h4>Access Denied</h4>
-                    <h2>36</h2>
-                    <p className="stat-sub">15.4% violations</p>
-                  </div>
-                  <div className="outline-icon-box border-red">🛑</div>
-                </div>
-              </div>
-
-              <div className="stat-card">
-                <div className="flex-between align-start">
-                  <div>
-                    <h4>Active Cameras</h4>
-                    <h2>4</h2>
-                    <p className="stat-sub">All operational</p>
-                  </div>
-                  <div className="outline-icon-box border-yellow">📷</div>
-                </div>
-              </div>
-
-=======
               <div className="stat-card"><div className="flex-between align-start"><div><h4>Total Access Attempts</h4><h2>234</h2><p className="stat-sub">+28 this week</p></div><div className="outline-icon-box border-blue">👤</div></div></div>
               <div className="stat-card"><div className="flex-between align-start"><div><h4>Access Granted</h4><h2>198</h2><p className="stat-sub">84.6% compliance</p></div><div className="outline-icon-box border-green">🛡️</div></div></div>
               <div className="stat-card"><div className="flex-between align-start"><div><h4>Access Denied</h4><h2>36</h2><p className="stat-sub">15.4% violations</p></div><div className="outline-icon-box border-red">🛑</div></div></div>
               <div className="stat-card"><div className="flex-between align-start"><div><h4>Active Cameras</h4><h2>4</h2><p className="stat-sub">All operational</p></div><div className="outline-icon-box border-yellow">📷</div></div></div>
->>>>>>> Stashed changes
             </div>
             <div className="table-container card-box mt-4">
               <h3 className="mb-4">Access Control Logs</h3>
-              
               <table className="data-table">
                 <thead>
                   <tr><th>Camera ID</th><th>Mask Detected</th><th>Confidence</th><th>Access Result</th><th>Timestamp</th></tr>
@@ -291,8 +228,6 @@ const Dashboard = ({ onLogout }) => {
           </div>
         )}
 
-<<<<<<< Updated upstream
-=======
         {/* ========================================= */}
         {/* 5. Fire Monitoring Tab Content */}
         {/* ========================================= */}
@@ -459,7 +394,7 @@ const Dashboard = ({ onLogout }) => {
         )}
 
         {/* ========================================= */}
-        {/* 9. Setting Tab Content (NEW) */}
+        {/* 9. Setting Tab Content */}
         {/* ========================================= */}
         {activeTab === 'setting' && (
           <div className="setting-wrapper">
@@ -469,11 +404,9 @@ const Dashboard = ({ onLogout }) => {
               <p>Configure cameras, monitoring zones, and system preferences</p>
             </div>
 
-            {/* Camera Management Card */}
             <div className="card-box mt-4">
-              
               <div className="camera-header-wrap">
-                <h3 style={{display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '5px'}}>
+                <h3 style={{display: 'flex', alignItems: 'center', gap: '8px', margin: '0 0 5px 0'}}>
                   <span>📷</span> Camera Management
                 </h3>
                 <p className="detail-label" style={{marginBottom: '20px'}}>Add, edit, or remove cameras from the system</p>
@@ -522,10 +455,8 @@ const Dashboard = ({ onLogout }) => {
               </table>
             </div>
 
-            {/* Contact Support Card */}
             <div className="card-box mt-4">
               <h3 className="mb-4">Contact Support</h3>
-              
               <div className="support-btn-container">
                 <button className="support-phone-btn">📞 +94765293838</button>
                 <button className="support-phone-btn">📞 +94766486769</button>
@@ -536,7 +467,6 @@ const Dashboard = ({ onLogout }) => {
           </div>
         )}
 
->>>>>>> Stashed changes
       </div>
     </div>
   );

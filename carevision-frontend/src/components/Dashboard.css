@@ -1,7 +1,7 @@
 .dashboard-container {
   display: flex;
   height: 100vh;
-  background-color: #E2E8F0; /* ඔයාගේ පින්තූරේ තියෙන අළු/නිල් පසුබිම */
+  background-color: #E2E8F0;
   font-family: 'Inter', 'Segoe UI', sans-serif;
 }
 
@@ -413,6 +413,7 @@
 .text-orange { color: #fd7e14; }
 .text-red { color: #dc3545; }
 .text-green { color: #198754; }
+.text-yellow { color: #d4a017; } 
 
 /* Action Links */
 .action-edit {
@@ -486,7 +487,6 @@
   gap: 8px;
 }
 
-/* Image Upload Box Mockup */
 .image-upload-box {
   width: 250px;
   height: 150px;
@@ -556,16 +556,14 @@
 .btn-cancel:hover {
   background-color: #7497ec;
 }
+
 /* ==========================================
    Access Control Styles
    ========================================== */
-
-/* Align card text and icons to the top */
 .align-start {
   align-items: flex-start;
 }
 
-/* Outline icon box style for Access Control cards */
 .outline-icon-box {
   width: 45px;
   height: 45px;
@@ -578,277 +576,20 @@
   background-color: transparent;
 }
 
-/* Border and text colors for status icons */
-.border-blue { 
-  border-color: #0D6EFD; 
-  color: #0D6EFD; 
-}
-.border-green { 
-  border-color: #198754; 
-  color: #198754; 
-}
-.border-red { 
-  border-color: #dc3545; 
-  color: #dc3545; 
-}
-.border-yellow { 
-  border-color: #ffc107; 
-  color: #ffc107; 
-}
+.border-blue { border-color: #0D6EFD; color: #0D6EFD; }
+.border-green { border-color: #198754; color: #198754; }
+.border-red { border-color: #dc3545; color: #dc3545; }
+.border-yellow { border-color: #ffc107; color: #ffc107; }
+.border-orange { border-color: #fd7e14; color: #fd7e14; }
 
-<<<<<<< Updated upstream
-/* Utility classes for margins */
-.mt-4 {
-  margin-top: 30px;
-}
-.mb-4 {
-  margin-bottom: 25px;
-=======
-/* New text colors for the table */
-.text-yellow { color: #d4a017; } /* Darker yellow for readability */
-
-/* ==========================================
-   Alerts Management Styles (NEW)
-   ========================================== */
-
-/* Layout for each individual alert in the feed */
-.alert-feed-item {
-  display: flex;
-  align-items: center;
-  background-color: #f0f7fd; /* Very light blue background */
-  border: 1px solid #d1e3f8;
-  border-radius: 8px;
-  padding: 15px 20px;
-  margin-bottom: 15px;
-  gap: 20px;
-}
-
-/* Red box for the alert icon */
-.alert-icon-box {
-  width: 50px;
-  height: 50px;
-  border-radius: 8px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  font-size: 24px;
-  color: white;
-  flex-shrink: 0;
-}
-
-.bg-red {
-  background-color: #ff0000;
-}
-
-/* Typography for alert details */
-.alert-details {
-  flex-grow: 1;
-}
-
-.alert-item-title {
-  margin: 0 0 5px 0;
-  font-size: 16px;
-  color: #111;
-  font-weight: 700;
-}
-
-.alert-item-desc {
-  margin: 0 0 5px 0;
-  font-size: 13px;
-  color: #555;
-}
-
-.alert-item-meta {
-  margin: 0;
-  font-size: 12px;
-  color: #888;
-}
-
-/* Bright green 'Mark as Resolved' button */
-.btn-resolve-green {
-  background-color: #39e600; /* Bright neon green */
-  color: white;
-  border: 1px solid #2db300;
-  padding: 10px 20px;
-  border-radius: 6px;
-  font-size: 14px;
-  font-weight: 700;
-  cursor: pointer;
-  box-shadow: 0 2px 4px rgba(57, 230, 0, 0.2);
-  transition: all 0.2s;
-  flex-shrink: 0;
-}
-
-.btn-resolve-green:hover {
-  background-color: #33cc00; /* Slightly darker green on hover */
-}
-
-/* ==========================================
-   Reports & Logs Styles (NEW)
-   ========================================== */
-
-/* Top Filter Card Layout */
-.reports-filter-card {
-  display: flex;
-  align-items: flex-end;
-  gap: 30px;
-  margin-bottom: 30px;
-}
-
-.filter-group {
-  flex: 1;
-}
-
-.filter-group label {
-  display: block;
-  font-weight: 600;
-  font-size: 14px;
-  color: #111;
-  margin-bottom: 8px;
-}
-
-.select-input {
-  appearance: auto; /* Show default dropdown arrow */
-  cursor: pointer;
-  background-color: white;
-}
-
-.filter-action {
-  flex-shrink: 0;
-}
-
-/* Blue Download Button */
-.btn-download-pdf {
-  background-color: #0D6EFD;
-  color: white;
-  border: none;
-  padding: 12px 25px;
-  border-radius: 8px;
-  font-size: 14px;
-  font-weight: 600;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  box-shadow: 0 2px 4px rgba(13, 110, 253, 0.2);
-}
-
-.btn-download-pdf:hover {
-  background-color: #0b5ed7;
-}
-
-.download-icon {
-  font-size: 16px;
-}
-
-/* Reports Specific Statistics Cards */
-.reports-stats-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 20px;
-  margin-bottom: 30px;
-}
-
-.report-stat-card {
-  background: white;
-  padding: 30px 20px;
-  border-radius: 8px;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-  text-align: center;
-  border: 1px solid #e2e8f0;
-}
-
-.report-stat-card h2 {
-  margin: 0 0 10px 0;
-  font-size: 36px;
-  font-weight: 500;
-}
-
-.report-stat-card p {
-  margin: 0;
-  color: #555;
-  font-size: 14px;
-  font-weight: 500;
-}
-
-/* Specific text colors for report stats */
-.text-black { color: #111; }
-.text-blue { color: #0D6EFD; }
-
-/* Empty state styling for tables */
-.empty-state-text {
-  text-align: center !important;
-  color: #8daaf5; /* Light blue empty state color */
-  padding: 30px !important;
-  font-style: italic;
-  background-color: #f8f9fa;
-}
-
-/* ==========================================
-   User Management Styles (NEW)
-   ========================================== */
-
-/* Blue border wrapper for the staff accounts table */
-.border-blue-wrap {
-  border: 2px solid #0D6EFD;
-  border-radius: 8px; /* Matches the card-box border radius */
-  padding: 25px; /* Ensures space between the border and the content */
-}
-
-/* ==========================================
-   System Setting Styles (NEW)
-   ========================================== */
-
-/* Utility classes for the Setting table layout */
-.text-left-table th, 
-.text-left-table td {
-  text-align: left !important;
-}
-
-.ml-2 {
-  margin-left: 15px;
-}
-
-/* Contact Support Buttons Layout */
-.support-btn-container {
-  display: flex;
-  gap: 20px;
-  flex-wrap: wrap; /* Allows wrapping on smaller screens */
-}
-
-/* Bright blue rounded support buttons */
-.support-phone-btn {
-  background-color: #0D6EFD;
-  color: white;
-  border: none;
-  padding: 12px 25px;
-  border-radius: 8px;
-  font-size: 16px;
-  font-weight: 700;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  box-shadow: 0 4px 6px rgba(13, 110, 253, 0.2);
-  transition: all 0.2s;
-}
-
-.support-phone-btn:hover {
-  background-color: #0b5ed7;
-  transform: translateY(-2px);
-  box-shadow: 0 6px 10px rgba(13, 110, 253, 0.3);
-<<<<<<< Updated upstream
->>>>>>> Stashed changes
-=======
-}
+.mt-4 { margin-top: 30px; }
+.mb-4 { margin-bottom: 25px; }
 
 /* ==========================================
    Fire Monitoring Styles
    ========================================== */
-
-/* Red alert banner for active fire/smoke detection */
 .fire-alert-banner {
-  background-color: #ffcccc; /* Light red background */
+  background-color: #ffcccc; 
   border: 1px solid #ff4d4d;
   border-radius: 8px;
   padding: 20px 25px;
@@ -865,7 +606,6 @@
   gap: 8px;
 }
 
-/* Grid layout for the details inside the red banner */
 .alert-details-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -885,7 +625,6 @@
   color: #111;
 }
 
-/* Action buttons inside the alert banner */
 .alert-actions {
   display: flex;
   gap: 15px;
@@ -920,5 +659,205 @@
 
 .btn-resolve:hover {
   background-color: #ffe6e6;
->>>>>>> Stashed changes
+}
+
+/* ==========================================
+   Alerts Management Styles
+   ========================================== */
+.alert-feed-item {
+  display: flex;
+  align-items: center;
+  background-color: #f0f7fd; 
+  border: 1px solid #d1e3f8;
+  border-radius: 8px;
+  padding: 15px 20px;
+  margin-bottom: 15px;
+  gap: 20px;
+}
+
+.alert-icon-box {
+  width: 50px;
+  height: 50px;
+  border-radius: 8px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 24px;
+  color: white;
+  flex-shrink: 0;
+}
+
+.bg-red { background-color: #ff0000; }
+
+.alert-details { flex-grow: 1; }
+
+.alert-item-title {
+  margin: 0 0 5px 0;
+  font-size: 16px;
+  color: #111;
+  font-weight: 700;
+}
+
+.alert-item-desc {
+  margin: 0 0 5px 0;
+  font-size: 13px;
+  color: #555;
+}
+
+.alert-item-meta {
+  margin: 0;
+  font-size: 12px;
+  color: #888;
+}
+
+.btn-resolve-green {
+  background-color: #39e600; 
+  color: white;
+  border: 1px solid #2db300;
+  padding: 10px 20px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 2px 4px rgba(57, 230, 0, 0.2);
+  transition: all 0.2s;
+  flex-shrink: 0;
+}
+
+.btn-resolve-green:hover {
+  background-color: #33cc00; 
+}
+
+/* ==========================================
+   Reports & Logs Styles
+   ========================================== */
+.reports-filter-card {
+  display: flex;
+  align-items: flex-end;
+  gap: 30px;
+  margin-bottom: 30px;
+}
+
+.filter-group { flex: 1; }
+
+.filter-group label {
+  display: block;
+  font-weight: 600;
+  font-size: 14px;
+  color: #111;
+  margin-bottom: 8px;
+}
+
+.select-input {
+  appearance: auto; 
+  cursor: pointer;
+  background-color: white;
+}
+
+.filter-action { flex-shrink: 0; }
+
+.btn-download-pdf {
+  background-color: #0D6EFD;
+  color: white;
+  border: none;
+  padding: 12px 25px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  box-shadow: 0 2px 4px rgba(13, 110, 253, 0.2);
+}
+
+.btn-download-pdf:hover { background-color: #0b5ed7; }
+
+.download-icon { font-size: 16px; }
+
+.reports-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+  margin-bottom: 30px;
+}
+
+.report-stat-card {
+  background: white;
+  padding: 30px 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+  text-align: center;
+  border: 1px solid #e2e8f0;
+}
+
+.report-stat-card h2 {
+  margin: 0 0 10px 0;
+  font-size: 36px;
+  font-weight: 500;
+}
+
+.report-stat-card p {
+  margin: 0;
+  color: #555;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.text-black { color: #111; }
+.text-blue { color: #0D6EFD; }
+
+.empty-state-text {
+  text-align: center !important;
+  color: #8daaf5; 
+  padding: 30px !important;
+  font-style: italic;
+  background-color: #f8f9fa;
+}
+
+/* ==========================================
+   User Management Styles
+   ========================================== */
+.border-blue-wrap {
+  border: 2px solid #0D6EFD;
+  border-radius: 8px; 
+  padding: 25px; 
+}
+
+/* ==========================================
+   System Setting Styles
+   ========================================== */
+.text-left-table th, 
+.text-left-table td {
+  text-align: left !important;
+}
+
+.ml-2 { margin-left: 15px; }
+
+.support-btn-container {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap; 
+}
+
+.support-phone-btn {
+  background-color: #0D6EFD;
+  color: white;
+  border: none;
+  padding: 12px 25px;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  box-shadow: 0 4px 6px rgba(13, 110, 253, 0.2);
+  transition: all 0.2s;
+}
+
+.support-phone-btn:hover {
+  background-color: #0b5ed7;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 10px rgba(13, 110, 253, 0.3);
 }
