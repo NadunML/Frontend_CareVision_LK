@@ -45,11 +45,30 @@ const Dashboard = ({ onLogout }) => {
           <li className={activeTab === 'access' ? 'active' : ''} onClick={() => handleTabChange('access')}>
             <span>🛡️</span> Access Control
           </li>
+<<<<<<< Updated upstream
           <li><span>🔥</span> Fire Monitoring</li>
           <li><span>🔔</span> Alerts</li>
           <li><span>📄</span> Reports & Logs</li>
           <li><span>👤</span> User Management</li>
           <li><span>⚙️</span> Setting</li>
+=======
+          <li className={activeTab === 'fire' ? 'active' : ''} onClick={() => handleTabChange('fire')}>
+            <span>🔥</span> Fire Monitoring
+          </li>
+          <li className={activeTab === 'alerts' ? 'active' : ''} onClick={() => handleTabChange('alerts')}>
+            <span>🔔</span> Alerts
+          </li>
+          <li className={activeTab === 'reports' ? 'active' : ''} onClick={() => handleTabChange('reports')}>
+            <span>📄</span> Reports & Logs
+          </li>
+          <li className={activeTab === 'user' ? 'active' : ''} onClick={() => handleTabChange('user')}>
+            <span>👤</span> User Management
+          </li>
+          {/* Setting Navigation Link (UPDATED) */}
+          <li className={activeTab === 'setting' ? 'active' : ''} onClick={() => handleTabChange('setting')}>
+            <span>⚙️</span> Setting
+          </li>
+>>>>>>> Stashed changes
         </ul>
 
         <div className="sidebar-footer">
@@ -128,27 +147,21 @@ const Dashboard = ({ onLogout }) => {
         {/* ========================================= */}
         {activeTab === 'patient' && (
           <div className="patient-wrapper">
-            
             <div className="page-header-flex">
               <div className="header">
                 <h1>Patient Management</h1>
                 <p>Register and monitor high-risk patients</p>
               </div>
-              
               {!showRegisterForm && (
-                <button className="primary-btn" onClick={() => setShowRegisterForm(true)}>
-                  + Register Patient
-                </button>
+                <button className="primary-btn" onClick={() => setShowRegisterForm(true)}>+ Register Patient</button>
               )}
             </div>
-
             {showRegisterForm ? (
               <div className="register-form-card card-box">
                 <div className="form-row"><label>Patient ID :</label><input type="text" className="form-input" /></div>
                 <div className="form-row"><label>Patient Name :</label><input type="text" className="form-input" /></div>
                 <div className="form-row"><label>Ward :</label><input type="text" className="form-input" /></div>
                 <div className="form-row"><label>Ward ID :</label><input type="text" className="form-input" /></div>
-                
                 <div className="form-row">
                   <label>Risk Level :</label>
                   <div className="radio-group">
@@ -157,7 +170,6 @@ const Dashboard = ({ onLogout }) => {
                     <label><input type="radio" name="risk" value="Low" /> Low</label>
                   </div>
                 </div>
-                
                 <div className="form-row align-start">
                   <label className="mt-2">Add Image :</label>
                   <div className="image-upload-box">
@@ -166,7 +178,6 @@ const Dashboard = ({ onLogout }) => {
                     </div>
                   </div>
                 </div>
-
                 <div className="form-actions">
                   <button className="btn-register">Register Patient</button>
                   <button className="btn-cancel" onClick={() => setShowRegisterForm(false)}>Cancel</button>
@@ -175,37 +186,26 @@ const Dashboard = ({ onLogout }) => {
             ) : (
               <>
                 <div className="patient-stats-grid">
-                  <div className="stat-card flex-between">
-                    <div><h4>Total Patients</h4><h2>5</h2></div>
-                    <div className="icon-circle blue-circle">!</div>
-                  </div>
-                  <div className="stat-card flex-between">
-                    <div><h4>High Risk</h4><h2>2</h2></div>
-                    <div className="icon-circle red-circle">!</div>
-                  </div>
-                  <div className="stat-card flex-between">
-                    <div><h4>Exit Alerts Today</h4><h2>3</h2></div>
-                    <div className="icon-circle orange-circle">!</div>
-                  </div>
+                  <div className="stat-card flex-between"><div><h4>Total Patients</h4><h2>5</h2></div><div className="icon-circle blue-circle">!</div></div>
+                  <div className="stat-card flex-between"><div><h4>High Risk</h4><h2>2</h2></div><div className="icon-circle red-circle">!</div></div>
+                  <div className="stat-card flex-between"><div><h4>Exit Alerts Today</h4><h2>3</h2></div><div className="icon-circle orange-circle">!</div></div>
                 </div>
-
                 <div className="table-container card-box">
                   <h3>Registered Patients</h3>
                   <input type="text" className="search-bar" placeholder="Search Patients..." />
                   <table className="data-table">
-                    <thead>
-                      <tr><th>Ward</th><th>Risk Level</th><th>Registered Date</th><th>Actions</th></tr>
-                    </thead>
+                    <thead><tr><th>Ward</th><th>Risk Level</th><th>Registered Date</th><th>Actions</th></tr></thead>
                     <tbody>
                       <tr><td>Ward 3</td><td className="text-orange font-bold">medium</td><td>2024-02-20</td><td><span className="action-edit">Edit</span> / <span className="action-delete">Delete</span></td></tr>
                       <tr><td>ICU</td><td className="text-red font-bold">High</td><td>2024-02-21</td><td><span className="action-edit">Edit</span> / <span className="action-delete">Delete</span></td></tr>
                       <tr><td>Ward 5</td><td className="text-green font-bold">Low</td><td>2024-02-22</td><td><span className="action-edit">Edit</span> / <span className="action-delete">Delete</span></td></tr>
+                      <tr><td>Ward 3</td><td className="text-orange font-bold">medium</td><td>2024-02-22</td><td><span className="action-edit">Edit</span> / <span className="action-delete">Delete</span></td></tr>
+                      <tr><td>Ward 7</td><td className="text-red font-bold">High</td><td>2024-02-23</td><td><span className="action-edit">Edit</span> / <span className="action-delete">Delete</span></td></tr>
                     </tbody>
                   </table>
                 </div>
               </>
             )}
-
           </div>
         )}
 
@@ -214,14 +214,12 @@ const Dashboard = ({ onLogout }) => {
         {/* ========================================= */}
         {activeTab === 'access' && (
           <div className="access-wrapper">
-            
-            <div className="header">
+             <div className="header">
               <h1>Access Control</h1>
               <p>Real-time hospital monitoring and security status</p>
             </div>
-
-            {/* Top statistics cards */}
             <div className="stats-grid">
+<<<<<<< Updated upstream
               
               <div className="stat-card">
                 <div className="flex-between align-start">
@@ -267,65 +265,278 @@ const Dashboard = ({ onLogout }) => {
                 </div>
               </div>
 
+=======
+              <div className="stat-card"><div className="flex-between align-start"><div><h4>Total Access Attempts</h4><h2>234</h2><p className="stat-sub">+28 this week</p></div><div className="outline-icon-box border-blue">👤</div></div></div>
+              <div className="stat-card"><div className="flex-between align-start"><div><h4>Access Granted</h4><h2>198</h2><p className="stat-sub">84.6% compliance</p></div><div className="outline-icon-box border-green">🛡️</div></div></div>
+              <div className="stat-card"><div className="flex-between align-start"><div><h4>Access Denied</h4><h2>36</h2><p className="stat-sub">15.4% violations</p></div><div className="outline-icon-box border-red">🛑</div></div></div>
+              <div className="stat-card"><div className="flex-between align-start"><div><h4>Active Cameras</h4><h2>4</h2><p className="stat-sub">All operational</p></div><div className="outline-icon-box border-yellow">📷</div></div></div>
+>>>>>>> Stashed changes
             </div>
-
-            {/* Access Control Logs Table */}
             <div className="table-container card-box mt-4">
               <h3 className="mb-4">Access Control Logs</h3>
               
               <table className="data-table">
                 <thead>
+                  <tr><th>Camera ID</th><th>Mask Detected</th><th>Confidence</th><th>Access Result</th><th>Timestamp</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td>Lab Entry - Cam 08</td><td className="text-green font-bold">Yes</td><td>98%</td><td className="text-green font-bold">Granted</td><td>2024-02-24 14:45:30</td></tr>
+                  <tr><td>ICU Entry - Cam 12</td><td className="text-red font-bold">No</td><td>95%</td><td className="text-red font-bold">Denied</td><td>2024-02-24 14:30:15</td></tr>
+                  <tr><td>Lab Entry - Cam 08</td><td className="text-green font-bold">Yes</td><td>92%</td><td className="text-green font-bold">Granted</td><td>2024-02-24 14:15:20</td></tr>
+                  <tr><td>Lab Entry - Cam 08</td><td className="text-green font-bold">Yes</td><td>96%</td><td className="text-green font-bold">Granted</td><td>2024-02-24 13:50:10</td></tr>
+                  <tr><td>ICU Entry - Cam 12</td><td className="text-red font-bold">No</td><td>97%</td><td className="text-red font-bold">Denied</td><td>2024-02-24 13:20:45</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        )}
+
+<<<<<<< Updated upstream
+=======
+        {/* ========================================= */}
+        {/* 5. Fire Monitoring Tab Content */}
+        {/* ========================================= */}
+        {activeTab === 'fire' && (
+          <div className="fire-wrapper">
+            <div className="header">
+              <h1>Fire & Smoke Detection</h1>
+              <p>Real-time fire and smoke monitoring system</p>
+            </div>
+            <div className="stats-grid">
+              <div className="stat-card"><div className="flex-between align-start"><div><h4>Active Alerts</h4><h2>1</h2><p className="stat-sub">+28 this week</p></div><div className="outline-icon-box border-red">⚠️</div></div></div>
+              <div className="stat-card"><div className="flex-between align-start"><div><h4>Total Events (24h)</h4><h2>4</h2><p className="stat-sub">84.6% compliance</p></div><div className="outline-icon-box border-orange">🔥</div></div></div>
+              <div className="stat-card"><div className="flex-between align-start"><div><h4>Resolved Events</h4><h2>3</h2><p className="stat-sub">15.4% violations</p></div><div className="outline-icon-box border-green">✅</div></div></div>
+              <div className="stat-card"><div className="flex-between align-start"><div><h4>Monitoring Cameras</h4><h2>6</h2><p className="stat-sub">All operational</p></div><div className="outline-icon-box border-yellow">📷</div></div></div>
+            </div>
+            <div className="fire-alert-banner">
+              <h3 className="alert-title">🔥 Active Fire/Smoke Alert</h3>
+              <div className="alert-details-grid">
+                <div><div className="detail-label">Location</div><div className="detail-value">ICU - Camera 12</div></div>
+                <div><div className="detail-label">Confidence Level</div><div className="detail-value">95%</div></div>
+                <div><div className="detail-label">Event Type</div><div className="detail-value">Smoke Detected</div></div>
+                <div><div className="detail-label">Detection Time</div><div className="detail-value">2024-02-24 14:30:25</div></div>
+              </div>
+              <div className="alert-actions">
+                <button className="btn-notify">🔔 Notify Emergency Service</button>
+                <button className="btn-resolve">Mark as Resolved</button>
+              </div>
+            </div>
+            <div className="table-container card-box mt-4">
+              <h3 className="mb-4">Fire & Smoke Event Logs</h3>
+              <table className="data-table">
+                <thead><tr><th>Event Type</th><th>Confidence</th><th>Severity</th><th>Status</th><th>Timestamp</th></tr></thead>
+                <tbody>
+                  <tr><td>Smoke Detected</td><td>95%</td><td className="text-red font-bold">High</td><td className="text-red font-bold">Active</td><td>2024-02-24 14:45:30</td></tr>
+                  <tr><td>Fire Detected</td><td>88%</td><td className="text-orange font-bold">Critical</td><td className="text-green font-bold">Resolved</td><td>2024-02-24 14:30:15</td></tr>
+                  <tr><td>Smoke Detected</td><td>76%</td><td className="text-yellow font-bold">Medium</td><td className="text-green font-bold">Resolved</td><td>2024-02-24 14:15:20</td></tr>
+                  <tr><td>Smoke Detected</td><td>82%</td><td className="text-yellow font-bold">Medium</td><td className="text-green font-bold">Resolved</td><td>2024-02-24 13:50:10</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        )}
+
+        {/* ========================================= */}
+        {/* 6. Alerts Tab Content */}
+        {/* ========================================= */}
+        {activeTab === 'alerts' && (
+          <div className="alerts-wrapper">
+            <div className="header">
+              <h1>Alert Management</h1>
+              <p>Monitor and manage system alerts and notifications</p>
+            </div>
+            <div className="stats-grid">
+              <div className="stat-card"><h4>Total Alerts</h4><h2>3</h2></div>
+              <div className="stat-card"><h4>High Priority</h4><h2 className="text-red">2</h2></div>
+              <div className="stat-card"><h4>Pending</h4><h2 className="text-orange">1</h2></div>
+              <div className="stat-card"><h4>Resolved</h4><h2 className="text-green">0</h2></div>
+            </div>
+            <div className="table-container card-box mt-4">
+              <h3 style={{marginBottom: '5px'}}>Alert Feed</h3>
+              <p className="detail-label" style={{marginBottom: '20px'}}>Filter alerts by type and manage responses</p>
+              <div className="alert-list">
+                <div className="alert-feed-item">
+                  <div className="alert-icon-box bg-red"><span>🔥</span></div>
+                  <div className="alert-details">
+                    <h4 className="alert-item-title">Fire</h4>
+                    <p className="alert-item-desc">Fire detected in Ward 3 Corridor</p>
+                    <p className="alert-item-meta">Camera: Ward 3 Corridor | Feb 24, 2026 08:30</p>
+                  </div>
+                  <button className="btn-resolve-green">Mark as Resolved</button>
+                </div>
+                <div className="alert-feed-item">
+                  <div className="alert-icon-box bg-red"><span>👤</span></div>
+                  <div className="alert-details">
+                    <h4 className="alert-item-title">Patient Wandering</h4>
+                    <p className="alert-item-desc">Patient John Anderson detected at Emergency Exit A</p>
+                    <p className="alert-item-meta">Camera: Emergency Exit A | Feb 24, 2026 09:15</p>
+                  </div>
+                  <button className="btn-resolve-green">Mark as Resolved</button>
+                </div>
+                <div className="alert-feed-item">
+                  <div className="alert-icon-box bg-red"><span>🛡️</span></div>
+                  <div className="alert-details">
+                    <h4 className="alert-item-title">Mask Violation</h4>
+                    <p className="alert-item-desc">Staff entered ICU without proper mask</p>
+                    <p className="alert-item-meta">Camera: ICU Wing | Feb 24, 2026 10:00</p>
+                  </div>
+                  <button className="btn-resolve-green">Mark as Resolved</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* ========================================= */}
+        {/* 7. Reports & Logs Tab Content */}
+        {/* ========================================= */}
+        {activeTab === 'reports' && (
+          <div className="reports-wrapper">
+            <div className="header">
+              <h1>Reports & Logs</h1>
+              <p>Generate and download detailed system reports</p>
+            </div>
+            <div className="reports-filter-card card-box">
+              <div className="filter-group">
+                <label>Report Type</label>
+                <select className="form-input select-input">
+                  <option>Daily Alert Report</option>
+                  <option>Weekly Summary</option>
+                  <option>Monthly Overview</option>
+                </select>
+              </div>
+              <div className="filter-group">
+                <label>Select Date</label>
+                <input type="text" className="form-input" placeholder="Select a date..." />
+              </div>
+              <div className="filter-action">
+                <button className="btn-download-pdf"><span className="download-icon">📥</span> Download PDF</button>
+              </div>
+            </div>
+            <div className="reports-stats-grid">
+              <div className="report-stat-card"><h2 className="text-black">0</h2><p>Total Alerts</p></div>
+              <div className="report-stat-card"><h2 className="text-red">0</h2><p>Fire Events</p></div>
+              <div className="report-stat-card"><h2 className="text-orange">0</h2><p>Patient Exits</p></div>
+              <div className="report-stat-card"><h2 className="text-blue">0</h2><p>Access Logs</p></div>
+            </div>
+            <div className="table-container card-box mt-4">
+              <h3 className="mb-4">Alert Details</h3>
+              <table className="data-table">
+                <thead><tr><th>Time</th><th>Type</th><th>Message</th><th>Priority</th><th>Status</th></tr></thead>
+                <tbody><tr><td colSpan="5" className="empty-state-text">No alerts for selected date</td></tr></tbody>
+              </table>
+            </div>
+          </div>
+        )}
+
+        {/* ========================================= */}
+        {/* 8. User Management Tab Content */}
+        {/* ========================================= */}
+        {activeTab === 'user' && (
+          <div className="user-wrapper">
+            <div className="header">
+              <h1>User Management</h1>
+              <p>Manage staff accounts and system access</p>
+            </div>
+            <div className="patient-stats-grid">
+              <div className="stat-card flex-between"><div><h4>Total Staff</h4><h2>5</h2></div><div className="icon-circle blue-circle">!</div></div>
+              <div className="stat-card flex-between"><div><h4>Active Users</h4><h2>2</h2></div><div className="icon-circle red-circle">!</div></div>
+              <div className="stat-card flex-between"><div><h4>Inactive Users</h4><h2>3</h2></div><div className="icon-circle orange-circle">!</div></div>
+            </div>
+            <div className="table-container card-box mt-4 border-blue-wrap">
+              <h3 className="mb-4">Staff Accounts</h3>
+              <table className="data-table">
+                <thead><tr><th>Username</th><th>Email</th><th>Status</th><th>Created</th></tr></thead>
+                <tbody>
+                  <tr><td>admin</td><td>admin@hospital.lk</td><td className="text-green font-bold">Active</td><td>2024-02-24</td></tr>
+                  <tr><td>sjohnson</td><td>sarah.j@hospital.lk</td><td className="text-green font-bold">Active</td><td>2024-02-24</td></tr>
+                  <tr><td>mikesmith</td><td>mike.s@hospital.lk</td><td className="text-green font-bold">Active</td><td>2024-02-24</td></tr>
+                  <tr><td>jonny</td><td>jonny.s@hospital.lk</td><td className="text-green font-bold">Active</td><td>2024-02-24</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        )}
+
+        {/* ========================================= */}
+        {/* 9. Setting Tab Content (NEW) */}
+        {/* ========================================= */}
+        {activeTab === 'setting' && (
+          <div className="setting-wrapper">
+            
+            <div className="header">
+              <h1>System Setting</h1>
+              <p>Configure cameras, monitoring zones, and system preferences</p>
+            </div>
+
+            {/* Camera Management Card */}
+            <div className="card-box mt-4">
+              
+              <div className="camera-header-wrap">
+                <h3 style={{display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '5px'}}>
+                  <span>📷</span> Camera Management
+                </h3>
+                <p className="detail-label" style={{marginBottom: '20px'}}>Add, edit, or remove cameras from the system</p>
+              </div>
+
+              <table className="data-table text-left-table">
+                <thead>
                   <tr>
-                    <th>Camera ID</th>
-                    <th>Mask Detected</th>
-                    <th>Confidence</th>
-                    <th>Access Result</th>
-                    <th>Timestamp</th>
+                    <th>Camera Name</th>
+                    <th>IP Address</th>
+                    <th>Zone</th>
+                    <th>Status</th>
+                    <th>Action</th>
                   </tr>
                 </thead>
                 <tbody>
                   <tr>
-                    <td>Lab Entry - Cam 08</td>
-                    <td className="text-green font-bold">Yes</td>
-                    <td>98%</td>
-                    <td className="text-green font-bold">Granted</td>
-                    <td>2024-02-24 14:45:30</td>
+                    <td>Main Entrance</td>
+                    <td>192.168.1.101</td>
+                    <td>Entrance</td>
+                    <td>Active</td>
+                    <td><span className="action-edit font-bold">Edit</span> <span className="action-delete font-bold ml-2 text-black">Delete</span></td>
                   </tr>
                   <tr>
-                    <td>ICU Entry - Cam 12</td>
-                    <td className="text-red font-bold">No</td>
-                    <td>95%</td>
-                    <td className="text-red font-bold">Denied</td>
-                    <td>2024-02-24 14:30:15</td>
+                    <td>Lab Entrance</td>
+                    <td>192.168.1.101</td>
+                    <td>Lab</td>
+                    <td>Active</td>
+                    <td><span className="action-edit font-bold">Edit</span> <span className="action-delete font-bold ml-2 text-black">Delete</span></td>
                   </tr>
                   <tr>
-                    <td>Lab Entry - Cam 08</td>
-                    <td className="text-green font-bold">Yes</td>
-                    <td>92%</td>
-                    <td className="text-green font-bold">Granted</td>
-                    <td>2024-02-24 14:15:20</td>
+                    <td>ICU Wing</td>
+                    <td>192.168.1.101</td>
+                    <td>ICU</td>
+                    <td>Active</td>
+                    <td><span className="action-edit font-bold">Edit</span> <span className="action-delete font-bold ml-2 text-black">Delete</span></td>
                   </tr>
                   <tr>
-                    <td>Lab Entry - Cam 08</td>
-                    <td className="text-green font-bold">Yes</td>
-                    <td>96%</td>
-                    <td className="text-green font-bold">Granted</td>
-                    <td>2024-02-24 13:50:10</td>
-                  </tr>
-                  <tr>
-                    <td>ICU Entry - Cam 12</td>
-                    <td className="text-red font-bold">No</td>
-                    <td>97%</td>
-                    <td className="text-red font-bold">Denied</td>
-                    <td>2024-02-24 13:20:45</td>
+                    <td>Ward 3</td>
+                    <td>192.168.1.101</td>
+                    <td>Ward</td>
+                    <td>Active</td>
+                    <td><span className="action-edit font-bold">Edit</span> <span className="action-delete font-bold ml-2 text-black">Delete</span></td>
                   </tr>
                 </tbody>
               </table>
             </div>
 
+            {/* Contact Support Card */}
+            <div className="card-box mt-4">
+              <h3 className="mb-4">Contact Support</h3>
+              
+              <div className="support-btn-container">
+                <button className="support-phone-btn">📞 +94765293838</button>
+                <button className="support-phone-btn">📞 +94766486769</button>
+                <button className="support-phone-btn">📞 +94766486769</button>
+              </div>
+            </div>
+
           </div>
         )}
 
+>>>>>>> Stashed changes
       </div>
     </div>
   );
