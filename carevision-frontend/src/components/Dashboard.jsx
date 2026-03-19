@@ -1,14 +1,123 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import './Dashboard.css';
 
 const Dashboard = ({ onLogout }) => {
   const [activeTab, setActiveTab] = useState('dashboard');
   const [showRegisterForm, setShowRegisterForm] = useState(false);
+  const videoRef = useRef(null);
+
+  const [patientData, setPatientData] = useState({ patientId: '', name: '', ward: '', wardId: '', risk: 'Low' });
+  const [imageFile, setImageFile] = useState(null);
+  const [isUploading, setIsUploading] = useState(false);
+
+  // 1. ඩේටාබේස් එකෙන් එන රෝගීන්ගේ විස්තර තියාගන්න අලුත් State එකක්
+  const [patientsList, setPatientsList] = useState([]);
 
   const handleTabChange = (tabName) => {
     setActiveTab(tabName);
     setShowRegisterForm(false);
   };
+
+  // 2. Python එකෙන් ඩේටා ගේන ෆන්ක්ෂන් එක
+  const fetchPatients = async () => {
+    try {
+      const response = await fetch('http://localhost:5000/api/patients');
+      const data = await response.json();
+      if (response.ok) {
+        setPatientsList(data);
+      }
+    } catch (error) {
+      console.error("Error fetching patients:", error);
+    }
+  };
+
+  // 3. Patient ටැබ් එකට ගියාම ඔටෝම ඩේටා ටික ලෝඩ් කරන්න
+  useEffect(() => {
+    if (activeTab === 'patient') {
+      fetchPatients();
+    }
+  }, [activeTab]);
+
+  useEffect(() => {
+    let stream = null;
+    const startCamera = async () => {
+      if (activeTab === 'cctv') {
+        try {
+          stream = await navigator.mediaDevices.getUserMedia({ video: true });
+          if (videoRef.current) {
+            videoRef.current.srcObject = stream;
+          }
+        } catch (err) {
+          console.error("Camera access denied or error:", err);
+        }
+      }
+    };
+    startCamera();
+    return () => {
+      if (stream) stream.getTracks().forEach(track => track.stop());
+    };
+  }, [activeTab]);
+
+  const handleImageChange = (e) => {
+    if (e.target.files[0]) {
+      setImageFile(e.target.files[0]);
+    }
+  };
+
+  const handleRegisterPatient = async (e) => {
+    e.preventDefault();
+    if (!patientData.patientId || !patientData.name || !imageFile) {
+      alert("Please fill all required fields and select an image!");
+      return;
+    }
+    setIsUploading(true);
+    const formData = new FormData();
+    formData.append('patientId', patientData.patientId);
+    formData.append('name', patientData.name);
+    formData.append('ward', patientData.ward);
+    formData.append('wardId', patientData.wardId);
+    formData.append('riskLevel', patientData.risk);
+    formData.append('image', imageFile); 
+
+    try {
+      const response = await fetch('http://localhost:5000/api/register-patient', {
+        method: 'POST',
+        body: formData, 
+      });
+      const result = await response.json();
+      if (response.ok) {
+        alert("Patient Registered Successfully in MySQL!");
+        setPatientData({ patientId: '', name: '', ward: '', wardId: '', risk: 'Low' });
+        setImageFile(null);
+        setShowRegisterForm(false);
+        
+        // 4. අලුත් කෙනෙක්ව රෙජිස්ටර් කළාම ඔටෝම ටේබල් එක අප්ඩේට් කරන්න
+        fetchPatients(); 
+      } else {
+        alert("Error: " + result.error);
+      }
+    } catch (error) {
+      console.error("Error saving patient: ", error);
+      alert("Server connection failed. Is Python running?");
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
+  const NoSignalBox = ({ camName }) => (
+    <div className="cctv-box" style={{ padding: 0, overflow: 'hidden', backgroundColor: '#111', display: 'flex', justifyContent: 'center', alignItems: 'center', flexDirection: 'column', position: 'relative' }}>
+      <div className="cctv-top-bar" style={{ position: 'absolute', top: '10px', left: '10px', right: '10px', zIndex: 2 }}>
+        <div className="cam-name" style={{ backgroundColor: 'rgba(255,255,255,0.1)', color: '#aaa', border: '1px solid #444' }}>{camName}</div>
+        <div className="cam-time" style={{ color: '#666', fontSize: '12px' }}>Disconnected</div>
+      </div>
+      <div style={{ textAlign: 'center', color: '#555' }}>
+        <div style={{ fontSize: '50px', marginBottom: '10px' }}>⚠️</div>
+        <div style={{ fontSize: '20px', fontWeight: 'bold', letterSpacing: '2px', color: '#666' }}>NO SIGNAL</div>
+        <div style={{ fontSize: '11px', color: '#444', marginTop: '5px' }}>CAMERA NOT CONNECTED</div>
+      </div>
+      <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', background: 'linear-gradient(rgba(255,255,255,0.03) 50%, transparent 50%)', backgroundSize: '100% 4px', pointerEvents: 'none' }}></div>
+    </div>
+  );
 
   return (
     <div className="dashboard-container">
@@ -28,33 +137,15 @@ const Dashboard = ({ onLogout }) => {
         </div>
 
         <ul className="sidebar-menu">
-          <li className={activeTab === 'dashboard' ? 'active' : ''} onClick={() => handleTabChange('dashboard')}>
-            <span>🏠</span> Dashboard
-          </li>
-          <li className={activeTab === 'cctv' ? 'active' : ''} onClick={() => handleTabChange('cctv')}>
-            <span>📷</span> Live CCTV Feeds
-          </li>
-          <li className={activeTab === 'patient' ? 'active' : ''} onClick={() => handleTabChange('patient')}>
-            <span>👥</span> Patient Management
-          </li>
-          <li className={activeTab === 'access' ? 'active' : ''} onClick={() => handleTabChange('access')}>
-            <span>🛡️</span> Access Control
-          </li>
-          <li className={activeTab === 'fire' ? 'active' : ''} onClick={() => handleTabChange('fire')}>
-            <span>🔥</span> Fire Monitoring
-          </li>
-          <li className={activeTab === 'alerts' ? 'active' : ''} onClick={() => handleTabChange('alerts')}>
-            <span>🔔</span> Alerts
-          </li>
-          <li className={activeTab === 'reports' ? 'active' : ''} onClick={() => handleTabChange('reports')}>
-            <span>📄</span> Reports & Logs
-          </li>
-          <li className={activeTab === 'user' ? 'active' : ''} onClick={() => handleTabChange('user')}>
-            <span>👤</span> User Management
-          </li>
-          <li className={activeTab === 'setting' ? 'active' : ''} onClick={() => handleTabChange('setting')}>
-            <span>⚙️</span> Setting
-          </li>
+          <li className={activeTab === 'dashboard' ? 'active' : ''} onClick={() => handleTabChange('dashboard')}><span>🏠</span> Dashboard</li>
+          <li className={activeTab === 'cctv' ? 'active' : ''} onClick={() => handleTabChange('cctv')}><span>📷</span> Live CCTV Feeds</li>
+          <li className={activeTab === 'patient' ? 'active' : ''} onClick={() => handleTabChange('patient')}><span>👥</span> Patient Management</li>
+          <li className={activeTab === 'access' ? 'active' : ''} onClick={() => handleTabChange('access')}><span>🛡️</span> Access Control</li>
+          <li className={activeTab === 'fire' ? 'active' : ''} onClick={() => handleTabChange('fire')}><span>🔥</span> Fire Monitoring</li>
+          <li className={activeTab === 'alerts' ? 'active' : ''} onClick={() => handleTabChange('alerts')}><span>🔔</span> Alerts</li>
+          <li className={activeTab === 'reports' ? 'active' : ''} onClick={() => handleTabChange('reports')}><span>📄</span> Reports & Logs</li>
+          <li className={activeTab === 'user' ? 'active' : ''} onClick={() => handleTabChange('user')}><span>👤</span> User Management</li>
+          <li className={activeTab === 'setting' ? 'active' : ''} onClick={() => handleTabChange('setting')}><span>⚙️</span> Setting</li>
         </ul>
 
         <div className="sidebar-footer">
@@ -120,10 +211,16 @@ const Dashboard = ({ onLogout }) => {
               <p>Real-time hospital monitoring and security status</p>
             </div>
             <div className="cctv-grid">
-              <div className="cctv-box"><div className="cctv-top-bar"><div className="cam-name">📷 Camera 01</div><div className="cam-time">4:50:36 PM</div></div><div className="cctv-bottom-bar"><span className="expand-icon">↗</span></div></div>
-              <div className="cctv-box"><div className="cctv-top-bar"><div className="cam-name">📷 Camera 02</div><div className="cam-time">4:50:36 PM</div></div><div className="cctv-bottom-bar"><span className="expand-icon">↗</span></div></div>
-              <div className="cctv-box"><div className="cctv-top-bar"><div className="cam-name">📷 Camera 03</div><div className="cam-time">4:50:36 PM</div></div><div className="cctv-bottom-bar"><span className="expand-icon">↗</span></div></div>
-              <div className="cctv-box"><div className="cctv-top-bar"><div className="cam-name">📷 Camera 04</div><div className="cam-time">4:50:36 PM</div></div><div className="cctv-bottom-bar"><span className="expand-icon">↗</span></div></div>
+              <div className="cctv-box" style={{ padding: 0, overflow: 'hidden', position: 'relative' }}>
+                <div className="cctv-top-bar" style={{ position: 'absolute', top: '10px', left: '10px', right: '10px', zIndex: 2 }}>
+                  <div className="cam-name" style={{ backgroundColor: 'rgba(0,0,0,0.6)', color: 'white', border: 'none' }}>🔴 Local WebCam (Live)</div>
+                  <div className="cam-time" style={{ backgroundColor: 'rgba(0,0,0,0.6)', color: 'white', padding: '2px 8px', borderRadius: '4px' }}>Live</div>
+                </div>
+                <video ref={videoRef} autoPlay playsInline muted style={{ width: '100%', height: '100%', objectFit: 'cover' }}></video>
+              </div>
+              <NoSignalBox camName="📷 ICU Ward 01" />
+              <NoSignalBox camName="📷 Lab Entrance" />
+              <NoSignalBox camName="📷 Emergency Exit" />
             </div>
           </div>
         )}
@@ -142,51 +239,98 @@ const Dashboard = ({ onLogout }) => {
                 <button className="primary-btn" onClick={() => setShowRegisterForm(true)}>+ Register Patient</button>
               )}
             </div>
+            
             {showRegisterForm ? (
-              <div className="register-form-card card-box">
-                <div className="form-row"><label>Patient ID :</label><input type="text" className="form-input" /></div>
-                <div className="form-row"><label>Patient Name :</label><input type="text" className="form-input" /></div>
-                <div className="form-row"><label>Ward :</label><input type="text" className="form-input" /></div>
-                <div className="form-row"><label>Ward ID :</label><input type="text" className="form-input" /></div>
+              <form onSubmit={handleRegisterPatient} className="register-form-card card-box">
+                <div className="form-row">
+                  <label>Patient ID :</label>
+                  <input type="text" className="form-input" required value={patientData.patientId} onChange={(e) => setPatientData({...patientData, patientId: e.target.value})} />
+                </div>
+                <div className="form-row">
+                  <label>Patient Name :</label>
+                  <input type="text" className="form-input" required value={patientData.name} onChange={(e) => setPatientData({...patientData, name: e.target.value})} />
+                </div>
+                <div className="form-row">
+                  <label>Ward :</label>
+                  <input type="text" className="form-input" value={patientData.ward} onChange={(e) => setPatientData({...patientData, ward: e.target.value})} />
+                </div>
+                <div className="form-row">
+                  <label>Ward ID :</label>
+                  <input type="text" className="form-input" value={patientData.wardId} onChange={(e) => setPatientData({...patientData, wardId: e.target.value})} />
+                </div>
                 <div className="form-row">
                   <label>Risk Level :</label>
                   <div className="radio-group">
-                    <label><input type="radio" name="risk" value="High" /> High</label>
-                    <label><input type="radio" name="risk" value="Medium" /> Medium</label>
-                    <label><input type="radio" name="risk" value="Low" /> Low</label>
+                    <label><input type="radio" name="risk" value="High" checked={patientData.risk === 'High'} onChange={(e) => setPatientData({...patientData, risk: e.target.value})} /> High</label>
+                    <label><input type="radio" name="risk" value="Medium" checked={patientData.risk === 'Medium'} onChange={(e) => setPatientData({...patientData, risk: e.target.value})} /> Medium</label>
+                    <label><input type="radio" name="risk" value="Low" checked={patientData.risk === 'Low'} onChange={(e) => setPatientData({...patientData, risk: e.target.value})} /> Low</label>
                   </div>
                 </div>
+                
                 <div className="form-row align-start">
                   <label className="mt-2">Add Image :</label>
-                  <div className="image-upload-box">
-                    <div className="upload-icon">
-                      <div className="square"></div><div className="plus">+</div>
-                    </div>
+                  <div style={{ padding: '10px 0' }}>
+                    <input type="file" accept="image/*" required onChange={handleImageChange} className="form-input" style={{ border: 'none', padding: '0' }} />
+                    {imageFile && <p style={{fontSize: '13px', color: '#16a34a', marginTop: '8px', fontWeight: 'bold'}}>✓ Selected: {imageFile.name}</p>}
                   </div>
                 </div>
-                <div className="form-actions">
-                  <button className="btn-register">Register Patient</button>
-                  <button className="btn-cancel" onClick={() => setShowRegisterForm(false)}>Cancel</button>
+
+                <div className="form-actions" style={{marginTop: '20px'}}>
+                  <button type="submit" className="btn-register" disabled={isUploading}>
+                    {isUploading ? 'Saving...' : 'Register Patient'}
+                  </button>
+                  <button type="button" className="btn-cancel" onClick={() => setShowRegisterForm(false)} disabled={isUploading}>Cancel</button>
                 </div>
-              </div>
+              </form>
             ) : (
               <>
                 <div className="patient-stats-grid">
-                  <div className="stat-card flex-between"><div><h4>Total Patients</h4><h2>5</h2></div><div className="icon-circle blue-circle">!</div></div>
-                  <div className="stat-card flex-between"><div><h4>High Risk</h4><h2>2</h2></div><div className="icon-circle red-circle">!</div></div>
-                  <div className="stat-card flex-between"><div><h4>Exit Alerts Today</h4><h2>3</h2></div><div className="icon-circle orange-circle">!</div></div>
+                  {/* උඩ තියෙන කොටු 3ත් ඔටෝ අප්ඩේට් වෙන්න හැදුවා */}
+                  <div className="stat-card flex-between">
+                    <div><h4>Total Patients</h4><h2>{patientsList.length}</h2></div>
+                    <div className="icon-circle blue-circle">!</div>
+                  </div>
+                  <div className="stat-card flex-between">
+                    <div><h4>High Risk</h4><h2>{patientsList.filter(p => p.risk_level === 'High').length}</h2></div>
+                    <div className="icon-circle red-circle">!</div>
+                  </div>
+                  <div className="stat-card flex-between">
+                    <div><h4>Exit Alerts Today</h4><h2>0</h2></div>
+                    <div className="icon-circle orange-circle">!</div>
+                  </div>
                 </div>
+                
                 <div className="table-container card-box">
                   <h3>Registered Patients</h3>
                   <input type="text" className="search-bar" placeholder="Search Patients..." />
                   <table className="data-table">
-                    <thead><tr><th>Ward</th><th>Risk Level</th><th>Registered Date</th><th>Actions</th></tr></thead>
+                    <thead>
+                      <tr>
+                        <th>Name (ID)</th>
+                        <th>Ward</th>
+                        <th>Risk Level</th>
+                        <th>Registered Date</th>
+                        <th>Actions</th>
+                      </tr>
+                    </thead>
                     <tbody>
-                      <tr><td>Ward 3</td><td className="text-orange font-bold">medium</td><td>2024-02-20</td><td><span className="action-edit">Edit</span> / <span className="action-delete">Delete</span></td></tr>
-                      <tr><td>ICU</td><td className="text-red font-bold">High</td><td>2024-02-21</td><td><span className="action-edit">Edit</span> / <span className="action-delete">Delete</span></td></tr>
-                      <tr><td>Ward 5</td><td className="text-green font-bold">Low</td><td>2024-02-22</td><td><span className="action-edit">Edit</span> / <span className="action-delete">Delete</span></td></tr>
-                      <tr><td>Ward 3</td><td className="text-orange font-bold">medium</td><td>2024-02-22</td><td><span className="action-edit">Edit</span> / <span className="action-delete">Delete</span></td></tr>
-                      <tr><td>Ward 7</td><td className="text-red font-bold">High</td><td>2024-02-23</td><td><span className="action-edit">Edit</span> / <span className="action-delete">Delete</span></td></tr>
+                      {/* ඩේටාබේස් එකේ මුකුත් නැත්නම් පෙන්නන්න */}
+                      {patientsList.length === 0 ? (
+                        <tr><td colSpan="5" style={{textAlign: 'center', padding: '20px', color: '#666'}}>No patients registered yet.</td></tr>
+                      ) : (
+                        // ඩේටාබේස් එකෙන් එන ලිස්ට් එකෙන් ටේබල් එක හදනවා
+                        patientsList.map((patient, index) => (
+                          <tr key={index}>
+                            <td><strong>{patient.name}</strong> <span style={{fontSize: '12px', color: '#666'}}>({patient.patient_id})</span></td>
+                            <td>{patient.ward || 'N/A'}</td>
+                            <td className={patient.risk_level === 'High' ? 'text-red font-bold' : patient.risk_level === 'Medium' ? 'text-orange font-bold' : 'text-green font-bold'}>
+                              {patient.risk_level}
+                            </td>
+                            <td>{patient.registered_date}</td>
+                            <td><span className="action-edit" style={{cursor: 'pointer'}}>Edit</span> / <span className="action-delete" style={{cursor: 'pointer'}}>Delete</span></td>
+                          </tr>
+                        ))
+                      )}
                     </tbody>
                   </table>
                 </div>
@@ -196,7 +340,7 @@ const Dashboard = ({ onLogout }) => {
         )}
 
         {/* ========================================= */}
-        {/* 4. Access Control Tab Content */}
+        {/* අනිත් ටැබ් ටික (Access, Fire, Alerts, Reports, User, Setting) */}
         {/* ========================================= */}
         {activeTab === 'access' && (
           <div className="access-wrapper">
