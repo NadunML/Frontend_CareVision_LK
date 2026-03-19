@@ -1,7 +1,12 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { auth } from '../firebase'; 
+// මෙන්න මේක තමයි අලුත් Professional Icons ටික
+import { Home, Camera, Users, ShieldAlert, Flame, BellRing, FileText, UserCog, Settings, LogOut, User, AlertTriangle, Download, Phone } from 'lucide-react';
 import './Dashboard.css';
 
 const Dashboard = ({ onLogout }) => {
+  const user = auth.currentUser; 
+
   const [activeTab, setActiveTab] = useState('dashboard');
   const [showRegisterForm, setShowRegisterForm] = useState(false);
   const videoRef = useRef(null);
@@ -10,7 +15,6 @@ const Dashboard = ({ onLogout }) => {
   const [imageFile, setImageFile] = useState(null);
   const [isUploading, setIsUploading] = useState(false);
 
-  // 1. ඩේටාබේස් එකෙන් එන රෝගීන්ගේ විස්තර තියාගන්න අලුත් State එකක්
   const [patientsList, setPatientsList] = useState([]);
 
   const handleTabChange = (tabName) => {
@@ -18,7 +22,6 @@ const Dashboard = ({ onLogout }) => {
     setShowRegisterForm(false);
   };
 
-  // 2. Python එකෙන් ඩේටා ගේන ෆන්ක්ෂන් එක
   const fetchPatients = async () => {
     try {
       const response = await fetch('http://localhost:5000/api/patients');
@@ -31,7 +34,6 @@ const Dashboard = ({ onLogout }) => {
     }
   };
 
-  // 3. Patient ටැබ් එකට ගියාම ඔටෝම ඩේටා ටික ලෝඩ් කරන්න
   useEffect(() => {
     if (activeTab === 'patient') {
       fetchPatients();
@@ -90,8 +92,6 @@ const Dashboard = ({ onLogout }) => {
         setPatientData({ patientId: '', name: '', ward: '', wardId: '', risk: 'Low' });
         setImageFile(null);
         setShowRegisterForm(false);
-        
-        // 4. අලුත් කෙනෙක්ව රෙජිස්ටර් කළාම ඔටෝම ටේබල් එක අප්ඩේට් කරන්න
         fetchPatients(); 
       } else {
         alert("Error: " + result.error);
@@ -104,14 +104,19 @@ const Dashboard = ({ onLogout }) => {
     }
   };
 
+  // පොඩි රතු පාට Dot එකක් හදනවා Emojis වෙනුවට කැමරා නමට ඉස්සරහින් දාන්න
+  const LiveDot = () => <span style={{ display: 'inline-block', width: '8px', height: '8px', borderRadius: '50%', backgroundColor: '#ef4444', marginRight: '6px' }}></span>;
+
   const NoSignalBox = ({ camName }) => (
     <div className="cctv-box" style={{ padding: 0, overflow: 'hidden', backgroundColor: '#111', display: 'flex', justifyContent: 'center', alignItems: 'center', flexDirection: 'column', position: 'relative' }}>
       <div className="cctv-top-bar" style={{ position: 'absolute', top: '10px', left: '10px', right: '10px', zIndex: 2 }}>
-        <div className="cam-name" style={{ backgroundColor: 'rgba(255,255,255,0.1)', color: '#aaa', border: '1px solid #444' }}>{camName}</div>
+        <div className="cam-name" style={{ backgroundColor: 'rgba(255,255,255,0.1)', color: '#aaa', border: '1px solid #444', display: 'flex', alignItems: 'center' }}>
+          <Camera size={14} style={{ marginRight: '6px' }} /> {camName}
+        </div>
         <div className="cam-time" style={{ color: '#666', fontSize: '12px' }}>Disconnected</div>
       </div>
-      <div style={{ textAlign: 'center', color: '#555' }}>
-        <div style={{ fontSize: '50px', marginBottom: '10px' }}>⚠️</div>
+      <div style={{ textAlign: 'center', color: '#555', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+        <AlertTriangle size={48} color="#555" style={{ marginBottom: '10px' }} />
         <div style={{ fontSize: '20px', fontWeight: 'bold', letterSpacing: '2px', color: '#666' }}>NO SIGNAL</div>
         <div style={{ fontSize: '11px', color: '#444', marginTop: '5px' }}>CAMERA NOT CONNECTED</div>
       </div>
@@ -136,22 +141,55 @@ const Dashboard = ({ onLogout }) => {
           </div>
         </div>
 
+        {/* Emojis වෙනුවට Professional Icons දැම්මා */}
         <ul className="sidebar-menu">
-          <li className={activeTab === 'dashboard' ? 'active' : ''} onClick={() => handleTabChange('dashboard')}><span>🏠</span> Dashboard</li>
-          <li className={activeTab === 'cctv' ? 'active' : ''} onClick={() => handleTabChange('cctv')}><span>📷</span> Live CCTV Feeds</li>
-          <li className={activeTab === 'patient' ? 'active' : ''} onClick={() => handleTabChange('patient')}><span>👥</span> Patient Management</li>
-          <li className={activeTab === 'access' ? 'active' : ''} onClick={() => handleTabChange('access')}><span>🛡️</span> Access Control</li>
-          <li className={activeTab === 'fire' ? 'active' : ''} onClick={() => handleTabChange('fire')}><span>🔥</span> Fire Monitoring</li>
-          <li className={activeTab === 'alerts' ? 'active' : ''} onClick={() => handleTabChange('alerts')}><span>🔔</span> Alerts</li>
-          <li className={activeTab === 'reports' ? 'active' : ''} onClick={() => handleTabChange('reports')}><span>📄</span> Reports & Logs</li>
-          <li className={activeTab === 'user' ? 'active' : ''} onClick={() => handleTabChange('user')}><span>👤</span> User Management</li>
-          <li className={activeTab === 'setting' ? 'active' : ''} onClick={() => handleTabChange('setting')}><span>⚙️</span> Setting</li>
+          <li className={activeTab === 'dashboard' ? 'active' : ''} onClick={() => handleTabChange('dashboard')}>
+            <Home size={18} style={{marginRight: '12px'}} /> Dashboard
+          </li>
+          <li className={activeTab === 'cctv' ? 'active' : ''} onClick={() => handleTabChange('cctv')}>
+            <Camera size={18} style={{marginRight: '12px'}} /> Live CCTV Feeds
+          </li>
+          <li className={activeTab === 'patient' ? 'active' : ''} onClick={() => handleTabChange('patient')}>
+            <Users size={18} style={{marginRight: '12px'}} /> Patient Management
+          </li>
+          <li className={activeTab === 'access' ? 'active' : ''} onClick={() => handleTabChange('access')}>
+            <ShieldAlert size={18} style={{marginRight: '12px'}} /> Access Control
+          </li>
+          <li className={activeTab === 'fire' ? 'active' : ''} onClick={() => handleTabChange('fire')}>
+            <Flame size={18} style={{marginRight: '12px'}} /> Fire Monitoring
+          </li>
+          <li className={activeTab === 'alerts' ? 'active' : ''} onClick={() => handleTabChange('alerts')}>
+            <BellRing size={18} style={{marginRight: '12px'}} /> Alerts
+          </li>
+          <li className={activeTab === 'reports' ? 'active' : ''} onClick={() => handleTabChange('reports')}>
+            <FileText size={18} style={{marginRight: '12px'}} /> Reports & Logs
+          </li>
+          <li className={activeTab === 'user' ? 'active' : ''} onClick={() => handleTabChange('user')}>
+            <UserCog size={18} style={{marginRight: '12px'}} /> User Management
+          </li>
+          <li className={activeTab === 'setting' ? 'active' : ''} onClick={() => handleTabChange('setting')}>
+            <Settings size={18} style={{marginRight: '12px'}} /> Setting
+          </li>
         </ul>
 
+        {/* Sidebar Footer with Icons */}
         <div className="sidebar-footer">
-          <div className="admin-badge">Admin</div>
-          <button className="logout-btn" onClick={onLogout}>
-            <span>🚪</span> Logout
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '15px', padding: '10px', backgroundColor: '#f8f9fa', borderRadius: '8px', border: '1px solid #e9ecef' }}>
+            <div style={{ width: '35px', height: '35px', borderRadius: '50%', backgroundColor: '#0D6EFD', display: 'flex', justifyContent: 'center', alignItems: 'center', color: 'white' }}>
+              <User size={20} />
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+              <span style={{ color: '#333', fontSize: '14px', fontWeight: 'bold', whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' }}>
+                {user?.displayName || 'Admin User'}
+              </span>
+              <span style={{ color: '#666', fontSize: '11px', whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' }}>
+                {user?.email || 'admin@carevision.lk'}
+              </span>
+            </div>
+          </div>
+
+          <button className="logout-btn" onClick={onLogout} style={{display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px'}}>
+            <LogOut size={16} /> Logout
           </button>
         </div>
       </div>
@@ -159,9 +197,6 @@ const Dashboard = ({ onLogout }) => {
       {/* Main Content Area */}
       <div className="main-content">
         
-        {/* ========================================= */}
-        {/* 1. Dashboard Tab Content */}
-        {/* ========================================= */}
         {activeTab === 'dashboard' && (
           <>
             <div className="header">
@@ -178,7 +213,7 @@ const Dashboard = ({ onLogout }) => {
             
             <div className="bottom-grid">
               <div className="alerts-section card-box">
-                <h3>⚠️ Active Alerts</h3>
+                <h3 style={{display: 'flex', alignItems: 'center', gap: '8px'}}><AlertTriangle size={18} color="#ef4444" /> Active Alerts</h3>
                 <div className="alert-item"><span className="dot red-dot"></span> Fire</div>
                 <div className="alert-item"><span className="dot orange-dot"></span> Patient Wandering</div>
                 <div className="alert-item"><span className="dot yellow-dot"></span> Mask Violation</div>
@@ -201,9 +236,6 @@ const Dashboard = ({ onLogout }) => {
           </>
         )}
 
-        {/* ========================================= */}
-        {/* 2. Live CCTV Tab Content */}
-        {/* ========================================= */}
         {activeTab === 'cctv' && (
           <div className="cctv-wrapper card-box">
             <div className="header">
@@ -213,21 +245,20 @@ const Dashboard = ({ onLogout }) => {
             <div className="cctv-grid">
               <div className="cctv-box" style={{ padding: 0, overflow: 'hidden', position: 'relative' }}>
                 <div className="cctv-top-bar" style={{ position: 'absolute', top: '10px', left: '10px', right: '10px', zIndex: 2 }}>
-                  <div className="cam-name" style={{ backgroundColor: 'rgba(0,0,0,0.6)', color: 'white', border: 'none' }}>🔴 Local WebCam (Live)</div>
+                  <div className="cam-name" style={{ backgroundColor: 'rgba(0,0,0,0.6)', color: 'white', border: 'none', display: 'flex', alignItems: 'center' }}>
+                    <LiveDot /> Local WebCam (Live)
+                  </div>
                   <div className="cam-time" style={{ backgroundColor: 'rgba(0,0,0,0.6)', color: 'white', padding: '2px 8px', borderRadius: '4px' }}>Live</div>
                 </div>
                 <video ref={videoRef} autoPlay playsInline muted style={{ width: '100%', height: '100%', objectFit: 'cover' }}></video>
               </div>
-              <NoSignalBox camName="📷 ICU Ward 01" />
-              <NoSignalBox camName="📷 Lab Entrance" />
-              <NoSignalBox camName="📷 Emergency Exit" />
+              <NoSignalBox camName="ICU Ward 01" />
+              <NoSignalBox camName="Lab Entrance" />
+              <NoSignalBox camName="Emergency Exit" />
             </div>
           </div>
         )}
 
-        {/* ========================================= */}
-        {/* 3. Patient Management Tab Content */}
-        {/* ========================================= */}
         {activeTab === 'patient' && (
           <div className="patient-wrapper">
             <div className="page-header-flex">
@@ -285,7 +316,6 @@ const Dashboard = ({ onLogout }) => {
             ) : (
               <>
                 <div className="patient-stats-grid">
-                  {/* උඩ තියෙන කොටු 3ත් ඔටෝ අප්ඩේට් වෙන්න හැදුවා */}
                   <div className="stat-card flex-between">
                     <div><h4>Total Patients</h4><h2>{patientsList.length}</h2></div>
                     <div className="icon-circle blue-circle">!</div>
@@ -314,11 +344,9 @@ const Dashboard = ({ onLogout }) => {
                       </tr>
                     </thead>
                     <tbody>
-                      {/* ඩේටාබේස් එකේ මුකුත් නැත්නම් පෙන්නන්න */}
                       {patientsList.length === 0 ? (
                         <tr><td colSpan="5" style={{textAlign: 'center', padding: '20px', color: '#666'}}>No patients registered yet.</td></tr>
                       ) : (
-                        // ඩේටාබේස් එකෙන් එන ලිස්ට් එකෙන් ටේබල් එක හදනවා
                         patientsList.map((patient, index) => (
                           <tr key={index}>
                             <td><strong>{patient.name}</strong> <span style={{fontSize: '12px', color: '#666'}}>({patient.patient_id})</span></td>
@@ -339,9 +367,6 @@ const Dashboard = ({ onLogout }) => {
           </div>
         )}
 
-        {/* ========================================= */}
-        {/* අනිත් ටැබ් ටික (Access, Fire, Alerts, Reports, User, Setting) */}
-        {/* ========================================= */}
         {activeTab === 'access' && (
           <div className="access-wrapper">
              <div className="header">
@@ -349,10 +374,10 @@ const Dashboard = ({ onLogout }) => {
               <p>Real-time hospital monitoring and security status</p>
             </div>
             <div className="stats-grid">
-              <div className="stat-card"><div className="flex-between align-start"><div><h4>Total Access Attempts</h4><h2>234</h2><p className="stat-sub">+28 this week</p></div><div className="outline-icon-box border-blue">👤</div></div></div>
-              <div className="stat-card"><div className="flex-between align-start"><div><h4>Access Granted</h4><h2>198</h2><p className="stat-sub">84.6% compliance</p></div><div className="outline-icon-box border-green">🛡️</div></div></div>
-              <div className="stat-card"><div className="flex-between align-start"><div><h4>Access Denied</h4><h2>36</h2><p className="stat-sub">15.4% violations</p></div><div className="outline-icon-box border-red">🛑</div></div></div>
-              <div className="stat-card"><div className="flex-between align-start"><div><h4>Active Cameras</h4><h2>4</h2><p className="stat-sub">All operational</p></div><div className="outline-icon-box border-yellow">📷</div></div></div>
+              <div className="stat-card"><div className="flex-between align-start"><div><h4>Total Access Attempts</h4><h2>234</h2><p className="stat-sub">+28 this week</p></div><div className="outline-icon-box border-blue"><Users size={20} /></div></div></div>
+              <div className="stat-card"><div className="flex-between align-start"><div><h4>Access Granted</h4><h2>198</h2><p className="stat-sub">84.6% compliance</p></div><div className="outline-icon-box border-green"><ShieldAlert size={20} /></div></div></div>
+              <div className="stat-card"><div className="flex-between align-start"><div><h4>Access Denied</h4><h2>36</h2><p className="stat-sub">15.4% violations</p></div><div className="outline-icon-box border-red"><AlertTriangle size={20} /></div></div></div>
+              <div className="stat-card"><div className="flex-between align-start"><div><h4>Active Cameras</h4><h2>4</h2><p className="stat-sub">All operational</p></div><div className="outline-icon-box border-yellow"><Camera size={20} /></div></div></div>
             </div>
             <div className="table-container card-box mt-4">
               <h3 className="mb-4">Access Control Logs</h3>
@@ -372,9 +397,6 @@ const Dashboard = ({ onLogout }) => {
           </div>
         )}
 
-        {/* ========================================= */}
-        {/* 5. Fire Monitoring Tab Content */}
-        {/* ========================================= */}
         {activeTab === 'fire' && (
           <div className="fire-wrapper">
             <div className="header">
@@ -382,13 +404,13 @@ const Dashboard = ({ onLogout }) => {
               <p>Real-time fire and smoke monitoring system</p>
             </div>
             <div className="stats-grid">
-              <div className="stat-card"><div className="flex-between align-start"><div><h4>Active Alerts</h4><h2>1</h2><p className="stat-sub">+28 this week</p></div><div className="outline-icon-box border-red">⚠️</div></div></div>
-              <div className="stat-card"><div className="flex-between align-start"><div><h4>Total Events (24h)</h4><h2>4</h2><p className="stat-sub">84.6% compliance</p></div><div className="outline-icon-box border-orange">🔥</div></div></div>
-              <div className="stat-card"><div className="flex-between align-start"><div><h4>Resolved Events</h4><h2>3</h2><p className="stat-sub">15.4% violations</p></div><div className="outline-icon-box border-green">✅</div></div></div>
-              <div className="stat-card"><div className="flex-between align-start"><div><h4>Monitoring Cameras</h4><h2>6</h2><p className="stat-sub">All operational</p></div><div className="outline-icon-box border-yellow">📷</div></div></div>
+              <div className="stat-card"><div className="flex-between align-start"><div><h4>Active Alerts</h4><h2>1</h2><p className="stat-sub">+28 this week</p></div><div className="outline-icon-box border-red"><AlertTriangle size={20} /></div></div></div>
+              <div className="stat-card"><div className="flex-between align-start"><div><h4>Total Events (24h)</h4><h2>4</h2><p className="stat-sub">84.6% compliance</p></div><div className="outline-icon-box border-orange"><Flame size={20} /></div></div></div>
+              <div className="stat-card"><div className="flex-between align-start"><div><h4>Resolved Events</h4><h2>3</h2><p className="stat-sub">15.4% violations</p></div><div className="outline-icon-box border-green"><ShieldAlert size={20} /></div></div></div>
+              <div className="stat-card"><div className="flex-between align-start"><div><h4>Monitoring Cameras</h4><h2>6</h2><p className="stat-sub">All operational</p></div><div className="outline-icon-box border-yellow"><Camera size={20} /></div></div></div>
             </div>
             <div className="fire-alert-banner">
-              <h3 className="alert-title">🔥 Active Fire/Smoke Alert</h3>
+              <h3 className="alert-title" style={{display: 'flex', alignItems: 'center', gap: '8px'}}><Flame size={20} /> Active Fire/Smoke Alert</h3>
               <div className="alert-details-grid">
                 <div><div className="detail-label">Location</div><div className="detail-value">ICU - Camera 12</div></div>
                 <div><div className="detail-label">Confidence Level</div><div className="detail-value">95%</div></div>
@@ -396,7 +418,7 @@ const Dashboard = ({ onLogout }) => {
                 <div><div className="detail-label">Detection Time</div><div className="detail-value">2024-02-24 14:30:25</div></div>
               </div>
               <div className="alert-actions">
-                <button className="btn-notify">🔔 Notify Emergency Service</button>
+                <button className="btn-notify" style={{display: 'flex', alignItems: 'center', gap: '6px'}}><BellRing size={16} /> Notify Emergency Service</button>
                 <button className="btn-resolve">Mark as Resolved</button>
               </div>
             </div>
@@ -415,9 +437,6 @@ const Dashboard = ({ onLogout }) => {
           </div>
         )}
 
-        {/* ========================================= */}
-        {/* 6. Alerts Tab Content */}
-        {/* ========================================= */}
         {activeTab === 'alerts' && (
           <div className="alerts-wrapper">
             <div className="header">
@@ -435,7 +454,7 @@ const Dashboard = ({ onLogout }) => {
               <p className="detail-label" style={{marginBottom: '20px'}}>Filter alerts by type and manage responses</p>
               <div className="alert-list">
                 <div className="alert-feed-item">
-                  <div className="alert-icon-box bg-red"><span>🔥</span></div>
+                  <div className="alert-icon-box bg-red"><Flame size={20} color="white" /></div>
                   <div className="alert-details">
                     <h4 className="alert-item-title">Fire</h4>
                     <p className="alert-item-desc">Fire detected in Ward 3 Corridor</p>
@@ -444,7 +463,7 @@ const Dashboard = ({ onLogout }) => {
                   <button className="btn-resolve-green">Mark as Resolved</button>
                 </div>
                 <div className="alert-feed-item">
-                  <div className="alert-icon-box bg-red"><span>👤</span></div>
+                  <div className="alert-icon-box bg-red"><User size={20} color="white" /></div>
                   <div className="alert-details">
                     <h4 className="alert-item-title">Patient Wandering</h4>
                     <p className="alert-item-desc">Patient John Anderson detected at Emergency Exit A</p>
@@ -453,7 +472,7 @@ const Dashboard = ({ onLogout }) => {
                   <button className="btn-resolve-green">Mark as Resolved</button>
                 </div>
                 <div className="alert-feed-item">
-                  <div className="alert-icon-box bg-red"><span>🛡️</span></div>
+                  <div className="alert-icon-box bg-red"><ShieldAlert size={20} color="white" /></div>
                   <div className="alert-details">
                     <h4 className="alert-item-title">Mask Violation</h4>
                     <p className="alert-item-desc">Staff entered ICU without proper mask</p>
@@ -466,9 +485,6 @@ const Dashboard = ({ onLogout }) => {
           </div>
         )}
 
-        {/* ========================================= */}
-        {/* 7. Reports & Logs Tab Content */}
-        {/* ========================================= */}
         {activeTab === 'reports' && (
           <div className="reports-wrapper">
             <div className="header">
@@ -489,7 +505,7 @@ const Dashboard = ({ onLogout }) => {
                 <input type="text" className="form-input" placeholder="Select a date..." />
               </div>
               <div className="filter-action">
-                <button className="btn-download-pdf"><span className="download-icon">📥</span> Download PDF</button>
+                <button className="btn-download-pdf" style={{display: 'flex', alignItems: 'center', gap: '8px'}}><Download size={16} /> Download PDF</button>
               </div>
             </div>
             <div className="reports-stats-grid">
@@ -508,9 +524,6 @@ const Dashboard = ({ onLogout }) => {
           </div>
         )}
 
-        {/* ========================================= */}
-        {/* 8. User Management Tab Content */}
-        {/* ========================================= */}
         {activeTab === 'user' && (
           <div className="user-wrapper">
             <div className="header">
@@ -537,9 +550,6 @@ const Dashboard = ({ onLogout }) => {
           </div>
         )}
 
-        {/* ========================================= */}
-        {/* 9. Setting Tab Content */}
-        {/* ========================================= */}
         {activeTab === 'setting' && (
           <div className="setting-wrapper">
             
@@ -551,7 +561,7 @@ const Dashboard = ({ onLogout }) => {
             <div className="card-box mt-4">
               <div className="camera-header-wrap">
                 <h3 style={{display: 'flex', alignItems: 'center', gap: '8px', margin: '0 0 5px 0'}}>
-                  <span>📷</span> Camera Management
+                  <Camera size={20} /> Camera Management
                 </h3>
                 <p className="detail-label" style={{marginBottom: '20px'}}>Add, edit, or remove cameras from the system</p>
               </div>
@@ -602,9 +612,9 @@ const Dashboard = ({ onLogout }) => {
             <div className="card-box mt-4">
               <h3 className="mb-4">Contact Support</h3>
               <div className="support-btn-container">
-                <button className="support-phone-btn">📞 +94765293838</button>
-                <button className="support-phone-btn">📞 +94766486769</button>
-                <button className="support-phone-btn">📞 +94766486769</button>
+                <button className="support-phone-btn" style={{display: 'flex', alignItems: 'center', gap: '6px'}}><Phone size={14} /> +94765293838</button>
+                <button className="support-phone-btn" style={{display: 'flex', alignItems: 'center', gap: '6px'}}><Phone size={14} /> +94766486769</button>
+                <button className="support-phone-btn" style={{display: 'flex', alignItems: 'center', gap: '6px'}}><Phone size={14} /> +94766486769</button>
               </div>
             </div>
 
