@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { auth } from '../firebase'; 
-// මෙන්න මේක තමයි අලුත් Professional Icons ටික
-import { Home, Camera, Users, ShieldAlert, Flame, BellRing, FileText, UserCog, Settings, LogOut, User, AlertTriangle, Download, Phone } from 'lucide-react';
+import { Home, Camera, Users, ShieldAlert, Flame, BellRing, FileText, UserCog, Settings, LogOut, User, AlertTriangle, Download, Phone, Cpu } from 'lucide-react';
 import './Dashboard.css';
 
 const Dashboard = ({ onLogout }) => {
@@ -16,6 +15,13 @@ const Dashboard = ({ onLogout }) => {
   const [isUploading, setIsUploading] = useState(false);
 
   const [patientsList, setPatientsList] = useState([]);
+
+  // Frontend UI එක වෙනුවෙන් අලුතින් හදපු AI Toggles State එක
+  const [aiControls, setAiControls] = useState({
+    patientIdent: false,
+    maskDetect: false,
+    fireDetect: false
+  });
 
   const handleTabChange = (tabName) => {
     setActiveTab(tabName);
@@ -104,7 +110,14 @@ const Dashboard = ({ onLogout }) => {
     }
   };
 
-  // පොඩි රතු පාට Dot එකක් හදනවා Emojis වෙනුවට කැමරා නමට ඉස්සරහින් දාන්න
+  // AI Buttons On/Off කරන Function එක
+  const toggleAI = (feature) => {
+    setAiControls(prev => ({
+      ...prev,
+      [feature]: !prev[feature]
+    }));
+  };
+
   const LiveDot = () => <span style={{ display: 'inline-block', width: '8px', height: '8px', borderRadius: '50%', backgroundColor: '#ef4444', marginRight: '6px' }}></span>;
 
   const NoSignalBox = ({ camName }) => (
@@ -141,7 +154,6 @@ const Dashboard = ({ onLogout }) => {
           </div>
         </div>
 
-        {/* Emojis වෙනුවට Professional Icons දැම්මා */}
         <ul className="sidebar-menu">
           <li className={activeTab === 'dashboard' ? 'active' : ''} onClick={() => handleTabChange('dashboard')}>
             <Home size={18} style={{marginRight: '12px'}} /> Dashboard
@@ -172,7 +184,6 @@ const Dashboard = ({ onLogout }) => {
           </li>
         </ul>
 
-        {/* Sidebar Footer with Icons */}
         <div className="sidebar-footer">
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '15px', padding: '10px', backgroundColor: '#f8f9fa', borderRadius: '8px', border: '1px solid #e9ecef' }}>
             <div style={{ width: '35px', height: '35px', borderRadius: '50%', backgroundColor: '#0D6EFD', display: 'flex', justifyContent: 'center', alignItems: 'center', color: 'white' }}>
@@ -210,6 +221,79 @@ const Dashboard = ({ onLogout }) => {
               <div className="stat-card"><h4>Today's Alerts</h4><h2>8</h2><p className="stat-sub">3 critical</p></div>
               <div className="stat-card"><h4>Mask Violations</h4><h2>3</h2><p className="stat-sub">-2 from yesterday</p></div>
             </div>
+
+            {/* ========================================================= */}
+            {/* අලුත් AI Security Modules Configuration කෑල්ල (ඔයා කියපු විදිහටම) */}
+            {/* ========================================================= */}
+            <div className="card-box" style={{ marginTop: '20px', marginBottom: '20px', backgroundColor: '#fff', border: '1px solid #e2e8f0' }}>
+              <h3 style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '20px', color: '#1e293b' }}>
+                <Cpu size={22} color="#0D6EFD" /> AI Security Modules Configuration
+              </h3>
+              
+              <div style={{ display: 'flex', gap: '15px', flexWrap: 'wrap' }}>
+                
+                {/* 1. Camera 01 - Dementia Ward */}
+                <div style={{ flex: 1, minWidth: '280px', border: aiControls.patientIdent ? '2px solid #0D6EFD' : '1px solid #e2e8f0', borderRadius: '12px', padding: '15px', backgroundColor: aiControls.patientIdent ? '#eff6ff' : '#f8fafc', transition: 'all 0.3s' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '15px' }}>
+                    <div>
+                      <h4 style={{ margin: '0 0 5px 0', color: '#1e293b', display: 'flex', alignItems: 'center', gap: '6px' }}><Camera size={16}/> Camera 01</h4>
+                      <span style={{ fontSize: '12px', color: '#64748b', fontWeight: 'bold' }}>📍 Dementia Patient Ward</span>
+                    </div>
+                    <button onClick={() => toggleAI('patientIdent')} style={{ padding: '6px 14px', borderRadius: '20px', border: 'none', backgroundColor: aiControls.patientIdent ? '#0D6EFD' : '#cbd5e1', color: 'white', fontWeight: 'bold', cursor: 'pointer', transition: '0.3s' }}>
+                      {aiControls.patientIdent ? 'ON' : 'OFF'}
+                    </button>
+                  </div>
+                  <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+                    <Users size={32} color={aiControls.patientIdent ? '#0D6EFD' : '#94a3b8'} />
+                    <div>
+                      <div style={{ fontSize: '14px', fontWeight: 'bold', color: aiControls.patientIdent ? '#0D6EFD' : '#475569' }}>Patient Identification</div>
+                      <div style={{ fontSize: '11px', color: '#64748b', marginTop: '4px', lineHeight: '1.4' }}>Alerts if a registered patient attempts to leave the ward door.</div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* 2. Camera 02 - Theater Entrance */}
+                <div style={{ flex: 1, minWidth: '280px', border: aiControls.maskDetect ? '2px solid #10b981' : '1px solid #e2e8f0', borderRadius: '12px', padding: '15px', backgroundColor: aiControls.maskDetect ? '#ecfdf5' : '#f8fafc', transition: 'all 0.3s' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '15px' }}>
+                    <div>
+                      <h4 style={{ margin: '0 0 5px 0', color: '#1e293b', display: 'flex', alignItems: 'center', gap: '6px' }}><Camera size={16}/> Camera 02</h4>
+                      <span style={{ fontSize: '12px', color: '#64748b', fontWeight: 'bold' }}>📍 Theater Entrance</span>
+                    </div>
+                    <button onClick={() => toggleAI('maskDetect')} style={{ padding: '6px 14px', borderRadius: '20px', border: 'none', backgroundColor: aiControls.maskDetect ? '#10b981' : '#cbd5e1', color: 'white', fontWeight: 'bold', cursor: 'pointer', transition: '0.3s' }}>
+                      {aiControls.maskDetect ? 'ON' : 'OFF'}
+                    </button>
+                  </div>
+                  <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+                    <UserCog size={32} color={aiControls.maskDetect ? '#10b981' : '#94a3b8'} />
+                    <div>
+                      <div style={{ fontSize: '14px', fontWeight: 'bold', color: aiControls.maskDetect ? '#10b981' : '#475569' }}>Mask Detection</div>
+                      <div style={{ fontSize: '11px', color: '#64748b', marginTop: '4px', lineHeight: '1.4' }}>Alerts if staff enters the theater area without a mask.</div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* 3. Camera 03 - Store Room */}
+                <div style={{ flex: 1, minWidth: '280px', border: aiControls.fireDetect ? '2px solid #ef4444' : '1px solid #e2e8f0', borderRadius: '12px', padding: '15px', backgroundColor: aiControls.fireDetect ? '#fef2f2' : '#f8fafc', transition: 'all 0.3s' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '15px' }}>
+                    <div>
+                      <h4 style={{ margin: '0 0 5px 0', color: '#1e293b', display: 'flex', alignItems: 'center', gap: '6px' }}><Camera size={16}/> Camera 03</h4>
+                      <span style={{ fontSize: '12px', color: '#64748b', fontWeight: 'bold' }}>📍 Main Store Room</span>
+                    </div>
+                    <button onClick={() => toggleAI('fireDetect')} style={{ padding: '6px 14px', borderRadius: '20px', border: 'none', backgroundColor: aiControls.fireDetect ? '#ef4444' : '#cbd5e1', color: 'white', fontWeight: 'bold', cursor: 'pointer', transition: '0.3s' }}>
+                      {aiControls.fireDetect ? 'ON' : 'OFF'}
+                    </button>
+                  </div>
+                  <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+                    <Flame size={32} color={aiControls.fireDetect ? '#ef4444' : '#94a3b8'} />
+                    <div>
+                      <div style={{ fontSize: '14px', fontWeight: 'bold', color: aiControls.fireDetect ? '#ef4444' : '#475569' }}>Fire & Smoke Detection</div>
+                      <div style={{ fontSize: '11px', color: '#64748b', marginTop: '4px', lineHeight: '1.4' }}>Alerts immediately if fire or smoke is detected in the area.</div>
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+            </div>
             
             <div className="bottom-grid">
               <div className="alerts-section card-box">
@@ -236,6 +320,9 @@ const Dashboard = ({ onLogout }) => {
           </>
         )}
 
+        {/* ========================================= */}
+        {/* අනිත් ටැබ් ටික කිසිම වෙනසක් කරලා නෑ */}
+        {/* ========================================= */}
         {activeTab === 'cctv' && (
           <div className="cctv-wrapper card-box">
             <div className="header">
@@ -252,8 +339,8 @@ const Dashboard = ({ onLogout }) => {
                 </div>
                 <video ref={videoRef} autoPlay playsInline muted style={{ width: '100%', height: '100%', objectFit: 'cover' }}></video>
               </div>
-              <NoSignalBox camName="ICU Ward 01" />
-              <NoSignalBox camName="Lab Entrance" />
+              <NoSignalBox camName="Camera 02 - Theater" />
+              <NoSignalBox camName="Camera 03 - Store Room" />
               <NoSignalBox camName="Emergency Exit" />
             </div>
           </div>
