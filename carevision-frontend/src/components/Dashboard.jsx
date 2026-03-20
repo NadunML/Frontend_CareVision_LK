@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { auth } from '../firebase'; 
 import { Home, Camera, Users, ShieldAlert, Flame, BellRing, FileText, UserCog, Settings, LogOut, User, AlertTriangle, Download, Phone, Cpu } from 'lucide-react';
 import './Dashboard.css';
@@ -8,7 +8,6 @@ const Dashboard = ({ onLogout }) => {
 
   const [activeTab, setActiveTab] = useState('dashboard');
   const [showRegisterForm, setShowRegisterForm] = useState(false);
-  const videoRef = useRef(null);
 
   const [patientData, setPatientData] = useState({ patientId: '', name: '', ward: '', wardId: '', risk: 'Low' });
   const [imageFile, setImageFile] = useState(null);
@@ -16,7 +15,6 @@ const Dashboard = ({ onLogout }) => {
 
   const [patientsList, setPatientsList] = useState([]);
 
-  // Frontend UI එක වෙනුවෙන් අලුතින් හදපු AI Toggles State එක
   const [aiControls, setAiControls] = useState({
     patientIdent: false,
     maskDetect: false,
@@ -46,25 +44,7 @@ const Dashboard = ({ onLogout }) => {
     }
   }, [activeTab]);
 
-  useEffect(() => {
-    let stream = null;
-    const startCamera = async () => {
-      if (activeTab === 'cctv') {
-        try {
-          stream = await navigator.mediaDevices.getUserMedia({ video: true });
-          if (videoRef.current) {
-            videoRef.current.srcObject = stream;
-          }
-        } catch (err) {
-          console.error("Camera access denied or error:", err);
-        }
-      }
-    };
-    startCamera();
-    return () => {
-      if (stream) stream.getTracks().forEach(track => track.stop());
-    };
-  }, [activeTab]);
+  // අර කැමරාව ලොක් කරන කෑල්ල මෙතනින් සම්පූර්ණයෙන්ම අයින් කළා! 🚀
 
   const handleImageChange = (e) => {
     if (e.target.files[0]) {
@@ -110,12 +90,22 @@ const Dashboard = ({ onLogout }) => {
     }
   };
 
-  // AI Buttons On/Off කරන Function එක
-  const toggleAI = (feature) => {
-    setAiControls(prev => ({
-      ...prev,
-      [feature]: !prev[feature]
-    }));
+  const toggleAI = async (feature) => {
+    try {
+      const response = await fetch(`http://localhost:5000/toggle_mode/${feature}`, {
+        method: 'POST',
+      });
+      
+      if (response.ok) {
+        setAiControls(prev => ({
+          ...prev,
+          [feature]: !prev[feature]
+        }));
+      }
+    } catch (error) {
+      console.error("AI Server Error:", error);
+      alert("AI Server connection failed! Make sure your Python backend is running.");
+    }
   };
 
   const LiveDot = () => <span style={{ display: 'inline-block', width: '8px', height: '8px', borderRadius: '50%', backgroundColor: '#ef4444', marginRight: '6px' }}></span>;
@@ -222,9 +212,6 @@ const Dashboard = ({ onLogout }) => {
               <div className="stat-card"><h4>Mask Violations</h4><h2>3</h2><p className="stat-sub">-2 from yesterday</p></div>
             </div>
 
-            {/* ========================================================= */}
-            {/* අලුත් AI Security Modules Configuration කෑල්ල (ඔයා කියපු විදිහටම) */}
-            {/* ========================================================= */}
             <div className="card-box" style={{ marginTop: '20px', marginBottom: '20px', backgroundColor: '#fff', border: '1px solid #e2e8f0' }}>
               <h3 style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '20px', color: '#1e293b' }}>
                 <Cpu size={22} color="#0D6EFD" /> AI Security Modules Configuration
@@ -232,7 +219,6 @@ const Dashboard = ({ onLogout }) => {
               
               <div style={{ display: 'flex', gap: '15px', flexWrap: 'wrap' }}>
                 
-                {/* 1. Camera 01 - Dementia Ward */}
                 <div style={{ flex: 1, minWidth: '280px', border: aiControls.patientIdent ? '2px solid #0D6EFD' : '1px solid #e2e8f0', borderRadius: '12px', padding: '15px', backgroundColor: aiControls.patientIdent ? '#eff6ff' : '#f8fafc', transition: 'all 0.3s' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '15px' }}>
                     <div>
@@ -252,7 +238,6 @@ const Dashboard = ({ onLogout }) => {
                   </div>
                 </div>
 
-                {/* 2. Camera 02 - Theater Entrance */}
                 <div style={{ flex: 1, minWidth: '280px', border: aiControls.maskDetect ? '2px solid #10b981' : '1px solid #e2e8f0', borderRadius: '12px', padding: '15px', backgroundColor: aiControls.maskDetect ? '#ecfdf5' : '#f8fafc', transition: 'all 0.3s' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '15px' }}>
                     <div>
@@ -272,7 +257,6 @@ const Dashboard = ({ onLogout }) => {
                   </div>
                 </div>
 
-                {/* 3. Camera 03 - Store Room */}
                 <div style={{ flex: 1, minWidth: '280px', border: aiControls.fireDetect ? '2px solid #ef4444' : '1px solid #e2e8f0', borderRadius: '12px', padding: '15px', backgroundColor: aiControls.fireDetect ? '#fef2f2' : '#f8fafc', transition: 'all 0.3s' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '15px' }}>
                     <div>
@@ -320,9 +304,6 @@ const Dashboard = ({ onLogout }) => {
           </>
         )}
 
-        {/* ========================================= */}
-        {/* අනිත් ටැබ් ටික කිසිම වෙනසක් කරලා නෑ */}
-        {/* ========================================= */}
         {activeTab === 'cctv' && (
           <div className="cctv-wrapper card-box">
             <div className="header">
@@ -330,15 +311,17 @@ const Dashboard = ({ onLogout }) => {
               <p>Real-time hospital monitoring and security status</p>
             </div>
             <div className="cctv-grid">
+              
               <div className="cctv-box" style={{ padding: 0, overflow: 'hidden', position: 'relative' }}>
                 <div className="cctv-top-bar" style={{ position: 'absolute', top: '10px', left: '10px', right: '10px', zIndex: 2 }}>
                   <div className="cam-name" style={{ backgroundColor: 'rgba(0,0,0,0.6)', color: 'white', border: 'none', display: 'flex', alignItems: 'center' }}>
-                    <LiveDot /> Local WebCam (Live)
+                    <LiveDot /> AI Processing Feed
                   </div>
                   <div className="cam-time" style={{ backgroundColor: 'rgba(0,0,0,0.6)', color: 'white', padding: '2px 8px', borderRadius: '4px' }}>Live</div>
                 </div>
-                <video ref={videoRef} autoPlay playsInline muted style={{ width: '100%', height: '100%', objectFit: 'cover' }}></video>
+                <img src="http://localhost:5000/video_feed" style={{ width: '100%', height: '100%', objectFit: 'cover' }} alt="AI Video Stream" />
               </div>
+
               <NoSignalBox camName="Camera 02 - Theater" />
               <NoSignalBox camName="Camera 03 - Store Room" />
               <NoSignalBox camName="Emergency Exit" />
@@ -454,6 +437,7 @@ const Dashboard = ({ onLogout }) => {
           </div>
         )}
 
+        {/* Access, Fire, Alerts, Reports, User, Setting (කිසිම වෙනසක් නෑ) */}
         {activeTab === 'access' && (
           <div className="access-wrapper">
              <div className="header">
