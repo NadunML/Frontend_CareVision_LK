@@ -12,7 +12,6 @@ const Dashboard = ({ onLogout }) => {
   const [patientData, setPatientData] = useState({ patientId: '', name: '', ward: '', wardId: '', risk: 'Low' });
   const [imageFile, setImageFile] = useState(null);
   const [isUploading, setIsUploading] = useState(false);
-
   const [patientsList, setPatientsList] = useState([]);
 
   const [aiControls, setAiControls] = useState({
@@ -20,6 +19,20 @@ const Dashboard = ({ onLogout }) => {
     maskDetect: false,
     fireDetect: false
   });
+
+  // Camera IPs States
+  const [cameraIps, setCameraIps] = useState({ '1': '', '2': '', '3': '' });
+  const [inputIps, setInputIps] = useState({ '1': '', '2': '', '3': '' });
+
+  useEffect(() => {
+    fetch('http://localhost:5000/api/get_cameras')
+      .then(res => res.json())
+      .then(data => {
+        setCameraIps(data);
+        setInputIps(data);
+      })
+      .catch(err => console.log(err));
+  }, []);
 
   const handleTabChange = (tabName) => {
     setActiveTab(tabName);
@@ -43,8 +56,6 @@ const Dashboard = ({ onLogout }) => {
       fetchPatients();
     }
   }, [activeTab]);
-
-  // අර කැමරාව ලොක් කරන කෑල්ල මෙතනින් සම්පූර්ණයෙන්ම අයින් කළා! 🚀
 
   const handleImageChange = (e) => {
     if (e.target.files[0]) {
@@ -95,12 +106,8 @@ const Dashboard = ({ onLogout }) => {
       const response = await fetch(`http://localhost:5000/toggle_mode/${feature}`, {
         method: 'POST',
       });
-      
       if (response.ok) {
-        setAiControls(prev => ({
-          ...prev,
-          [feature]: !prev[feature]
-        }));
+        setAiControls(prev => ({ ...prev, [feature]: !prev[feature] }));
       }
     } catch (error) {
       console.error("AI Server Error:", error);
@@ -108,20 +115,52 @@ const Dashboard = ({ onLogout }) => {
     }
   };
 
+  const handleSaveCamera = async (camId) => {
+    const url = inputIps[camId];
+    const formData = new FormData();
+    formData.append('cam_id', camId);
+    formData.append('url', url);
+
+    try {
+      const response = await fetch('http://localhost:5000/api/update_camera', { method: 'POST', body: formData });
+      if (response.ok) {
+        setCameraIps(prev => ({ ...prev, [camId]: url }));
+        alert(`Camera 0${camId} connected successfully!`);
+      }
+    } catch (error) {
+      alert("Failed to save camera IP.");
+    }
+  };
+
+  const handleRemoveCamera = async (camId) => {
+    const formData = new FormData();
+    formData.append('cam_id', camId);
+    formData.append('url', ''); 
+
+    try {
+      const response = await fetch('http://localhost:5000/api/update_camera', { method: 'POST', body: formData });
+      if (response.ok) {
+        setCameraIps(prev => ({ ...prev, [camId]: '' }));
+        setInputIps(prev => ({ ...prev, [camId]: '' }));
+      }
+    } catch (error) {
+      alert("Failed to remove camera.");
+    }
+  };
+
   const LiveDot = () => <span style={{ display: 'inline-block', width: '8px', height: '8px', borderRadius: '50%', backgroundColor: '#ef4444', marginRight: '6px' }}></span>;
 
   const NoSignalBox = ({ camName }) => (
-    <div className="cctv-box" style={{ padding: 0, overflow: 'hidden', backgroundColor: '#111', display: 'flex', justifyContent: 'center', alignItems: 'center', flexDirection: 'column', position: 'relative' }}>
+    <div className="cctv-box" style={{ padding: 0, overflow: 'hidden', backgroundColor: '#111', display: 'flex', justifyContent: 'center', alignItems: 'center', flexDirection: 'column', position: 'relative', height: '300px', borderRadius: '12px', border: '1px solid #444' }}>
       <div className="cctv-top-bar" style={{ position: 'absolute', top: '10px', left: '10px', right: '10px', zIndex: 2 }}>
-        <div className="cam-name" style={{ backgroundColor: 'rgba(255,255,255,0.1)', color: '#aaa', border: '1px solid #444', display: 'flex', alignItems: 'center' }}>
+        <div className="cam-name" style={{ backgroundColor: 'rgba(255,255,255,0.1)', color: '#aaa', border: '1px solid #444', display: 'flex', alignItems: 'center', padding: '4px 10px', borderRadius: '6px' }}>
           <Camera size={14} style={{ marginRight: '6px' }} /> {camName}
         </div>
-        <div className="cam-time" style={{ color: '#666', fontSize: '12px' }}>Disconnected</div>
       </div>
       <div style={{ textAlign: 'center', color: '#555', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
         <AlertTriangle size={48} color="#555" style={{ marginBottom: '10px' }} />
         <div style={{ fontSize: '20px', fontWeight: 'bold', letterSpacing: '2px', color: '#666' }}>NO SIGNAL</div>
-        <div style={{ fontSize: '11px', color: '#444', marginTop: '5px' }}>CAMERA NOT CONNECTED</div>
+        <div style={{ fontSize: '11px', color: '#444', marginTop: '5px' }}>CAMERA NOT CONFIGURED</div>
       </div>
       <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', background: 'linear-gradient(rgba(255,255,255,0.03) 50%, transparent 50%)', backgroundSize: '100% 4px', pointerEvents: 'none' }}></div>
     </div>
@@ -130,7 +169,7 @@ const Dashboard = ({ onLogout }) => {
   return (
     <div className="dashboard-container">
       
-      {/* Left Sidebar Navigation */}
+      {/* Sidebar */}
       <div className="sidebar">
         <div className="sidebar-header">
           <div className="logo-box">
@@ -145,33 +184,15 @@ const Dashboard = ({ onLogout }) => {
         </div>
 
         <ul className="sidebar-menu">
-          <li className={activeTab === 'dashboard' ? 'active' : ''} onClick={() => handleTabChange('dashboard')}>
-            <Home size={18} style={{marginRight: '12px'}} /> Dashboard
-          </li>
-          <li className={activeTab === 'cctv' ? 'active' : ''} onClick={() => handleTabChange('cctv')}>
-            <Camera size={18} style={{marginRight: '12px'}} /> Live CCTV Feeds
-          </li>
-          <li className={activeTab === 'patient' ? 'active' : ''} onClick={() => handleTabChange('patient')}>
-            <Users size={18} style={{marginRight: '12px'}} /> Patient Management
-          </li>
-          <li className={activeTab === 'access' ? 'active' : ''} onClick={() => handleTabChange('access')}>
-            <ShieldAlert size={18} style={{marginRight: '12px'}} /> Access Control
-          </li>
-          <li className={activeTab === 'fire' ? 'active' : ''} onClick={() => handleTabChange('fire')}>
-            <Flame size={18} style={{marginRight: '12px'}} /> Fire Monitoring
-          </li>
-          <li className={activeTab === 'alerts' ? 'active' : ''} onClick={() => handleTabChange('alerts')}>
-            <BellRing size={18} style={{marginRight: '12px'}} /> Alerts
-          </li>
-          <li className={activeTab === 'reports' ? 'active' : ''} onClick={() => handleTabChange('reports')}>
-            <FileText size={18} style={{marginRight: '12px'}} /> Reports & Logs
-          </li>
-          <li className={activeTab === 'user' ? 'active' : ''} onClick={() => handleTabChange('user')}>
-            <UserCog size={18} style={{marginRight: '12px'}} /> User Management
-          </li>
-          <li className={activeTab === 'setting' ? 'active' : ''} onClick={() => handleTabChange('setting')}>
-            <Settings size={18} style={{marginRight: '12px'}} /> Setting
-          </li>
+          <li className={activeTab === 'dashboard' ? 'active' : ''} onClick={() => handleTabChange('dashboard')}><Home size={18} style={{marginRight: '12px'}} /> Dashboard</li>
+          <li className={activeTab === 'cctv' ? 'active' : ''} onClick={() => handleTabChange('cctv')}><Camera size={18} style={{marginRight: '12px'}} /> Live CCTV Feeds</li>
+          <li className={activeTab === 'patient' ? 'active' : ''} onClick={() => handleTabChange('patient')}><Users size={18} style={{marginRight: '12px'}} /> Patient Management</li>
+          <li className={activeTab === 'access' ? 'active' : ''} onClick={() => handleTabChange('access')}><ShieldAlert size={18} style={{marginRight: '12px'}} /> Access Control</li>
+          <li className={activeTab === 'fire' ? 'active' : ''} onClick={() => handleTabChange('fire')}><Flame size={18} style={{marginRight: '12px'}} /> Fire Monitoring</li>
+          <li className={activeTab === 'alerts' ? 'active' : ''} onClick={() => handleTabChange('alerts')}><BellRing size={18} style={{marginRight: '12px'}} /> Alerts</li>
+          <li className={activeTab === 'reports' ? 'active' : ''} onClick={() => handleTabChange('reports')}><FileText size={18} style={{marginRight: '12px'}} /> Reports & Logs</li>
+          <li className={activeTab === 'user' ? 'active' : ''} onClick={() => handleTabChange('user')}><UserCog size={18} style={{marginRight: '12px'}} /> User Management</li>
+          <li className={activeTab === 'setting' ? 'active' : ''} onClick={() => handleTabChange('setting')}><Settings size={18} style={{marginRight: '12px'}} /> Setting</li>
         </ul>
 
         <div className="sidebar-footer">
@@ -188,16 +209,15 @@ const Dashboard = ({ onLogout }) => {
               </span>
             </div>
           </div>
-
           <button className="logout-btn" onClick={onLogout} style={{display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px'}}>
             <LogOut size={16} /> Logout
           </button>
         </div>
       </div>
 
-      {/* Main Content Area */}
       <div className="main-content">
         
+        {/* DASHBOARD TAB */}
         {activeTab === 'dashboard' && (
           <>
             <div className="header">
@@ -206,8 +226,8 @@ const Dashboard = ({ onLogout }) => {
             </div>
             
             <div className="stats-grid">
-              <div className="stat-card"><h4>Total Cameras</h4><h2>24</h2><p className="stat-sub">+2 this week</p></div>
-              <div className="stat-card"><h4>Registered Patients</h4><h2>156</h2><p className="stat-sub">+12 today</p></div>
+              <div className="stat-card"><h4>Total Cameras</h4><h2>4</h2><p className="stat-sub">3 Active</p></div>
+              <div className="stat-card"><h4>Registered Patients</h4><h2>{patientsList.length}</h2><p className="stat-sub">Total Base</p></div>
               <div className="stat-card"><h4>Today's Alerts</h4><h2>8</h2><p className="stat-sub">3 critical</p></div>
               <div className="stat-card"><h4>Mask Violations</h4><h2>3</h2><p className="stat-sub">-2 from yesterday</p></div>
             </div>
@@ -218,14 +238,13 @@ const Dashboard = ({ onLogout }) => {
               </h3>
               
               <div style={{ display: 'flex', gap: '15px', flexWrap: 'wrap' }}>
-                
                 <div style={{ flex: 1, minWidth: '280px', border: aiControls.patientIdent ? '2px solid #0D6EFD' : '1px solid #e2e8f0', borderRadius: '12px', padding: '15px', backgroundColor: aiControls.patientIdent ? '#eff6ff' : '#f8fafc', transition: 'all 0.3s' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '15px' }}>
                     <div>
                       <h4 style={{ margin: '0 0 5px 0', color: '#1e293b', display: 'flex', alignItems: 'center', gap: '6px' }}><Camera size={16}/> Camera 01</h4>
                       <span style={{ fontSize: '12px', color: '#64748b', fontWeight: 'bold' }}>📍 Dementia Patient Ward</span>
                     </div>
-                    <button onClick={() => toggleAI('patientIdent')} style={{ padding: '6px 14px', borderRadius: '20px', border: 'none', backgroundColor: aiControls.patientIdent ? '#0D6EFD' : '#cbd5e1', color: 'white', fontWeight: 'bold', cursor: 'pointer', transition: '0.3s' }}>
+                    <button onClick={() => toggleAI('patientIdent')} style={{ padding: '6px 14px', borderRadius: '20px', border: 'none', backgroundColor: aiControls.patientIdent ? '#0D6EFD' : '#cbd5e1', color: 'white', fontWeight: 'bold', cursor: 'pointer' }}>
                       {aiControls.patientIdent ? 'ON' : 'OFF'}
                     </button>
                   </div>
@@ -233,7 +252,7 @@ const Dashboard = ({ onLogout }) => {
                     <Users size={32} color={aiControls.patientIdent ? '#0D6EFD' : '#94a3b8'} />
                     <div>
                       <div style={{ fontSize: '14px', fontWeight: 'bold', color: aiControls.patientIdent ? '#0D6EFD' : '#475569' }}>Patient Identification</div>
-                      <div style={{ fontSize: '11px', color: '#64748b', marginTop: '4px', lineHeight: '1.4' }}>Alerts if a registered patient attempts to leave the ward door.</div>
+                      <div style={{ fontSize: '11px', color: '#64748b', marginTop: '4px', lineHeight: '1.4' }}>Alerts if a registered patient attempts to leave.</div>
                     </div>
                   </div>
                 </div>
@@ -244,7 +263,7 @@ const Dashboard = ({ onLogout }) => {
                       <h4 style={{ margin: '0 0 5px 0', color: '#1e293b', display: 'flex', alignItems: 'center', gap: '6px' }}><Camera size={16}/> Camera 02</h4>
                       <span style={{ fontSize: '12px', color: '#64748b', fontWeight: 'bold' }}>📍 Theater Entrance</span>
                     </div>
-                    <button onClick={() => toggleAI('maskDetect')} style={{ padding: '6px 14px', borderRadius: '20px', border: 'none', backgroundColor: aiControls.maskDetect ? '#10b981' : '#cbd5e1', color: 'white', fontWeight: 'bold', cursor: 'pointer', transition: '0.3s' }}>
+                    <button onClick={() => toggleAI('maskDetect')} style={{ padding: '6px 14px', borderRadius: '20px', border: 'none', backgroundColor: aiControls.maskDetect ? '#10b981' : '#cbd5e1', color: 'white', fontWeight: 'bold', cursor: 'pointer' }}>
                       {aiControls.maskDetect ? 'ON' : 'OFF'}
                     </button>
                   </div>
@@ -252,7 +271,7 @@ const Dashboard = ({ onLogout }) => {
                     <UserCog size={32} color={aiControls.maskDetect ? '#10b981' : '#94a3b8'} />
                     <div>
                       <div style={{ fontSize: '14px', fontWeight: 'bold', color: aiControls.maskDetect ? '#10b981' : '#475569' }}>Mask Detection</div>
-                      <div style={{ fontSize: '11px', color: '#64748b', marginTop: '4px', lineHeight: '1.4' }}>Alerts if staff enters the theater area without a mask.</div>
+                      <div style={{ fontSize: '11px', color: '#64748b', marginTop: '4px', lineHeight: '1.4' }}>Alerts if staff enters without a mask.</div>
                     </div>
                   </div>
                 </div>
@@ -263,7 +282,7 @@ const Dashboard = ({ onLogout }) => {
                       <h4 style={{ margin: '0 0 5px 0', color: '#1e293b', display: 'flex', alignItems: 'center', gap: '6px' }}><Camera size={16}/> Camera 03</h4>
                       <span style={{ fontSize: '12px', color: '#64748b', fontWeight: 'bold' }}>📍 Main Store Room</span>
                     </div>
-                    <button onClick={() => toggleAI('fireDetect')} style={{ padding: '6px 14px', borderRadius: '20px', border: 'none', backgroundColor: aiControls.fireDetect ? '#ef4444' : '#cbd5e1', color: 'white', fontWeight: 'bold', cursor: 'pointer', transition: '0.3s' }}>
+                    <button onClick={() => toggleAI('fireDetect')} style={{ padding: '6px 14px', borderRadius: '20px', border: 'none', backgroundColor: aiControls.fireDetect ? '#ef4444' : '#cbd5e1', color: 'white', fontWeight: 'bold', cursor: 'pointer' }}>
                       {aiControls.fireDetect ? 'ON' : 'OFF'}
                     </button>
                   </div>
@@ -271,11 +290,10 @@ const Dashboard = ({ onLogout }) => {
                     <Flame size={32} color={aiControls.fireDetect ? '#ef4444' : '#94a3b8'} />
                     <div>
                       <div style={{ fontSize: '14px', fontWeight: 'bold', color: aiControls.fireDetect ? '#ef4444' : '#475569' }}>Fire & Smoke Detection</div>
-                      <div style={{ fontSize: '11px', color: '#64748b', marginTop: '4px', lineHeight: '1.4' }}>Alerts immediately if fire or smoke is detected in the area.</div>
+                      <div style={{ fontSize: '11px', color: '#64748b', marginTop: '4px', lineHeight: '1.4' }}>Alerts if fire or smoke is detected.</div>
                     </div>
                   </div>
                 </div>
-
               </div>
             </div>
             
@@ -287,7 +305,6 @@ const Dashboard = ({ onLogout }) => {
                 <div className="alert-item"><span className="dot yellow-dot"></span> Mask Violation</div>
                 <div className="alert-item"><span className="dot orange-dot"></span> Unauthorized Access</div>
               </div>
-              
               <div className="chart-section card-box">
                 <h3>Weekly Alerts Overview</h3>
                 <div className="mock-chart">
@@ -304,31 +321,65 @@ const Dashboard = ({ onLogout }) => {
           </>
         )}
 
+        {/* CCTV TAB (Overlapping Fix කර ඇත) */}
         {activeTab === 'cctv' && (
           <div className="cctv-wrapper card-box">
             <div className="header">
               <h1>Live CCTV Feeds</h1>
               <p>Real-time hospital monitoring and security status</p>
             </div>
-            <div className="cctv-grid">
+            <div className="cctv-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '15px', marginTop: '20px' }}>
               
-              <div className="cctv-box" style={{ padding: 0, overflow: 'hidden', position: 'relative' }}>
-                <div className="cctv-top-bar" style={{ position: 'absolute', top: '10px', left: '10px', right: '10px', zIndex: 2 }}>
-                  <div className="cam-name" style={{ backgroundColor: 'rgba(0,0,0,0.6)', color: 'white', border: 'none', display: 'flex', alignItems: 'center' }}>
-                    <LiveDot /> AI Processing Feed
+              {/* Feed 01 */}
+              {cameraIps['1'] ? (
+                <div className="cctv-box" style={{ padding: 0, overflow: 'hidden', position: 'relative', height: '300px', borderRadius: '12px', border: '1px solid #444' }}>
+                  <div className="cctv-top-bar" style={{ position: 'absolute', top: '10px', left: '10px', right: '10px', zIndex: 2 }}>
+                    <div className="cam-name" style={{ backgroundColor: 'rgba(0,0,0,0.6)', color: 'white', border: 'none', display: 'flex', alignItems: 'center', padding: '4px 10px', borderRadius: '6px' }}>
+                      <LiveDot /> Cam 01: Patient Detection
+                    </div>
                   </div>
-                  <div className="cam-time" style={{ backgroundColor: 'rgba(0,0,0,0.6)', color: 'white', padding: '2px 8px', borderRadius: '4px' }}>Live</div>
+                  <img src="http://localhost:5000/video_feed/1" style={{ width: '100%', height: '100%', objectFit: 'cover' }} alt="Cam 1" />
                 </div>
-                <img src="http://localhost:5000/video_feed" style={{ width: '100%', height: '100%', objectFit: 'cover' }} alt="AI Video Stream" />
-              </div>
+              ) : (
+                <NoSignalBox camName="Camera 01: Patient Detection" />
+              )}
 
-              <NoSignalBox camName="Camera 02 - Theater" />
-              <NoSignalBox camName="Camera 03 - Store Room" />
-              <NoSignalBox camName="Emergency Exit" />
+              {/* Feed 02 */}
+              {cameraIps['2'] ? (
+                <div className="cctv-box" style={{ padding: 0, overflow: 'hidden', position: 'relative', height: '300px', borderRadius: '12px', border: '1px solid #444' }}>
+                  <div className="cctv-top-bar" style={{ position: 'absolute', top: '10px', left: '10px', right: '10px', zIndex: 2 }}>
+                    <div className="cam-name" style={{ backgroundColor: 'rgba(0,0,0,0.6)', color: 'white', border: 'none', display: 'flex', alignItems: 'center', padding: '4px 10px', borderRadius: '6px' }}>
+                      <LiveDot /> Cam 02: Mask Detection
+                    </div>
+                  </div>
+                  <img src="http://localhost:5000/video_feed/2" style={{ width: '100%', height: '100%', objectFit: 'cover' }} alt="Cam 2" />
+                </div>
+              ) : (
+                <NoSignalBox camName="Camera 02: Mask Detection" />
+              )}
+
+              {/* Feed 03 */}
+              {cameraIps['3'] ? (
+                <div className="cctv-box" style={{ padding: 0, overflow: 'hidden', position: 'relative', height: '300px', borderRadius: '12px', border: '1px solid #444' }}>
+                  <div className="cctv-top-bar" style={{ position: 'absolute', top: '10px', left: '10px', right: '10px', zIndex: 2 }}>
+                    <div className="cam-name" style={{ backgroundColor: 'rgba(0,0,0,0.6)', color: 'white', border: 'none', display: 'flex', alignItems: 'center', padding: '4px 10px', borderRadius: '6px' }}>
+                      <LiveDot /> Cam 03: Fire Detection
+                    </div>
+                  </div>
+                  <img src="http://localhost:5000/video_feed/3" style={{ width: '100%', height: '100%', objectFit: 'cover' }} alt="Cam 3" />
+                </div>
+              ) : (
+                <NoSignalBox camName="Camera 03: Fire Detection" />
+              )}
+
+              {/* Feed 04 */}
+              <NoSignalBox camName="Camera 04 - Emergency Exit" />
+
             </div>
           </div>
         )}
 
+        {/* PATIENT TAB (ඔයාගේ පරණ Table එකම ආපහු දැම්මා) */}
         {activeTab === 'patient' && (
           <div className="patient-wrapper">
             <div className="page-header-flex">
@@ -437,7 +488,7 @@ const Dashboard = ({ onLogout }) => {
           </div>
         )}
 
-        {/* Access, Fire, Alerts, Reports, User, Setting (කිසිම වෙනසක් නෑ) */}
+        {/* අනිත් ඔක්කොම ටැබ් ටික (කිසිම වෙනසක් නෑ) */}
         {activeTab === 'access' && (
           <div className="access-wrapper">
              <div className="header">
@@ -621,61 +672,67 @@ const Dashboard = ({ onLogout }) => {
           </div>
         )}
 
+        {/* SETTINGS TAB */}
         {activeTab === 'setting' && (
           <div className="setting-wrapper">
-            
             <div className="header">
               <h1>System Setting</h1>
               <p>Configure cameras, monitoring zones, and system preferences</p>
             </div>
 
             <div className="card-box mt-4">
-              <div className="camera-header-wrap">
+              <div className="camera-header-wrap mb-4">
                 <h3 style={{display: 'flex', alignItems: 'center', gap: '8px', margin: '0 0 5px 0'}}>
-                  <Camera size={20} /> Camera Management
+                  <Camera size={20} /> Network Camera Configuration
                 </h3>
-                <p className="detail-label" style={{marginBottom: '20px'}}>Add, edit, or remove cameras from the system</p>
+                <p className="detail-label">Add your IP Webcam URLs here (e.g., http://192.168.1.5:8080/video)</p>
               </div>
 
+              <div style={{ display: 'flex', alignItems: 'center', marginBottom: '15px', backgroundColor: '#f8fafc', padding: '15px', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
+                <span style={{ fontWeight: 'bold', width: '120px' }}>Camera 01 IP :</span>
+                <input type="text" value={inputIps['1']} onChange={(e) => setInputIps({...inputIps, '1': e.target.value})} placeholder="Enter video URL (Patient Detection)" className="form-input" style={{ flex: 1, marginRight: '15px' }} />
+                <button onClick={() => handleSaveCamera('1')} style={{ padding: '8px 20px', backgroundColor: '#0D6EFD', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer', marginRight: '10px' }}>Add</button>
+                <button onClick={() => handleRemoveCamera('1')} style={{ padding: '8px 20px', backgroundColor: '#ef4444', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer' }}>Remove</button>
+              </div>
+
+              <div style={{ display: 'flex', alignItems: 'center', marginBottom: '15px', backgroundColor: '#f8fafc', padding: '15px', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
+                <span style={{ fontWeight: 'bold', width: '120px' }}>Camera 02 IP :</span>
+                <input type="text" value={inputIps['2']} onChange={(e) => setInputIps({...inputIps, '2': e.target.value})} placeholder="Enter video URL (Mask Detection)" className="form-input" style={{ flex: 1, marginRight: '15px' }} />
+                <button onClick={() => handleSaveCamera('2')} style={{ padding: '8px 20px', backgroundColor: '#0D6EFD', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer', marginRight: '10px' }}>Add</button>
+                <button onClick={() => handleRemoveCamera('2')} style={{ padding: '8px 20px', backgroundColor: '#ef4444', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer' }}>Remove</button>
+              </div>
+
+              <div style={{ display: 'flex', alignItems: 'center', marginBottom: '15px', backgroundColor: '#f8fafc', padding: '15px', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
+                <span style={{ fontWeight: 'bold', width: '120px' }}>Camera 03 IP :</span>
+                <input type="text" value={inputIps['3']} onChange={(e) => setInputIps({...inputIps, '3': e.target.value})} placeholder="Enter video URL (Fire Detection)" className="form-input" style={{ flex: 1, marginRight: '15px' }} />
+                <button onClick={() => handleSaveCamera('3')} style={{ padding: '8px 20px', backgroundColor: '#0D6EFD', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer', marginRight: '10px' }}>Add</button>
+                <button onClick={() => handleRemoveCamera('3')} style={{ padding: '8px 20px', backgroundColor: '#ef4444', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer' }}>Remove</button>
+              </div>
+
+              <div style={{ display: 'flex', alignItems: 'center', backgroundColor: '#f1f5f9', padding: '15px', borderRadius: '8px', border: '1px solid #e2e8f0', opacity: 0.6 }}>
+                <span style={{ fontWeight: 'bold', width: '120px' }}>Camera 04 IP :</span>
+                <input type="text" disabled placeholder="Not Configured" className="form-input" style={{ flex: 1, marginRight: '15px', cursor: 'not-allowed' }} />
+                <button disabled style={{ padding: '8px 20px', backgroundColor: '#94a3b8', color: 'white', border: 'none', borderRadius: '4px', marginRight: '10px', cursor: 'not-allowed' }}>Add</button>
+                <button disabled style={{ padding: '8px 20px', backgroundColor: '#94a3b8', color: 'white', border: 'none', borderRadius: '4px', cursor: 'not-allowed' }}>Remove</button>
+              </div>
+            </div>
+
+            <div className="card-box mt-4">
+              <div className="camera-header-wrap">
+                <h3 style={{display: 'flex', alignItems: 'center', gap: '8px', margin: '0 0 5px 0'}}>
+                  <Camera size={20} /> Registered Zones
+                </h3>
+                <p className="detail-label" style={{marginBottom: '20px'}}>View all monitoring zones in the system</p>
+              </div>
               <table className="data-table text-left-table">
                 <thead>
-                  <tr>
-                    <th>Camera Name</th>
-                    <th>IP Address</th>
-                    <th>Zone</th>
-                    <th>Status</th>
-                    <th>Action</th>
-                  </tr>
+                  <tr><th>Camera Name</th><th>IP Address</th><th>Zone</th><th>Status</th><th>Action</th></tr>
                 </thead>
                 <tbody>
-                  <tr>
-                    <td>Main Entrance</td>
-                    <td>192.168.1.101</td>
-                    <td>Entrance</td>
-                    <td>Active</td>
-                    <td><span className="action-edit font-bold">Edit</span> <span className="action-delete font-bold ml-2 text-black">Delete</span></td>
-                  </tr>
-                  <tr>
-                    <td>Lab Entrance</td>
-                    <td>192.168.1.101</td>
-                    <td>Lab</td>
-                    <td>Active</td>
-                    <td><span className="action-edit font-bold">Edit</span> <span className="action-delete font-bold ml-2 text-black">Delete</span></td>
-                  </tr>
-                  <tr>
-                    <td>ICU Wing</td>
-                    <td>192.168.1.101</td>
-                    <td>ICU</td>
-                    <td>Active</td>
-                    <td><span className="action-edit font-bold">Edit</span> <span className="action-delete font-bold ml-2 text-black">Delete</span></td>
-                  </tr>
-                  <tr>
-                    <td>Ward 3</td>
-                    <td>192.168.1.101</td>
-                    <td>Ward</td>
-                    <td>Active</td>
-                    <td><span className="action-edit font-bold">Edit</span> <span className="action-delete font-bold ml-2 text-black">Delete</span></td>
-                  </tr>
+                  <tr><td>Main Entrance</td><td>192.168.1.101</td><td>Entrance</td><td>Active</td><td><span className="action-edit font-bold">Edit</span> <span className="action-delete font-bold ml-2 text-black">Delete</span></td></tr>
+                  <tr><td>Lab Entrance</td><td>192.168.1.101</td><td>Lab</td><td>Active</td><td><span className="action-edit font-bold">Edit</span> <span className="action-delete font-bold ml-2 text-black">Delete</span></td></tr>
+                  <tr><td>ICU Wing</td><td>192.168.1.101</td><td>ICU</td><td>Active</td><td><span className="action-edit font-bold">Edit</span> <span className="action-delete font-bold ml-2 text-black">Delete</span></td></tr>
+                  <tr><td>Ward 3</td><td>192.168.1.101</td><td>Ward</td><td>Active</td><td><span className="action-edit font-bold">Edit</span> <span className="action-delete font-bold ml-2 text-black">Delete</span></td></tr>
                 </tbody>
               </table>
             </div>
