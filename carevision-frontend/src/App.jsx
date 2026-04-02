@@ -5,39 +5,43 @@ import { auth } from './firebase';
 import LoginPage from './components/LoginPage'; 
 import Dashboard from './components/Dashboard';
 
-// 1. මෙන්න මේක තමයි අපේ VIP ලිස්ට් එක (Whitelisted Emails)
-// මේකට ඔයාගේ ඇත්තම Gmail එකයි, ඇතුළට ගන්න ඕනේ අයගේ ඊමේල් ටිකයි දාන්න
-const ALLOWED_EMAILS = [
-  'liyanage2021@gmail.com', // ඔයාගේ Super Admin එක මෙතනට දාන්න
+/**
+ * System Access Control List (ACL)
+ * Only these predefined administrative email addresses are granted access 
+ * to the CareVision Edge AI Dashboard.
+ */
+const AUTHORIZED_ADMIN_EMAILS = [
+  'liyanage2021@gmail.com', 
   'mlndliyanage9@gmail.com',
   '22cis0263@ms.sab.ac.lk'
 ];
 
 function App() {
   const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
-  
-  // අවසර නැති කෙනෙක් ආවොත් එරර් එකක් පෙන්නන්න State එකක්
+  const [isLoading, setIsLoading] = useState(true);
   const [authError, setAuthError] = useState('');
 
   useEffect(() => {
+    // Listen to Firebase authentication state changes
     const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
       if (currentUser) {
-        // 2. ලොග් වුණ කෙනාගේ ඊමේල් එක අර VIP ලිස්ට් එකේ තියෙනවද බලනවා
-        if (ALLOWED_EMAILS.includes(currentUser.email)) {
-          setUser(currentUser); // අවසර තියෙනවා නම් ඇතුළට ගන්නවා
+        // Verify if the authenticated user has administrative privileges
+        if (AUTHORIZED_ADMIN_EMAILS.includes(currentUser.email)) {
+          setUser(currentUser); 
           setAuthError('');
         } else {
-          // අවසර නැත්නම් එවේලේම එළියට විසි කරනවා (Sign Out)
+          // Revoke access for unauthorized users immediately to ensure system security
           await signOut(auth);
           setUser(null);
-          setAuthError('Access Denied: Your account is not authorized to access this system.');
+          setAuthError('Access Denied: Your account is not authorized to access the CareVision system.');
         }
       } else {
         setUser(null);
       }
-      setLoading(false); 
+      setIsLoading(false); 
     });
+
+    // Cleanup subscription on component unmount
     return () => unsubscribe();
   }, []);
 
@@ -45,27 +49,35 @@ function App() {
     try {
       await signOut(auth); 
     } catch (error) {
-      console.error("Error logging out:", error);
+      console.error("Authentication Error (Logout):", error);
     }
   };
 
-  if (loading) {
-    return <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', fontFamily: 'sans-serif' }}><h2>Loading CareVision...</h2></div>;
+  // Enterprise-grade loading state UI
+  if (isLoading) {
+    return (
+      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', backgroundColor: '#f8fafc', fontFamily: 'Inter, sans-serif' }}>
+        <div style={{ textAlign: 'center' }}>
+          <h2 style={{ color: '#0D6EFD', marginBottom: '8px' }}>Initializing CareVision LK...</h2>
+          <p style={{ color: '#64748b', fontSize: '14px', margin: 0 }}>Securing connection to edge servers</p>
+        </div>
+      </div>
+    );
   }
 
   return (
-    <div>
+    <div className="app-container">
       {user ? (
         <Dashboard onLogout={handleLogout} />
       ) : (
         <>
-          {/* අවසර නැති කෙනෙක්ට එරර් එකක් පෙන්නන්න පොඩි UI කෑල්ලක් */}
+          {/* Unauthorized access alert banner */}
           {authError && (
-            <div style={{ backgroundColor: '#fee2e2', color: '#dc2626', padding: '15px', textAlign: 'center', fontWeight: 'bold', fontFamily: 'sans-serif' }}>
-              {authError}
+            <div style={{ backgroundColor: '#fef2f2', borderBottom: '1px solid #fecaca', color: '#dc2626', padding: '12px', textAlign: 'center', fontSize: '14px', fontWeight: '600', fontFamily: 'Inter, sans-serif' }}>
+              ⚠️ {authError}
             </div>
           )}
-          <LoginPage onLoginSuccess={() => console.log("Login Attempted")} />
+          <LoginPage onLoginSuccess={() => console.log("Authentication attempt registered")} />
         </>
       )}
     </div>
