@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { auth } from '../firebase'; 
-// 🔥 Maximize අයිකන් එක අලුතින් import කරලා තියෙනවා 🔥
 import { Home, Camera, Users, ShieldAlert, Flame, BellRing, FileText, UserCog, Settings, LogOut, User, AlertTriangle, Download, Phone, Cpu, Maximize } from 'lucide-react';
 import './Dashboard.css';
 
@@ -15,7 +14,12 @@ const Dashboard = ({ onLogout }) => {
   const [isUploading, setIsUploading] = useState(false);
   const [patientsList, setPatientsList] = useState([]);
   
+  const [accessLogs, setAccessLogs] = useState([]);
+  const [fireLogs, setFireLogs] = useState([]);
+  const [systemAlerts, setSystemAlerts] = useState([]);
+  
   const [searchQuery, setSearchQuery] = useState('');
+  const [reportDate, setReportDate] = useState('');
 
   const [aiControls, setAiControls] = useState({
     patientIdent: false,
@@ -55,6 +59,7 @@ const Dashboard = ({ onLogout }) => {
     setActiveTab(tabName);
     setShowRegisterForm(false);
     setSearchQuery(''); 
+    setReportDate(''); 
   };
 
   const fetchPatients = async () => {
@@ -80,6 +85,96 @@ const Dashboard = ({ onLogout }) => {
       fetchPatients();
     }
   }, [activeTab]);
+
+  const fetchAccessLogs = async () => {
+    try {
+      const response = await fetch('http://localhost:5000/api/access_logs');
+      const data = await response.json();
+      if (response.ok && Array.isArray(data)) {
+        setAccessLogs(data);
+      }
+    } catch (error) {
+      console.error("Error fetching access logs:", error);
+    }
+  };
+
+  useEffect(() => {
+    if (activeTab === 'access' || activeTab === 'reports') {
+      fetchAccessLogs();
+      const interval = setInterval(fetchAccessLogs, 3000);
+      return () => clearInterval(interval);
+    }
+  }, [activeTab]);
+
+  const fetchFireLogs = async () => {
+    try {
+      const response = await fetch('http://localhost:5000/api/fire_logs');
+      const data = await response.json();
+      if (response.ok && Array.isArray(data)) {
+        setFireLogs(data);
+      }
+    } catch (error) {
+      console.error("Error fetching fire logs:", error);
+    }
+  };
+
+  useEffect(() => {
+    if (activeTab === 'fire' || activeTab === 'reports') {
+      fetchFireLogs();
+      const interval = setInterval(fetchFireLogs, 3000);
+      return () => clearInterval(interval);
+    }
+  }, [activeTab]);
+
+  const fetchSystemAlerts = async () => {
+    try {
+      const response = await fetch('http://localhost:5000/api/system_alerts');
+      const data = await response.json();
+      if (response.ok && Array.isArray(data)) {
+        setSystemAlerts(data);
+      }
+    } catch (error) {
+      console.error("Error fetching system alerts:", error);
+    }
+  };
+
+  useEffect(() => {
+    if (activeTab === 'alerts' || activeTab === 'reports') {
+      fetchSystemAlerts();
+      const interval = setInterval(fetchSystemAlerts, 3000);
+      return () => clearInterval(interval);
+    }
+  }, [activeTab]);
+
+  const handleResolveFireAlert = async (logId) => {
+    try {
+      const response = await fetch(`http://localhost:5000/api/resolve_fire_alert/${logId}`, {
+        method: 'POST',
+      });
+      if (response.ok) {
+        fetchFireLogs(); 
+      }
+    } catch (error) {
+      console.error("Error resolving alert:", error);
+    }
+  };
+
+  const handleResolveSystemAlert = async (alertId) => {
+    try {
+      const response = await fetch(`http://localhost:5000/api/resolve_system_alert/${alertId}`, {
+        method: 'POST',
+      });
+      if (response.ok) {
+        fetchSystemAlerts(); 
+      }
+    } catch (error) {
+      console.error("Error resolving system alert:", error);
+    }
+  };
+
+  const handleNotifyEmergency = (location) => {
+    alert(`🚨 URGENT: Emergency Services have been notified for ${location}!`);
+  };
 
   const handleImageChange = (e) => {
     if (e.target.files[0]) {
@@ -196,15 +291,14 @@ const Dashboard = ({ onLogout }) => {
     }
   };
 
-  // 🔥 Full Screen කරන Function එක 🔥
   const toggleFullScreen = (e) => {
-    const elem = e.currentTarget.parentElement; // Full Screen වෙන්න ඕන Div එක අල්ලගන්නවා
+    const elem = e.currentTarget.parentElement; 
     if (!document.fullscreenElement) {
       if (elem.requestFullscreen) {
         elem.requestFullscreen();
-      } else if (elem.webkitRequestFullscreen) { /* Safari */
+      } else if (elem.webkitRequestFullscreen) { 
         elem.webkitRequestFullscreen();
-      } else if (elem.msRequestFullscreen) { /* IE11 */
+      } else if (elem.msRequestFullscreen) { 
         elem.msRequestFullscreen();
       }
     } else {
@@ -214,11 +308,21 @@ const Dashboard = ({ onLogout }) => {
     }
   };
 
+  const handlePrintPDF = () => {
+    window.print();
+  };
+
   const filteredPatients = Array.isArray(patientsList) ? patientsList.filter(patient => {
     const pName = patient.name ? String(patient.name).toLowerCase() : '';
     const pId = patient.patient_id ? String(patient.patient_id).toLowerCase() : '';
     const query = searchQuery ? String(searchQuery).toLowerCase() : '';
     return pName.includes(query) || pId.includes(query);
+  }) : [];
+
+  const filteredReports = Array.isArray(systemAlerts) ? systemAlerts.filter(alert => {
+    if (!reportDate) return true;
+    const alertDate = alert.timestamp ? alert.timestamp.split(' ')[0] : '';
+    return alertDate === reportDate;
   }) : [];
 
   const LiveDot = () => <span style={{ display: 'inline-block', width: '8px', height: '8px', borderRadius: '50%', backgroundColor: '#ef4444', marginRight: '6px' }}></span>;
@@ -237,6 +341,21 @@ const Dashboard = ({ onLogout }) => {
       <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', background: 'linear-gradient(rgba(255,255,255,0.03) 50%, transparent 50%)', backgroundSize: '100% 4px', pointerEvents: 'none' }}></div>
     </div>
   );
+
+  const totalAccess = accessLogs.length;
+  const grantedAccess = accessLogs.filter(log => log.access_result === 'Granted').length;
+  const deniedAccess = accessLogs.filter(log => log.access_result === 'Denied').length;
+  const activeCamCount = Object.values(cameraIps).filter(ip => ip !== '').length;
+
+  const activeFireAlerts = fireLogs.filter(log => log.status === 'Active');
+  const resolvedFireAlerts = fireLogs.filter(log => log.status === 'Resolved');
+  const activeFireCamsCount = ['7', '8', '9'].filter(cam => cameraIps[cam] !== '').length;
+  const latestActiveFire = activeFireAlerts.length > 0 ? activeFireAlerts[0] : null;
+
+  const totalSystemAlerts = systemAlerts.length;
+  const pendingSystemAlerts = systemAlerts.filter(a => a.status === 'Pending');
+  const resolvedSystemAlertsCount = systemAlerts.filter(a => a.status === 'Resolved').length;
+  const highPrioritySystemAlertsCount = systemAlerts.filter(a => a.priority === 'High' && a.status === 'Pending').length;
 
   return (
     <div className="dashboard-container">
@@ -259,7 +378,7 @@ const Dashboard = ({ onLogout }) => {
           <li className={activeTab === 'dashboard' ? 'active' : ''} onClick={() => handleTabChange('dashboard')}><Home size={18} style={{marginRight: '12px'}} /> Dashboard</li>
           <li className={activeTab === 'cctv' ? 'active' : ''} onClick={() => handleTabChange('cctv')}><Camera size={18} style={{marginRight: '12px'}} /> Live CCTV Feeds</li>
           <li className={activeTab === 'patient' ? 'active' : ''} onClick={() => handleTabChange('patient')}><Users size={18} style={{marginRight: '12px'}} /> Patient Management</li>
-          <li className={activeTab === 'access' ? 'active' : ''} onClick={() => handleTabChange('access')}><ShieldAlert size={18} style={{marginRight: '12px'}} /> Access Control</li>
+          <li className={activeTab === 'access' ? 'active' : ''} onClick={() => handleTabChange('access')}><ShieldAlert size={18} style={{marginRight: '12px'}} /> Mask Detection</li>
           <li className={activeTab === 'fire' ? 'active' : ''} onClick={() => handleTabChange('fire')}><Flame size={18} style={{marginRight: '12px'}} /> Fire Monitoring</li>
           <li className={activeTab === 'alerts' ? 'active' : ''} onClick={() => handleTabChange('alerts')}><BellRing size={18} style={{marginRight: '12px'}} /> Alerts</li>
           <li className={activeTab === 'reports' ? 'active' : ''} onClick={() => handleTabChange('reports')}><FileText size={18} style={{marginRight: '12px'}} /> Reports & Logs</li>
@@ -289,7 +408,7 @@ const Dashboard = ({ onLogout }) => {
 
       <div className="main-content">
         
-        {/* DASHBOARD TAB */}
+        {/* Dashboard Tab */}
         {activeTab === 'dashboard' && (
           <>
             <div className="header">
@@ -300,8 +419,8 @@ const Dashboard = ({ onLogout }) => {
             <div className="stats-grid">
               <div className="stat-card"><h4>Total Cameras</h4><h2>9</h2><p className="stat-sub">Enterprise Mode</p></div>
               <div className="stat-card"><h4>Registered Patients</h4><h2>{patientsList.length}</h2><p className="stat-sub">Total Base</p></div>
-              <div className="stat-card"><h4>Today's Alerts</h4><h2>8</h2><p className="stat-sub">3 critical</p></div>
-              <div className="stat-card"><h4>Mask Violations</h4><h2>3</h2><p className="stat-sub">-2 from yesterday</p></div>
+              <div className="stat-card"><h4>Today's Alerts</h4><h2>{pendingSystemAlerts.length}</h2><p className="stat-sub">{highPrioritySystemAlertsCount} critical</p></div>
+              <div className="stat-card"><h4>Mask Violations</h4><h2>{deniedAccess}</h2><p className="stat-sub">From access control</p></div>
             </div>
 
             <div className="card-box" style={{ marginTop: '20px', marginBottom: '20px', backgroundColor: '#fff', border: '1px solid #e2e8f0' }}>
@@ -393,7 +512,7 @@ const Dashboard = ({ onLogout }) => {
           </>
         )}
 
-        {/* CCTV TAB - 🔥 Full Screen බටන් එක එකතු කරලා තියෙනවා 🔥 */}
+        {/* CCTV Tab */}
         {activeTab === 'cctv' && (
           <div className="cctv-wrapper card-box">
             <div className="header">
@@ -402,7 +521,6 @@ const Dashboard = ({ onLogout }) => {
             </div>
             <div className="cctv-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '15px', marginTop: '20px' }}>
               
-              {/* Patient Cams 1-3 */}
               {[1, 2, 3].map(cam => (
                 cameraIps[String(cam)] ? (
                   <div key={cam} className="cctv-box" style={{ padding: 0, overflow: 'hidden', position: 'relative', height: '250px', borderRadius: '12px', border: '1px solid #444', backgroundColor: '#000' }}>
@@ -413,7 +531,6 @@ const Dashboard = ({ onLogout }) => {
                     </div>
                     <img src={`http://localhost:5000/video_feed/${cam}`} style={{ width: '100%', height: '100%', objectFit: 'cover' }} alt={`Cam ${cam}`} />
                     
-                    {/* Full Screen බටන් එක */}
                     <button onClick={toggleFullScreen} style={{ position: 'absolute', bottom: '10px', right: '10px', zIndex: 10, background: 'rgba(0,0,0,0.6)', color: 'white', border: 'none', padding: '6px', borderRadius: '4px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                       <Maximize size={14} />
                     </button>
@@ -421,7 +538,6 @@ const Dashboard = ({ onLogout }) => {
                 ) : <NoSignalBox key={cam} camName={`Cam 0${cam}: Patient Detection`} />
               ))}
 
-              {/* Mask Cams 4-6 */}
               {[4, 5, 6].map(cam => (
                 cameraIps[String(cam)] ? (
                   <div key={cam} className="cctv-box" style={{ padding: 0, overflow: 'hidden', position: 'relative', height: '250px', borderRadius: '12px', border: '1px solid #444', backgroundColor: '#000' }}>
@@ -432,7 +548,6 @@ const Dashboard = ({ onLogout }) => {
                     </div>
                     <img src={`http://localhost:5000/video_feed/${cam}`} style={{ width: '100%', height: '100%', objectFit: 'cover' }} alt={`Cam ${cam}`} />
                     
-                    {/* Full Screen බටන් එක */}
                     <button onClick={toggleFullScreen} style={{ position: 'absolute', bottom: '10px', right: '10px', zIndex: 10, background: 'rgba(0,0,0,0.6)', color: 'white', border: 'none', padding: '6px', borderRadius: '4px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                       <Maximize size={14} />
                     </button>
@@ -440,7 +555,6 @@ const Dashboard = ({ onLogout }) => {
                 ) : <NoSignalBox key={cam} camName={`Cam 0${cam}: Mask Detection`} />
               ))}
 
-              {/* Fire Cams 7-9 */}
               {[7, 8, 9].map(cam => (
                 cameraIps[String(cam)] ? (
                   <div key={cam} className="cctv-box" style={{ padding: 0, overflow: 'hidden', position: 'relative', height: '250px', borderRadius: '12px', border: '1px solid #444', backgroundColor: '#000' }}>
@@ -451,7 +565,6 @@ const Dashboard = ({ onLogout }) => {
                     </div>
                     <img src={`http://localhost:5000/video_feed/${cam}`} style={{ width: '100%', height: '100%', objectFit: 'cover' }} alt={`Cam ${cam}`} />
                     
-                    {/* Full Screen බටන් එක */}
                     <button onClick={toggleFullScreen} style={{ position: 'absolute', bottom: '10px', right: '10px', zIndex: 10, background: 'rgba(0,0,0,0.6)', color: 'white', border: 'none', padding: '6px', borderRadius: '4px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                       <Maximize size={14} />
                     </button>
@@ -463,7 +576,7 @@ const Dashboard = ({ onLogout }) => {
           </div>
         )}
 
-        {/* PATIENT TAB */}
+        {/* Patient Tab */}
         {activeTab === 'patient' && (
           <div className="patient-wrapper">
             <div className="page-header-flex">
@@ -585,18 +698,18 @@ const Dashboard = ({ onLogout }) => {
           </div>
         )}
 
-        {/* ACCESS TAB */}
+        {/* Mask Detection */}
         {activeTab === 'access' && (
           <div className="access-wrapper">
              <div className="header">
-              <h1>Access Control</h1>
+              <h1>Mask Detection</h1>
               <p>Real-time hospital monitoring and security status</p>
             </div>
             <div className="stats-grid">
-              <div className="stat-card"><div className="flex-between align-start"><div><h4>Total Access Attempts</h4><h2>234</h2><p className="stat-sub">+28 this week</p></div><div className="outline-icon-box border-blue"><Users size={20} /></div></div></div>
-              <div className="stat-card"><div className="flex-between align-start"><div><h4>Access Granted</h4><h2>198</h2><p className="stat-sub">84.6% compliance</p></div><div className="outline-icon-box border-green"><ShieldAlert size={20} /></div></div></div>
-              <div className="stat-card"><div className="flex-between align-start"><div><h4>Access Denied</h4><h2>36</h2><p className="stat-sub">15.4% violations</p></div><div className="outline-icon-box border-red"><AlertTriangle size={20} /></div></div></div>
-              <div className="stat-card"><div className="flex-between align-start"><div><h4>Active Cameras</h4><h2>9</h2><p className="stat-sub">All operational</p></div><div className="outline-icon-box border-yellow"><Camera size={20} /></div></div></div>
+              <div className="stat-card"><div className="flex-between align-start"><div><h4>Total Access Attempts</h4><h2>{totalAccess > 0 ? totalAccess : 0}</h2><p className="stat-sub">Real-time stats</p></div><div className="outline-icon-box border-blue"><Users size={20} /></div></div></div>
+              <div className="stat-card"><div className="flex-between align-start"><div><h4>Access Granted</h4><h2>{grantedAccess}</h2><p className="stat-sub">{totalAccess > 0 ? ((grantedAccess / totalAccess) * 100).toFixed(1) : 0}% compliance</p></div><div className="outline-icon-box border-green"><ShieldAlert size={20} /></div></div></div>
+              <div className="stat-card"><div className="flex-between align-start"><div><h4>Access Denied</h4><h2>{deniedAccess}</h2><p className="stat-sub">{totalAccess > 0 ? ((deniedAccess / totalAccess) * 100).toFixed(1) : 0}% violations</p></div><div className="outline-icon-box border-red"><AlertTriangle size={20} /></div></div></div>
+              <div className="stat-card"><div className="flex-between align-start"><div><h4>Active Cameras</h4><h2>{activeCamCount}</h2><p className="stat-sub">All operational</p></div><div className="outline-icon-box border-yellow"><Camera size={20} /></div></div></div>
             </div>
             <div className="table-container card-box mt-4">
               <h3 className="mb-4">Access Control Logs</h3>
@@ -605,16 +718,26 @@ const Dashboard = ({ onLogout }) => {
                   <tr><th>Camera ID</th><th>Mask Detected</th><th>Confidence</th><th>Access Result</th><th>Timestamp</th></tr>
                 </thead>
                 <tbody>
-                  <tr><td>Lab Entry - Cam 05</td><td className="text-green font-bold">Yes</td><td>98%</td><td className="text-green font-bold">Granted</td><td>2024-02-24 14:45:30</td></tr>
-                  <tr><td>ICU Entry - Cam 04</td><td className="text-red font-bold">No</td><td>95%</td><td className="text-red font-bold">Denied</td><td>2024-02-24 14:30:15</td></tr>
-                  <tr><td>Theater - Cam 06</td><td className="text-green font-bold">Yes</td><td>92%</td><td className="text-green font-bold">Granted</td><td>2024-02-24 14:15:20</td></tr>
+                  {accessLogs.length === 0 ? (
+                     <tr><td colSpan="5" style={{textAlign: 'center', padding: '20px', color: '#666'}}>No access logs available yet. Wait for AI detection.</td></tr>
+                  ) : (
+                    accessLogs.map((log, index) => (
+                      <tr key={index}>
+                        <td>{log.camera_id}</td>
+                        <td className={log.mask_detected === 'Yes' ? 'text-green font-bold' : 'text-red font-bold'}>{log.mask_detected}</td>
+                        <td>{log.confidence}</td>
+                        <td className={log.access_result === 'Granted' ? 'text-green font-bold' : 'text-red font-bold'}>{log.access_result}</td>
+                        <td>{log.timestamp}</td>
+                      </tr>
+                    ))
+                  )}
                 </tbody>
               </table>
             </div>
           </div>
         )}
 
-        {/* FIRE TAB */}
+        {/* Fire Detection */}
         {activeTab === 'fire' && (
           <div className="fire-wrapper">
             <div className="header">
@@ -622,40 +745,59 @@ const Dashboard = ({ onLogout }) => {
               <p>Real-time fire and smoke monitoring system</p>
             </div>
             <div className="stats-grid">
-              <div className="stat-card"><div className="flex-between align-start"><div><h4>Active Alerts</h4><h2>1</h2><p className="stat-sub">+28 this week</p></div><div className="outline-icon-box border-red"><AlertTriangle size={20} /></div></div></div>
-              <div className="stat-card"><div className="flex-between align-start"><div><h4>Total Events (24h)</h4><h2>4</h2><p className="stat-sub">84.6% compliance</p></div><div className="outline-icon-box border-orange"><Flame size={20} /></div></div></div>
-              <div className="stat-card"><div className="flex-between align-start"><div><h4>Resolved Events</h4><h2>3</h2><p className="stat-sub">15.4% violations</p></div><div className="outline-icon-box border-green"><ShieldAlert size={20} /></div></div></div>
-              <div className="stat-card"><div className="flex-between align-start"><div><h4>Monitoring Cameras</h4><h2>3</h2><p className="stat-sub">Cams 7, 8, 9 Active</p></div><div className="outline-icon-box border-yellow"><Camera size={20} /></div></div></div>
+              <div className="stat-card"><div className="flex-between align-start"><div><h4>Active Alerts</h4><h2>{activeFireAlerts.length}</h2><p className="stat-sub">Requires action</p></div><div className="outline-icon-box border-red"><AlertTriangle size={20} /></div></div></div>
+              <div className="stat-card"><div className="flex-between align-start"><div><h4>Total Events</h4><h2>{fireLogs.length}</h2><p className="stat-sub">Recorded logs</p></div><div className="outline-icon-box border-orange"><Flame size={20} /></div></div></div>
+              <div className="stat-card"><div className="flex-between align-start"><div><h4>Resolved Events</h4><h2>{resolvedFireAlerts.length}</h2><p className="stat-sub">Handled events</p></div><div className="outline-icon-box border-green"><ShieldAlert size={20} /></div></div></div>
+              <div className="stat-card"><div className="flex-between align-start"><div><h4>Monitoring Cameras</h4><h2>{activeFireCamsCount}</h2><p className="stat-sub">Cams 7, 8, 9 Active</p></div><div className="outline-icon-box border-yellow"><Camera size={20} /></div></div></div>
             </div>
-            <div className="fire-alert-banner">
-              <h3 className="alert-title" style={{display: 'flex', alignItems: 'center', gap: '8px'}}><Flame size={20} /> Active Fire/Smoke Alert</h3>
-              <div className="alert-details-grid">
-                <div><div className="detail-label">Location</div><div className="detail-value">Main Store - Camera 07</div></div>
-                <div><div className="detail-label">Confidence Level</div><div className="detail-value">95%</div></div>
-                <div><div className="detail-label">Event Type</div><div className="detail-value">Smoke Detected</div></div>
-                <div><div className="detail-label">Detection Time</div><div className="detail-value">2024-02-24 14:30:25</div></div>
+
+            {latestActiveFire ? (
+              <div className="fire-alert-banner">
+                <h3 className="alert-title" style={{display: 'flex', alignItems: 'center', gap: '8px'}}><Flame size={20} /> Active Fire/Smoke Alert</h3>
+                <div className="alert-details-grid">
+                  <div><div className="detail-label">Location</div><div className="detail-value">{latestActiveFire.camera_id}</div></div>
+                  <div><div className="detail-label">Confidence Level</div><div className="detail-value">{latestActiveFire.confidence}</div></div>
+                  <div><div className="detail-label">Event Type</div><div className="detail-value">{latestActiveFire.event_type}</div></div>
+                  <div><div className="detail-label">Detection Time</div><div className="detail-value">{latestActiveFire.timestamp}</div></div>
+                </div>
+                <div className="alert-actions">
+                  <button className="btn-notify" onClick={() => handleNotifyEmergency(latestActiveFire.camera_id)} style={{display: 'flex', alignItems: 'center', gap: '6px'}}><BellRing size={16} /> Notify Emergency Service</button>
+                  <button className="btn-resolve" onClick={() => handleResolveFireAlert(latestActiveFire.id)}>Mark as Resolved</button>
+                </div>
               </div>
-              <div className="alert-actions">
-                <button className="btn-notify" style={{display: 'flex', alignItems: 'center', gap: '6px'}}><BellRing size={16} /> Notify Emergency Service</button>
-                <button className="btn-resolve">Mark as Resolved</button>
+            ) : (
+              <div className="fire-alert-banner" style={{backgroundColor: '#ecfdf5', borderColor: '#a7f3d0'}}>
+                <h3 className="alert-title" style={{color: '#064e3b', display: 'flex', alignItems: 'center', gap: '8px'}}>✅ All Clear</h3>
+                <p style={{color: '#064e3b', margin: 0}}>No active fire or smoke alerts at the moment. Monitoring is active.</p>
               </div>
-            </div>
+            )}
+
             <div className="table-container card-box mt-4">
               <h3 className="mb-4">Fire & Smoke Event Logs</h3>
               <table className="data-table">
-                <thead><tr><th>Event Type</th><th>Confidence</th><th>Severity</th><th>Status</th><th>Timestamp</th></tr></thead>
+                <thead><tr><th>Event Type</th><th>Camera</th><th>Confidence</th><th>Severity</th><th>Status</th><th>Timestamp</th></tr></thead>
                 <tbody>
-                  <tr><td>Smoke Detected</td><td>95%</td><td className="text-red font-bold">High</td><td className="text-red font-bold">Active</td><td>2024-02-24 14:45:30</td></tr>
-                  <tr><td>Fire Detected</td><td>88%</td><td className="text-orange font-bold">Critical</td><td className="text-green font-bold">Resolved</td><td>2024-02-24 14:30:15</td></tr>
-                  <tr><td>Smoke Detected</td><td>76%</td><td className="text-yellow font-bold">Medium</td><td className="text-green font-bold">Resolved</td><td>2024-02-24 14:15:20</td></tr>
-                  <tr><td>Smoke Detected</td><td>82%</td><td className="text-yellow font-bold">Medium</td><td className="text-green font-bold">Resolved</td><td>2024-02-24 13:50:10</td></tr>
+                  {fireLogs.length === 0 ? (
+                     <tr><td colSpan="6" style={{textAlign: 'center', padding: '20px', color: '#666'}}>No fire/smoke logs available.</td></tr>
+                  ) : (
+                    fireLogs.map((log, index) => (
+                      <tr key={index}>
+                        <td>{log.event_type}</td>
+                        <td>{log.camera_id}</td>
+                        <td>{log.confidence}</td>
+                        <td className={log.severity === 'Critical' ? 'text-orange font-bold' : log.severity === 'High' ? 'text-red font-bold' : 'text-yellow font-bold'}>{log.severity}</td>
+                        <td className={log.status === 'Active' ? 'text-red font-bold' : 'text-green font-bold'}>{log.status}</td>
+                        <td>{log.timestamp}</td>
+                      </tr>
+                    ))
+                  )}
                 </tbody>
               </table>
             </div>
           </div>
         )}
 
-        {/* ALERTS TAB */}
+        {/* Alerts Tab */}
         {activeTab === 'alerts' && (
           <div className="alerts-wrapper">
             <div className="header">
@@ -663,54 +805,62 @@ const Dashboard = ({ onLogout }) => {
               <p>Monitor and manage system alerts and notifications</p>
             </div>
             <div className="stats-grid">
-              <div className="stat-card"><h4>Total Alerts</h4><h2>3</h2></div>
-              <div className="stat-card"><h4>High Priority</h4><h2 className="text-red">2</h2></div>
-              <div className="stat-card"><h4>Pending</h4><h2 className="text-orange">1</h2></div>
-              <div className="stat-card"><h4>Resolved</h4><h2 className="text-green">0</h2></div>
+              <div className="stat-card"><h4>Total Alerts</h4><h2>{totalSystemAlerts}</h2></div>
+              <div className="stat-card"><h4>High Priority</h4><h2 className="text-red">{highPrioritySystemAlertsCount}</h2></div>
+              <div className="stat-card"><h4>Pending</h4><h2 className="text-orange">{pendingSystemAlerts.length}</h2></div>
+              <div className="stat-card"><h4>Resolved</h4><h2 className="text-green">{resolvedSystemAlertsCount}</h2></div>
             </div>
             <div className="table-container card-box mt-4">
               <h3 style={{marginBottom: '5px'}}>Alert Feed</h3>
               <p className="detail-label" style={{marginBottom: '20px'}}>Filter alerts by type and manage responses</p>
               <div className="alert-list">
-                <div className="alert-feed-item">
-                  <div className="alert-icon-box bg-red"><Flame size={20} color="white" /></div>
-                  <div className="alert-details">
-                    <h4 className="alert-item-title">Fire</h4>
-                    <p className="alert-item-desc">Fire detected in Store Room</p>
-                    <p className="alert-item-meta">Camera: Cam 07 | Feb 24, 2026 08:30</p>
-                  </div>
-                  <button className="btn-resolve-green">Mark as Resolved</button>
-                </div>
-                <div className="alert-feed-item">
-                  <div className="alert-icon-box bg-red"><User size={20} color="white" /></div>
-                  <div className="alert-details">
-                    <h4 className="alert-item-title">Patient Wandering</h4>
-                    <p className="alert-item-desc">Patient John Anderson detected at Exit</p>
-                    <p className="alert-item-meta">Camera: Cam 02 | Feb 24, 2026 09:15</p>
-                  </div>
-                  <button className="btn-resolve-green">Mark as Resolved</button>
-                </div>
-                <div className="alert-feed-item">
-                  <div className="alert-icon-box bg-red"><ShieldAlert size={20} color="white" /></div>
-                  <div className="alert-details">
-                    <h4 className="alert-item-title">Mask Violation</h4>
-                    <p className="alert-item-desc">Staff entered ICU without proper mask</p>
-                    <p className="alert-item-meta">Camera: ICU Wing | Feb 24, 2026 10:00</p>
-                  </div>
-                  <button className="btn-resolve-green">Mark as Resolved</button>
-                </div>
+                {pendingSystemAlerts.length === 0 ? (
+                  <p style={{textAlign: 'center', padding: '20px', color: '#666'}}>No pending alerts. Everything is secure. ✅</p>
+                ) : (
+                  pendingSystemAlerts.map((alert) => (
+                    <div className="alert-feed-item" key={alert.id}>
+                      <div className="alert-icon-box bg-red">
+                        {alert.alert_type === 'Fire' && <Flame size={20} color="white" />}
+                        {alert.alert_type === 'Patient Wandering' && <User size={20} color="white" />}
+                        {alert.alert_type === 'Mask Violation' && <ShieldAlert size={20} color="white" />}
+                      </div>
+                      <div className="alert-details">
+                        <h4 className="alert-item-title">{alert.alert_type}</h4>
+                        <p className="alert-item-desc">{alert.description}</p>
+                        <p className="alert-item-meta">Camera: {alert.camera_id} | {alert.timestamp}</p>
+                      </div>
+                      <button className="btn-resolve-green" onClick={() => handleResolveSystemAlert(alert.id)}>Mark as Resolved</button>
+                    </div>
+                  ))
+                )}
               </div>
             </div>
           </div>
         )}
 
-        {/* REPORTS TAB */}
+        {/* Reports (Alerts) */}
         {activeTab === 'reports' && (
           <div className="reports-wrapper">
+            
+            <style>
+              {`
+                @media print {
+                  @page { margin: 10mm; size: landscape; }
+                  .sidebar, .reports-filter-card { display: none !important; }
+                  .main-content { margin-left: 0 !important; width: 100% !important; background-color: white !important; padding: 0 !important; }
+                  .dashboard-container { display: block !important; background-color: white !important; }
+                  .card-box { border: 1px solid #ccc !important; box-shadow: none !important; page-break-inside: avoid; margin-bottom: 20px !important; }
+                  .report-stat-card { border: 1px solid #ccc !important; }
+                  body { -webkit-print-color-adjust: exact; print-color-adjust: exact; background-color: white !important; }
+                }
+              `}
+            </style>
+
             <div className="header">
               <h1>Reports & Logs</h1>
               <p>Generate and download detailed system reports</p>
             </div>
+            
             <div className="reports-filter-card card-box">
               <div className="filter-group">
                 <label>Report Type</label>
@@ -722,29 +872,50 @@ const Dashboard = ({ onLogout }) => {
               </div>
               <div className="filter-group">
                 <label>Select Date</label>
-                <input type="text" className="form-input" placeholder="Select a date..." />
+                <input 
+                  type="date" 
+                  className="form-input" 
+                  value={reportDate}
+                  onChange={(e) => setReportDate(e.target.value)}
+                />
               </div>
               <div className="filter-action">
-                <button className="btn-download-pdf" style={{display: 'flex', alignItems: 'center', gap: '8px'}}><Download size={16} /> Download PDF</button>
+                <button className="btn-download-pdf" onClick={handlePrintPDF} style={{display: 'flex', alignItems: 'center', gap: '8px'}}><Download size={16} /> Download PDF</button>
               </div>
             </div>
+            
             <div className="reports-stats-grid">
-              <div className="report-stat-card"><h2 className="text-black">0</h2><p>Total Alerts</p></div>
-              <div className="report-stat-card"><h2 className="text-red">0</h2><p>Fire Events</p></div>
-              <div className="report-stat-card"><h2 className="text-orange">0</h2><p>Patient Exits</p></div>
-              <div className="report-stat-card"><h2 className="text-blue">0</h2><p>Access Logs</p></div>
+              <div className="report-stat-card"><h2 className="text-black">{filteredReports.length}</h2><p>Total Alerts</p></div>
+              <div className="report-stat-card"><h2 className="text-red">{fireLogs.length}</h2><p>Fire Events</p></div>
+              <div className="report-stat-card"><h2 className="text-orange">{systemAlerts.filter(a => a.alert_type === 'Patient Wandering').length}</h2><p>Patient Exits</p></div>
+              <div className="report-stat-card"><h2 className="text-blue">{accessLogs.length}</h2><p>Access Logs</p></div>
             </div>
+            
             <div className="table-container card-box mt-4">
-              <h3 className="mb-4">Alert Details</h3>
+              <h3 className="mb-4">Alert Details {reportDate && `(${reportDate})`}</h3>
               <table className="data-table">
                 <thead><tr><th>Time</th><th>Type</th><th>Message</th><th>Priority</th><th>Status</th></tr></thead>
-                <tbody><tr><td colSpan="5" className="empty-state-text">No alerts for selected date</td></tr></tbody>
+                <tbody>
+                  {filteredReports.length === 0 ? (
+                    <tr><td colSpan="5" className="empty-state-text">No alerts for selected date</td></tr>
+                  ) : (
+                    filteredReports.map((alert) => (
+                      <tr key={alert.id}>
+                        <td>{alert.timestamp}</td>
+                        <td><strong>{alert.alert_type}</strong></td>
+                        <td>{alert.description}</td>
+                        <td className={alert.priority === 'High' ? 'text-red font-bold' : 'text-orange font-bold'}>{alert.priority}</td>
+                        <td className={alert.status === 'Active' || alert.status === 'Pending' ? 'text-red font-bold' : 'text-green font-bold'}>{alert.status}</td>
+                      </tr>
+                    ))
+                  )}
+                </tbody>
               </table>
             </div>
           </div>
         )}
 
-        {/* USER TAB */}
+        {/* User Tab */}
         {activeTab === 'user' && (
           <div className="user-wrapper">
             <div className="header">
@@ -770,7 +941,7 @@ const Dashboard = ({ onLogout }) => {
           </div>
         )}
 
-        {/* SETTINGS TAB */}
+        {/* Settings Tab */}
         {activeTab === 'setting' && (
           <div className="setting-wrapper">
             <div className="header">
@@ -780,7 +951,6 @@ const Dashboard = ({ onLogout }) => {
 
             <div className="card-box mt-4">
               
-              {/* 1. Patient Cams */}
               <div className="camera-header-wrap mb-4">
                 <h3 style={{display: 'flex', alignItems: 'center', gap: '8px', margin: '0 0 5px 0', color: '#0D6EFD'}}>
                   <Users size={20} /> Patient Detection Configuration (Cams 1, 2, 3)
@@ -795,7 +965,6 @@ const Dashboard = ({ onLogout }) => {
                 </div>
               ))}
 
-              {/* 2. Mask Cams */}
               <div className="camera-header-wrap mb-4" style={{marginTop: '30px'}}>
                 <h3 style={{display: 'flex', alignItems: 'center', gap: '8px', margin: '0 0 5px 0', color: '#10b981'}}>
                   <UserCog size={20} /> Mask Detection Configuration (Cams 4, 5, 6)
@@ -810,7 +979,6 @@ const Dashboard = ({ onLogout }) => {
                 </div>
               ))}
 
-              {/* 3. Fire Cams */}
               <div className="camera-header-wrap mb-4" style={{marginTop: '30px'}}>
                 <h3 style={{display: 'flex', alignItems: 'center', gap: '8px', margin: '0 0 5px 0', color: '#ef4444'}}>
                   <Flame size={20} /> Fire Detection Configuration (Cams 7, 8, 9)
