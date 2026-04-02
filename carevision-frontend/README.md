@@ -44,12 +44,3 @@ To minimize network latency and reduce cloud bandwidth costs, heavy video stream
 * Node.js (v18+)
 * Python (3.9+)
 * MySQL Server
-
-### 1. Database Setup
-Create a new MySQL database named `carevision_db`. (The system will automatically generate the required tables upon starting the backend).
-
-### 2. Backend Setup
-Navigate to the backend directory and install the required Python dependencies:
-```bash
-cd backend
-pip install -r requirements.txt
