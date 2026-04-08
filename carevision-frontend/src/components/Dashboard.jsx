@@ -408,7 +408,7 @@ const Dashboard = ({ onLogout }) => {
 
       <div className="main-content">
         
-        {/* Dashboard Tab */}
+        {/* DASHBOARD TAB */}
         {activeTab === 'dashboard' && (
           <>
             <div className="header">
@@ -512,7 +512,7 @@ const Dashboard = ({ onLogout }) => {
           </>
         )}
 
-        {/* CCTV Tab */}
+        {/* CCTV TAB */}
         {activeTab === 'cctv' && (
           <div className="cctv-wrapper card-box">
             <div className="header">
@@ -576,7 +576,7 @@ const Dashboard = ({ onLogout }) => {
           </div>
         )}
 
-        {/* Patient Tab */}
+        {/* PATIENT TAB */}
         {activeTab === 'patient' && (
           <div className="patient-wrapper">
             <div className="page-header-flex">
@@ -698,7 +698,7 @@ const Dashboard = ({ onLogout }) => {
           </div>
         )}
 
-        {/* Mask Detection */}
+        {/* ACCESS TAB - 🔥 Confidence අයින් කරලා තියෙන්නේ 🔥 */}
         {activeTab === 'access' && (
           <div className="access-wrapper">
              <div className="header">
@@ -715,17 +715,16 @@ const Dashboard = ({ onLogout }) => {
               <h3 className="mb-4">Access Control Logs</h3>
               <table className="data-table">
                 <thead>
-                  <tr><th>Camera ID</th><th>Mask Detected</th><th>Confidence</th><th>Access Result</th><th>Timestamp</th></tr>
+                  <tr><th>Camera ID</th><th>Mask Detected</th><th>Access Result</th><th>Timestamp</th></tr>
                 </thead>
                 <tbody>
                   {accessLogs.length === 0 ? (
-                     <tr><td colSpan="5" style={{textAlign: 'center', padding: '20px', color: '#666'}}>No access logs available yet. Wait for AI detection.</td></tr>
+                     <tr><td colSpan="4" style={{textAlign: 'center', padding: '20px', color: '#666'}}>No access logs available yet. Wait for AI detection.</td></tr>
                   ) : (
                     accessLogs.map((log, index) => (
                       <tr key={index}>
                         <td>{log.camera_id}</td>
                         <td className={log.mask_detected === 'Yes' ? 'text-green font-bold' : 'text-red font-bold'}>{log.mask_detected}</td>
-                        <td>{log.confidence}</td>
                         <td className={log.access_result === 'Granted' ? 'text-green font-bold' : 'text-red font-bold'}>{log.access_result}</td>
                         <td>{log.timestamp}</td>
                       </tr>
@@ -737,7 +736,7 @@ const Dashboard = ({ onLogout }) => {
           </div>
         )}
 
-        {/* Fire Detection */}
+        {/* FIRE TAB - 🔥 Confidence අයින් කරලා තියෙන්නේ 🔥 */}
         {activeTab === 'fire' && (
           <div className="fire-wrapper">
             <div className="header">
@@ -756,7 +755,6 @@ const Dashboard = ({ onLogout }) => {
                 <h3 className="alert-title" style={{display: 'flex', alignItems: 'center', gap: '8px'}}><Flame size={20} /> Active Fire/Smoke Alert</h3>
                 <div className="alert-details-grid">
                   <div><div className="detail-label">Location</div><div className="detail-value">{latestActiveFire.camera_id}</div></div>
-                  <div><div className="detail-label">Confidence Level</div><div className="detail-value">{latestActiveFire.confidence}</div></div>
                   <div><div className="detail-label">Event Type</div><div className="detail-value">{latestActiveFire.event_type}</div></div>
                   <div><div className="detail-label">Detection Time</div><div className="detail-value">{latestActiveFire.timestamp}</div></div>
                 </div>
@@ -775,16 +773,15 @@ const Dashboard = ({ onLogout }) => {
             <div className="table-container card-box mt-4">
               <h3 className="mb-4">Fire & Smoke Event Logs</h3>
               <table className="data-table">
-                <thead><tr><th>Event Type</th><th>Camera</th><th>Confidence</th><th>Severity</th><th>Status</th><th>Timestamp</th></tr></thead>
+                <thead><tr><th>Event Type</th><th>Camera</th><th>Severity</th><th>Status</th><th>Timestamp</th></tr></thead>
                 <tbody>
                   {fireLogs.length === 0 ? (
-                     <tr><td colSpan="6" style={{textAlign: 'center', padding: '20px', color: '#666'}}>No fire/smoke logs available.</td></tr>
+                     <tr><td colSpan="5" style={{textAlign: 'center', padding: '20px', color: '#666'}}>No fire/smoke logs available.</td></tr>
                   ) : (
                     fireLogs.map((log, index) => (
                       <tr key={index}>
                         <td>{log.event_type}</td>
                         <td>{log.camera_id}</td>
-                        <td>{log.confidence}</td>
                         <td className={log.severity === 'Critical' ? 'text-orange font-bold' : log.severity === 'High' ? 'text-red font-bold' : 'text-yellow font-bold'}>{log.severity}</td>
                         <td className={log.status === 'Active' ? 'text-red font-bold' : 'text-green font-bold'}>{log.status}</td>
                         <td>{log.timestamp}</td>
@@ -797,7 +794,7 @@ const Dashboard = ({ onLogout }) => {
           </div>
         )}
 
-        {/* Alerts Tab */}
+        {/* ALERTS TAB */}
         {activeTab === 'alerts' && (
           <div className="alerts-wrapper">
             <div className="header">
@@ -838,7 +835,7 @@ const Dashboard = ({ onLogout }) => {
           </div>
         )}
 
-        {/* Reports (Alerts) */}
+        {/* REPORTS TAB */}
         {activeTab === 'reports' && (
           <div className="reports-wrapper">
             
@@ -915,7 +912,7 @@ const Dashboard = ({ onLogout }) => {
           </div>
         )}
 
-        {/* User Tab */}
+        {/* USER TAB */}
         {activeTab === 'user' && (
           <div className="user-wrapper">
             <div className="header">
@@ -941,7 +938,7 @@ const Dashboard = ({ onLogout }) => {
           </div>
         )}
 
-        {/* Settings Tab */}
+        {/* SETTINGS TAB */}
         {activeTab === 'setting' && (
           <div className="setting-wrapper">
             <div className="header">
