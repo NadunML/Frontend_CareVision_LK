@@ -3,7 +3,7 @@ import { onAuthStateChanged, signOut } from 'firebase/auth';
 import { auth } from './firebase'; 
 
 import LoginPage from './components/LoginPage'; 
-import Dashboard from './components/Dashboard';
+import DashboardLayout from './components/DashboardLayout';
 
 /**
  * System Access Control List (ACL)
@@ -68,7 +68,7 @@ function App() {
   return (
     <div className="app-container">
       {user ? (
-        <Dashboard onLogout={handleLogout} />
+        <DashboardLayout onLogout={handleLogout} />
       ) : (
         <>
           {/* Unauthorized access alert banner */}
