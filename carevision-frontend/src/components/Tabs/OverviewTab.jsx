@@ -1,7 +1,7 @@
 import React from 'react';
 import { Camera, Users, UserCog, Flame, Cpu, AlertTriangle } from 'lucide-react';
 
-const OverviewTab = ({ patientsCount, pendingAlertsCount, highPriorityCount, deniedAccessCount, aiControls, toggleAI }) => {
+const OverviewTab = ({ patientsCount, pendingAlertsCount, highPriorityCount, deniedAccessCount }) => {
   return (
     <>
       <div className="header">
@@ -10,78 +10,93 @@ const OverviewTab = ({ patientsCount, pendingAlertsCount, highPriorityCount, den
       </div>
       
       <div className="stats-grid">
-        <div className="stat-card"><h4>Total Cameras</h4><h2>9</h2><p className="stat-sub">Enterprise Mode</p></div>
-        <div className="stat-card"><h4>Registered Patients</h4><h2>{patientsCount}</h2><p className="stat-sub">Total Base</p></div>
-        <div className="stat-card"><h4>Today's Alerts</h4><h2>{pendingAlertsCount}</h2><p className="stat-sub">{highPriorityCount} critical</p></div>
-        <div className="stat-card"><h4>Mask Violations</h4><h2>{deniedAccessCount}</h2><p className="stat-sub">From access control</p></div>
+        <div className="stat-card">
+          <h4>Total Cameras</h4>
+          <h2>5</h2>
+          <p className="stat-sub">Optimized Nodes</p>
+        </div>
+        <div className="stat-card">
+          <h4>Registered Patients</h4>
+          <h2>{patientsCount}</h2>
+          <p className="stat-sub">Total Base</p>
+        </div>
+        <div className="stat-card">
+          <h4>Today's Alerts</h4>
+          <h2>{pendingAlertsCount}</h2>
+          <p className="stat-sub">{highPriorityCount} critical</p>
+        </div>
+        <div className="stat-card">
+          <h4>Mask Violations</h4>
+          <h2>{deniedAccessCount}</h2>
+          <p className="stat-sub">From access control</p>
+        </div>
       </div>
 
       <div className="card-box" style={{ marginTop: '20px', marginBottom: '20px', backgroundColor: '#fff', border: '1px solid #e2e8f0' }}>
         <h3 style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '20px', color: '#1e293b' }}>
-          <Cpu size={22} color="#0D6EFD" /> AI Security Modules Configuration
+          <Cpu size={22} color="#0D6EFD" /> AI Security Modules Overview
         </h3>
+        <p style={{ color: '#64748b', fontSize: '14px', marginBottom: '20px' }}>
+          The system utilizes advanced deep learning models capable of running concurrently across all 5 active camera nodes. Individual module toggles are available in the Live CCTV Feeds tab.
+        </p>
         
         <div style={{ display: 'flex', gap: '15px', flexWrap: 'wrap' }}>
-          <div style={{ flex: 1, minWidth: '280px', border: aiControls.patientIdent ? '2px solid #0D6EFD' : '1px solid #e2e8f0', borderRadius: '12px', padding: '15px', backgroundColor: aiControls.patientIdent ? '#eff6ff' : '#f8fafc', transition: 'all 0.3s' }}>
+          
+          {/* Patient Identification Module Info */}
+          <div style={{ flex: 1, minWidth: '280px', border: '1px solid #bfdbfe', borderRadius: '12px', padding: '15px', backgroundColor: '#f8fafc' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '15px' }}>
               <div>
-                <h4 style={{ margin: '0 0 5px 0', color: '#1e293b', display: 'flex', alignItems: 'center', gap: '6px' }}><Camera size={16}/> Cams 1,2,3</h4>
-                <span style={{ fontSize: '12px', color: '#64748b', fontWeight: 'bold' }}>📍 Wards Monitoring</span>
+                <h4 style={{ margin: '0 0 5px 0', color: '#1e293b', display: 'flex', alignItems: 'center', gap: '6px' }}><Camera size={16}/> Available on Cams 1-5</h4>
+                <span style={{ fontSize: '12px', color: '#0D6EFD', fontWeight: 'bold', backgroundColor: '#e0f2fe', padding: '4px 8px', borderRadius: '4px' }}>OpenCV + Deep Learning</span>
               </div>
-              <button onClick={() => toggleAI('patientIdent')} style={{ padding: '6px 14px', borderRadius: '20px', border: 'none', backgroundColor: aiControls.patientIdent ? '#0D6EFD' : '#cbd5e1', color: 'white', fontWeight: 'bold', cursor: 'pointer' }}>
-                {aiControls.patientIdent ? 'ON' : 'OFF'}
-              </button>
             </div>
             <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
-              <Users size={32} color={aiControls.patientIdent ? '#0D6EFD' : '#94a3b8'} />
+              <Users size={32} color="#0D6EFD" />
               <div>
-                <div style={{ fontSize: '14px', fontWeight: 'bold', color: aiControls.patientIdent ? '#0D6EFD' : '#475569' }}>Patient Identification</div>
-                <div style={{ fontSize: '11px', color: '#64748b', marginTop: '4px', lineHeight: '1.4' }}>Alerts if a registered patient attempts to leave.</div>
+                <div style={{ fontSize: '14px', fontWeight: 'bold', color: '#0D6EFD' }}>Patient Identification</div>
+                <div style={{ fontSize: '12px', color: '#64748b', marginTop: '4px', lineHeight: '1.4' }}>Cross-references live feeds with the database to detect wandering high-risk patients.</div>
               </div>
             </div>
           </div>
 
-          <div style={{ flex: 1, minWidth: '280px', border: aiControls.maskDetect ? '2px solid #10b981' : '1px solid #e2e8f0', borderRadius: '12px', padding: '15px', backgroundColor: aiControls.maskDetect ? '#ecfdf5' : '#f8fafc', transition: 'all 0.3s' }}>
+          {/* Mask Detection Module Info */}
+          <div style={{ flex: 1, minWidth: '280px', border: '1px solid #a7f3d0', borderRadius: '12px', padding: '15px', backgroundColor: '#f8fafc' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '15px' }}>
               <div>
-                <h4 style={{ margin: '0 0 5px 0', color: '#1e293b', display: 'flex', alignItems: 'center', gap: '6px' }}><Camera size={16}/> Cams 4,5,6</h4>
-                <span style={{ fontSize: '12px', color: '#64748b', fontWeight: 'bold' }}>📍 Theaters & Labs</span>
+                <h4 style={{ margin: '0 0 5px 0', color: '#1e293b', display: 'flex', alignItems: 'center', gap: '6px' }}><Camera size={16}/> Available on Cams 1-5</h4>
+                <span style={{ fontSize: '12px', color: '#10b981', fontWeight: 'bold', backgroundColor: '#d1fae5', padding: '4px 8px', borderRadius: '4px' }}>MobileNetV2 Architecture</span>
               </div>
-              <button onClick={() => toggleAI('maskDetect')} style={{ padding: '6px 14px', borderRadius: '20px', border: 'none', backgroundColor: aiControls.maskDetect ? '#10b981' : '#cbd5e1', color: 'white', fontWeight: 'bold', cursor: 'pointer' }}>
-                {aiControls.maskDetect ? 'ON' : 'OFF'}
-              </button>
             </div>
             <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
-              <UserCog size={32} color={aiControls.maskDetect ? '#10b981' : '#94a3b8'} />
+              <UserCog size={32} color="#10b981" />
               <div>
-                <div style={{ fontSize: '14px', fontWeight: 'bold', color: aiControls.maskDetect ? '#10b981' : '#475569' }}>Mask Detection</div>
-                <div style={{ fontSize: '11px', color: '#64748b', marginTop: '4px', lineHeight: '1.4' }}>Alerts if staff enters without a mask.</div>
+                <div style={{ fontSize: '14px', fontWeight: 'bold', color: '#10b981' }}>Mask Detection</div>
+                <div style={{ fontSize: '12px', color: '#64748b', marginTop: '4px', lineHeight: '1.4' }}>Analyzes facial regions to enforce hospital safety protocols and restrict access.</div>
               </div>
             </div>
           </div>
 
-          <div style={{ flex: 1, minWidth: '280px', border: aiControls.fireDetect ? '2px solid #ef4444' : '1px solid #e2e8f0', borderRadius: '12px', padding: '15px', backgroundColor: aiControls.fireDetect ? '#fef2f2' : '#f8fafc', transition: 'all 0.3s' }}>
+          {/* Fire Detection Module Info */}
+          <div style={{ flex: 1, minWidth: '280px', border: '1px solid #fecaca', borderRadius: '12px', padding: '15px', backgroundColor: '#f8fafc' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '15px' }}>
               <div>
-                <h4 style={{ margin: '0 0 5px 0', color: '#1e293b', display: 'flex', alignItems: 'center', gap: '6px' }}><Camera size={16}/> Cams 7,8,9</h4>
-                <span style={{ fontSize: '12px', color: '#64748b', fontWeight: 'bold' }}>📍 Dangerous Zones</span>
+                <h4 style={{ margin: '0 0 5px 0', color: '#1e293b', display: 'flex', alignItems: 'center', gap: '6px' }}><Camera size={16}/> Available on Cams 1-5</h4>
+                <span style={{ fontSize: '12px', color: '#ef4444', fontWeight: 'bold', backgroundColor: '#fee2e2', padding: '4px 8px', borderRadius: '4px' }}>YOLOv8 Nano Model</span>
               </div>
-              <button onClick={() => toggleAI('fireDetect')} style={{ padding: '6px 14px', borderRadius: '20px', border: 'none', backgroundColor: aiControls.fireDetect ? '#ef4444' : '#cbd5e1', color: 'white', fontWeight: 'bold', cursor: 'pointer' }}>
-                {aiControls.fireDetect ? 'ON' : 'OFF'}
-              </button>
             </div>
             <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
-              <Flame size={32} color={aiControls.fireDetect ? '#ef4444' : '#94a3b8'} />
+              <Flame size={32} color="#ef4444" />
               <div>
-                <div style={{ fontSize: '14px', fontWeight: 'bold', color: aiControls.fireDetect ? '#ef4444' : '#475569' }}>Fire & Smoke Detection</div>
-                <div style={{ fontSize: '11px', color: '#64748b', marginTop: '4px', lineHeight: '1.4' }}>Alerts if fire or smoke is detected.</div>
+                <div style={{ fontSize: '14px', fontWeight: 'bold', color: '#ef4444' }}>Fire & Smoke Detection</div>
+                <div style={{ fontSize: '12px', color: '#64748b', marginTop: '4px', lineHeight: '1.4' }}>Real-time hazard monitoring utilizing high-speed bounding box processing.</div>
               </div>
             </div>
           </div>
+
         </div>
       </div>
       
-      {/* ඔන්න ඔරිජිනල් තිබ්බ විදිහටම Active Alerts කොටස ආයෙත් දැම්මා! */}
+      {/* Active Alerts & Chart Section */}
       <div className="bottom-grid">
         <div className="alerts-section card-box">
           <h3 style={{display: 'flex', alignItems: 'center', gap: '8px'}}>

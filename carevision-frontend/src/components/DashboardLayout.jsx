@@ -3,7 +3,7 @@ import { auth } from '../firebase';
 import { Home, Camera, Users, ShieldAlert, Flame, BellRing, FileText, UserCog, Settings, LogOut, User } from 'lucide-react';
 import './Dashboard.css';
 
-// Import All Tabs (කැපිටල් T අකුරෙන්)
+// Import All Tabs
 import OverviewTab from './Tabs/OverviewTab';
 import CCTVFeedsTab from './Tabs/CCTVFeedsTab';
 import PatientManagementTab from './Tabs/PatientManagementTab';
@@ -38,8 +38,38 @@ const DashboardLayout = ({ onLogout }) => {
     fireDetect: false
   });
 
+  const [cameraAiConfigs, setCameraAiConfigs] = useState({
+    1: { patient: false, mask: false, fire: false },
+    2: { patient: false, mask: false, fire: false },
+    3: { patient: false, mask: false, fire: false },
+    4: { patient: false, mask: false, fire: false },
+    5: { patient: false, mask: false, fire: false },
+  });
+
   const [cameraIps, setCameraIps] = useState({ '1': '', '2': '', '3': '', '4': '', '5': '', '6': '', '7': '', '8': '', '9': '' });
   const [inputIps, setInputIps] = useState({ '1': '', '2': '', '3': '', '4': '', '5': '', '6': '', '7': '', '8': '', '9': '' });
+
+  const handleToggleCameraAI = async (camId, type) => {
+    const newStatus = !cameraAiConfigs[camId][type];
+
+    setCameraAiConfigs(prevConfigs => ({
+      ...prevConfigs,
+      [camId]: {
+        ...prevConfigs[camId],
+        [type]: newStatus 
+      }
+    }));
+
+    try {
+      await fetch(`http://localhost:5000/api/set_camera_ai`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ camId: String(camId), module: type, status: newStatus })
+      });
+    } catch (error) {
+      console.error("Failed to update AI config on backend", error);
+    }
+  };
 
   useEffect(() => {
     const fetchCurrentModes = async () => {
@@ -271,7 +301,7 @@ const DashboardLayout = ({ onLogout }) => {
   };
 
   const toggleFullScreen = (e) => {
-    const elem = e.currentTarget.parentElement;
+    const elem = e.currentTarget.parentElement.parentElement;
     if (!document.fullscreenElement) {
       if (elem.requestFullscreen) elem.requestFullscreen();
       else if (elem.webkitRequestFullscreen) elem.webkitRequestFullscreen();
@@ -283,7 +313,6 @@ const DashboardLayout = ({ onLogout }) => {
 
   const handlePrintPDF = () => window.print();
 
-  // Helper variables
   const totalAccess = accessLogs.length;
   const grantedAccess = accessLogs.filter(log => log.access_result === 'Granted').length;
   const deniedAccess = accessLogs.filter(log => log.access_result === 'Denied').length;
@@ -307,7 +336,6 @@ const DashboardLayout = ({ onLogout }) => {
 
   return (
     <div className="dashboard-container">
-      {/* Sidebar */}
       <div className="sidebar">
         <div className="sidebar-header">
           <div className="logo-box">
@@ -355,7 +383,16 @@ const DashboardLayout = ({ onLogout }) => {
 
       <div className="main-content">
         {activeTab === 'dashboard' && <OverviewTab patientsCount={patientsList.length} pendingAlertsCount={pendingSystemAlerts.length} highPriorityCount={highPrioritySystemAlertsCount} deniedAccessCount={deniedAccess} aiControls={aiControls} toggleAI={toggleAI} />}
-        {activeTab === 'cctv' && <CCTVFeedsTab cameraIps={cameraIps} toggleFullScreen={toggleFullScreen} />}
+        
+        {activeTab === 'cctv' && (
+          <CCTVFeedsTab 
+            cameraIps={cameraIps} 
+            toggleFullScreen={toggleFullScreen} 
+            aiConfigs={cameraAiConfigs} 
+            onToggleAI={handleToggleCameraAI} 
+          />
+        )}
+        
         {activeTab === 'patient' && <PatientManagementTab showRegisterForm={showRegisterForm} setShowRegisterForm={setShowRegisterForm} patientData={patientData} setPatientData={setPatientData} handleImageChange={handleImageChange} imageFile={imageFile} handleRegisterPatient={handleRegisterPatient} isUploading={isUploading} patientsList={patientsList} searchQuery={searchQuery} setSearchQuery={setSearchQuery} handleDeletePatient={handleDeletePatient} />}
         {activeTab === 'access' && <MaskDetectionTab totalAccess={totalAccess} grantedAccess={grantedAccess} deniedAccess={deniedAccess} activeCamCount={activeCamCount} accessLogs={accessLogs} />}
         {activeTab === 'fire' && <FireMonitoringTab activeFireAlerts={activeFireAlerts} fireLogs={fireLogs} resolvedFireAlerts={resolvedFireAlerts} activeFireCamsCount={activeFireCamsCount} latestActiveFire={latestActiveFire} handleNotifyEmergency={handleNotifyEmergency} handleResolveFireAlert={handleResolveFireAlert} />}
