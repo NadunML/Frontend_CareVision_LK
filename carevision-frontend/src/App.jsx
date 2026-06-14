@@ -22,15 +22,12 @@ function App() {
   const [authError, setAuthError] = useState('');
 
   useEffect(() => {
-    // Listen to Firebase authentication state changes
     const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
       if (currentUser) {
-        // Verify if the authenticated user has administrative privileges
         if (AUTHORIZED_ADMIN_EMAILS.includes(currentUser.email)) {
           setUser(currentUser); 
           setAuthError('');
         } else {
-          // Revoke access for unauthorized users immediately to ensure system security
           await signOut(auth);
           setUser(null);
           setAuthError('Access Denied: Your account is not authorized to access the CareVision system.');
@@ -40,8 +37,6 @@ function App() {
       }
       setIsLoading(false); 
     });
-
-    // Cleanup subscription on component unmount
     return () => unsubscribe();
   }, []);
 
@@ -53,7 +48,6 @@ function App() {
     }
   };
 
-  // Enterprise-grade loading state UI
   if (isLoading) {
     return (
       <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', backgroundColor: '#f8fafc', fontFamily: 'Inter, sans-serif' }}>

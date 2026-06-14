@@ -1,0 +1,95 @@
+/* ==========================================
+   ReportsTab Styles
+   ========================================== */
+
+/* Download PDF button — flex layout */
+.btn-download-pdf--flex {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Native date picker — blue accent (colors Clear & Today buttons) */
+.date-input-blue {
+  accent-color: #0D6EFD;
+  color-scheme: light;
+}
+
+/* Date input row — input + Today toggle side by side */
+.date-input-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Today toggle button — default (inactive) */
+.date-quick-btn {
+  padding: 10px 18px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  border: 1px solid #0D6EFD;
+  background-color: transparent;
+  color: #0D6EFD;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+  font-family: inherit;
+}
+
+.date-quick-btn:hover {
+  background-color: #0D6EFD;
+  color: white;
+}
+
+/* Today toggle button — ACTIVE state (pressed) */
+.date-quick-btn--active {
+  background-color: #0D6EFD !important;
+  color: white !important;
+  border-color: #0D6EFD !important;
+  box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.2);
+}
+
+.date-quick-btn--active:hover {
+  background-color: #0b5ed7 !important;
+}
+
+/* ==========================================
+   Print Styles
+   ========================================== */
+@media print {
+  @page {
+    margin: 10mm;
+    size: landscape;
+  }
+
+  .sidebar,
+  .reports-filter-card {
+    display: none !important;
+  }
+
+  .main-content {
+    margin-left: 0 !important;
+    width: 100% !important;
+    background-color: white !important;
+    padding: 0 !important;
+  }
+
+  .dashboard-container {
+    display: block !important;
+    background-color: white !important;
+  }
+
+  .card-box {
+    border: 1px solid #ccc !important;
+    box-shadow: none !important;
+    page-break-inside: avoid;
+    margin-bottom: 20px !important;
+  }
+
+  body {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+    background-color: white !important;
+  }
+}

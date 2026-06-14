@@ -5,6 +5,20 @@
   font-family: 'Inter', 'Segoe UI', sans-serif;
 }
 
+/* ==========================================
+   Global Button Disabled State
+   Applies to every <button> inside the dashboard that carries the disabled attribute.
+   ========================================== */
+.main-content button:disabled,
+.sidebar-footer button:disabled {
+  background-color: #adb5bd !important;
+  color: #fff !important;
+  border-color: transparent !important;
+  opacity: 0.6 !important;
+  cursor: not-allowed !important;
+  box-shadow: none !important;
+}
+
 /* Sidebar Styles */
 .sidebar {
   width: 260px;
@@ -67,6 +81,12 @@
   font-size: 16px;
 }
 
+/* Lucide icon spacing inside sidebar nav items */
+.sidebar-menu li svg {
+  margin-right: 12px;
+  flex-shrink: 0;
+}
+
 .sidebar-menu li:hover {
   background-color: #f8f9fa;
 }
@@ -94,21 +114,70 @@
 .logout-btn {
   width: 100%;
   padding: 10px;
-  background: white;
-  border: 1px solid #ddd;
-  border-radius: 4px;
+  background: transparent;
+  border: 1px solid #0D6EFD;
+  border-radius: 6px;
   cursor: pointer;
-  text-align: left;
   display: flex;
   align-items: center;
-}
-
-.logout-btn span {
-  margin-right: 10px;
+  justify-content: center;
+  gap: 8px;
+  color: #0D6EFD;
+  font-weight: 600;
+  font-size: 14px;
+  transition: background-color 0.15s ease, color 0.15s ease;
 }
 
 .logout-btn:hover {
-  background: #f1f1f1;
+  background: #0D6EFD;
+  color: white;
+}
+
+/* User profile card in sidebar footer */
+.user-profile-card {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 15px;
+  padding: 10px;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  border: 1px solid #e9ecef;
+}
+
+.user-avatar {
+  width: 35px;
+  height: 35px;
+  border-radius: 50%;
+  background-color: #0D6EFD;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: white;
+  flex-shrink: 0;
+}
+
+.user-info {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.user-name {
+  color: #333;
+  font-size: 14px;
+  font-weight: bold;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+
+.user-email {
+  color: #666;
+  font-size: 11px;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
 }
 
 /* Main Content Styles */
@@ -331,7 +400,7 @@
   font-size: 14px;
   font-weight: 600;
   cursor: pointer;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  transition: background-color 0.15s ease;
 }
 
 .primary-btn:hover {
@@ -528,7 +597,7 @@
 }
 
 .btn-register {
-  background-color: #1a62ff;
+  background-color: #0D6EFD;
   color: white;
   border: none;
   padding: 12px 25px;
@@ -536,25 +605,34 @@
   font-size: 15px;
   font-weight: 600;
   cursor: pointer;
+  transition: background-color 0.15s ease;
 }
 
 .btn-register:hover {
-  background-color: #0d52e6;
+  background-color: #0b5ed7;
+}
+
+.btn-register:disabled {
+  background-color: #adb5bd;
+  cursor: not-allowed;
+  opacity: 0.6;
 }
 
 .btn-cancel {
-  background-color: #8daaf5;
-  color: white;
-  border: none;
+  background-color: transparent;
+  color: #0D6EFD;
+  border: 1px solid #0D6EFD;
   padding: 12px 35px;
   border-radius: 8px;
   font-size: 15px;
   font-weight: 600;
   cursor: pointer;
+  transition: background-color 0.15s ease, color 0.15s ease;
 }
 
 .btn-cancel:hover {
-  background-color: #7497ec;
+  background-color: #0D6EFD;
+  color: white;
 }
 
 /* ==========================================
@@ -631,7 +709,7 @@
 }
 
 .btn-notify {
-  background-color: #ff0000;
+  background-color: #0D6EFD;
   color: white;
   border: none;
   padding: 10px 20px;
@@ -639,26 +717,28 @@
   font-size: 14px;
   font-weight: 600;
   cursor: pointer;
-  box-shadow: 0 2px 4px rgba(255, 0, 0, 0.2);
+  transition: background-color 0.15s ease;
 }
 
 .btn-notify:hover {
-  background-color: #cc0000;
+  background-color: #0b5ed7;
 }
 
 .btn-resolve {
   background-color: transparent;
-  color: #ff0000;
-  border: 1px solid #ff0000;
+  color: #0D6EFD;
+  border: 1px solid #0D6EFD;
   padding: 10px 20px;
   border-radius: 6px;
   font-size: 14px;
   font-weight: 600;
   cursor: pointer;
+  transition: background-color 0.15s ease, color 0.15s ease;
 }
 
 .btn-resolve:hover {
-  background-color: #ffe6e6;
+  background-color: #0D6EFD;
+  color: white;
 }
 
 /* ==========================================
@@ -711,21 +791,20 @@
 }
 
 .btn-resolve-green {
-  background-color: #39e600; 
+  background-color: #0D6EFD;
   color: white;
-  border: 1px solid #2db300;
+  border: none;
   padding: 10px 20px;
   border-radius: 6px;
   font-size: 14px;
   font-weight: 700;
   cursor: pointer;
-  box-shadow: 0 2px 4px rgba(57, 230, 0, 0.2);
-  transition: all 0.2s;
+  transition: background-color 0.15s ease;
   flex-shrink: 0;
 }
 
 .btn-resolve-green:hover {
-  background-color: #33cc00; 
+  background-color: #0b5ed7;
 }
 
 /* ==========================================
@@ -768,7 +847,7 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  box-shadow: 0 2px 4px rgba(13, 110, 253, 0.2);
+  transition: background-color 0.15s ease;
 }
 
 .btn-download-pdf:hover { background-color: #0b5ed7; }
@@ -861,3 +940,94 @@
   transform: translateY(-2px);
   box-shadow: 0 6px 10px rgba(13, 110, 253, 0.3);
 }
+
+/* ==========================================
+   Shared Pagination Bar
+   Used by MaskDetectionTab & ReportsTab
+   ========================================== */
+
+/* Row above table: title left, record count right */
+.pag-table-topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.pag-table-topbar h3 {
+  margin: 0;
+  font-size: 16px;
+  color: #1e293b;
+}
+
+.pag-record-info {
+  font-size: 13px;
+  color: #64748b;
+  font-weight: 500;
+}
+
+/* Bottom pagination bar */
+.pag-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 1px solid #e2e8f0;
+  gap: 12px;
+}
+
+.pag-pages {
+  display: flex;
+  gap: 6px;
+}
+
+/* All pagination buttons */
+.pag-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 7px 14px;
+  border-radius: 7px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  border: 1px solid #e2e8f0;
+  background: #f8fafc;
+  color: #475569;
+  transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+}
+
+.pag-btn:hover:not(:disabled) {
+  background: #0D6EFD;
+  color: white;
+  border-color: #0D6EFD;
+}
+
+/* Nav buttons (Previous / Next) */
+.pag-btn--nav {
+  padding: 7px 16px;
+}
+
+/* Number buttons */
+.pag-btn--num {
+  min-width: 36px;
+  justify-content: center;
+  padding: 7px 8px;
+}
+
+/* Active page */
+.pag-btn--active {
+  background: #0D6EFD !important;
+  color: white !important;
+  border-color: #0D6EFD !important;
+}
+
+/* Disabled state */
+.pag-btn--disabled,
+.pag-btn:disabled {
+  background: #f1f5f9 !important;
+  color: #cbd5e1 !important;
+  border-color: #e2e8f0 !important;
+  cursor: not-allowed !important;
+}

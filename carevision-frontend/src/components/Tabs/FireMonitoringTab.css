@@ -1,0 +1,42 @@
+/* ==========================================
+   FireMonitoringTab Styles
+   ========================================== */
+
+/* Alert title with icon */
+.fire-alert-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* All-clear banner variant (green) */
+.fire-alert-banner--clear {
+  background-color: #ecfdf5;
+  border-color: #a7f3d0;
+}
+
+.fire-alert-title--clear {
+  color: #064e3b;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.fire-all-clear-msg {
+  color: #064e3b;
+  margin: 0;
+}
+
+/* Notify button with icon */
+.btn-notify--flex {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* Empty log state */
+.fire-empty-cell {
+  text-align: center;
+  padding: 20px;
+  color: #666;
+}
