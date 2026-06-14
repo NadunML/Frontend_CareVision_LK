@@ -1,0 +1,80 @@
+/* ==========================================
+   MaskDetectionTab Styles
+   ========================================== */
+
+/* Table + pagination side-by-side layout */
+.mask-table-layout {
+  display: flex;
+  align-items: flex-start;
+  gap: 15px;
+}
+
+.mask-table-wrapper {
+  flex: 1;
+  min-height: 520px;
+}
+
+/* Table header */
+.mask-table-head {
+  background-color: #f8fafc;
+  border-bottom: 2px solid #e2e8f0;
+}
+
+/* Column widths */
+.col-camera-id   { padding: 12px 15px; text-align: left; width: 20%; }
+.col-mask        { padding: 12px 15px; text-align: left; width: 25%; }
+.col-access      { padding: 12px 15px; text-align: left; width: 25%; }
+.col-timestamp   { padding: 12px 15px; text-align: left; width: 30%; }
+
+/* Standard table cell */
+.mask-td { padding: 12px 15px; }
+
+/* Row separator */
+.mask-row { border-bottom: 1px solid #e2e8f0; }
+
+/* Empty state */
+.mask-empty-cell {
+  text-align: center;
+  padding: 30px;
+  color: #64748b;
+}
+
+/* Pagination sidebar */
+.pagination-sidebar {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 15px;
+  margin-top: 50px;
+  padding: 10px;
+  background-color: #f8fafc;
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+}
+
+.pagination-btn {
+  padding: 8px;
+  border: none;
+  border-radius: 8px;
+  transition: background-color 0.3s, color 0.3s;
+  cursor: pointer;
+}
+
+.pagination-btn--active {
+  background-color: #0D6EFD;
+  color: white;
+  cursor: pointer;
+}
+
+.pagination-btn--disabled {
+  background-color: #f1f5f9;
+  color: #cbd5e1;
+  cursor: not-allowed;
+}
+
+.pagination-label {
+  font-size: 13px;
+  font-weight: bold;
+  color: #64748b;
+}

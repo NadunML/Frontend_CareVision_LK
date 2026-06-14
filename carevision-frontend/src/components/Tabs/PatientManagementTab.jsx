@@ -1,4 +1,5 @@
 import React from 'react';
+import './PatientManagementTab.css';
 
 const PatientManagementTab = ({ showRegisterForm, setShowRegisterForm, patientData, setPatientData, handleImageChange, imageFile, handleRegisterPatient, isUploading, patientsList, searchQuery, setSearchQuery, handleDeletePatient }) => {
   const filteredPatients = Array.isArray(patientsList) ? patientsList.filter(patient => {
@@ -25,13 +26,22 @@ const PatientManagementTab = ({ showRegisterForm, setShowRegisterForm, patientDa
           <div className="form-row"><label>Ward :</label><input type="text" className="form-input" value={patientData.ward} onChange={(e) => setPatientData({...patientData, ward: e.target.value})} /></div>
           <div className="form-row"><label>Ward ID :</label><input type="text" className="form-input" value={patientData.wardId} onChange={(e) => setPatientData({...patientData, wardId: e.target.value})} /></div>
           
-          <div className="form-row align-start"><label className="mt-2">Add Image :</label><div style={{ padding: '10px 0' }}><input type="file" accept="image/*" required onChange={handleImageChange} className="form-input" style={{ border: 'none', padding: '0' }} />{imageFile && <p style={{fontSize: '13px', color: '#16a34a', marginTop: '8px', fontWeight: 'bold'}}>✓ Selected: {imageFile.name}</p>}</div></div>
-          <div className="form-actions" style={{marginTop: '20px'}}><button type="submit" className="btn-register" disabled={isUploading}>{isUploading ? 'Saving...' : 'Register Patient'}</button><button type="button" className="btn-cancel" onClick={() => setShowRegisterForm(false)} disabled={isUploading}>Cancel</button></div>
+          <div className="form-row align-start">
+            <label className="mt-2">Add Image :</label>
+            <div className="file-input-wrapper">
+              <input type="file" accept="image/*" required onChange={handleImageChange} className="form-input file-input-clean" />
+              {imageFile && <p className="image-selected-msg">✓ Selected: {imageFile.name}</p>}
+            </div>
+          </div>
+          <div className="form-actions form-actions--patient">
+            <button type="submit" className="btn-register" disabled={isUploading}>{isUploading ? 'Saving...' : 'Register Patient'}</button>
+            <button type="button" className="btn-cancel" onClick={() => setShowRegisterForm(false)} disabled={isUploading}>Cancel</button>
+          </div>
         </form>
       ) : (
         <>
-          <div style={{ display: 'flex', gap: '20px', marginBottom: '20px' }}>
-            <div className="stat-card flex-between" style={{ flex: 1, margin: 0 }}>
+          <div className="patient-stats-row">
+            <div className="stat-card flex-between patient-stat-card">
               <div><h4>Total Patients</h4><h2>{patientsList.length}</h2></div>
               <div className="icon-circle blue-circle">!</div>
             </div>
@@ -41,31 +51,30 @@ const PatientManagementTab = ({ showRegisterForm, setShowRegisterForm, patientDa
             <h3>Registered Patients</h3>
             <input type="text" className="search-bar" placeholder="Search Patients by Name or ID..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} />
             
-            {/* Scrollable Container Area */}
-            <div style={{ maxHeight: '480px', overflowY: 'auto', borderBottom: '1px solid #e2e8f0', paddingRight: '5px' }}>
-              <table className="data-table" style={{ width: '100%', borderCollapse: 'collapse' }}>
-                <thead style={{ position: 'sticky', top: 0, backgroundColor: '#f8fafc', zIndex: 1, boxShadow: '0 2px 4px rgba(0,0,0,0.05)' }}>
+
+            <div className="patient-table-scroll">
+              <table className="data-table">
+                <thead className="patient-table-head">
                   <tr>
-                    {/* Widths adjusted to fill the gap perfectly */}
-                    <th style={{ width: '35%', padding: '12px 15px' }}>Name (ID)</th>
-                    <th style={{ width: '25%', padding: '12px 15px' }}>Ward</th>
-                    <th style={{ width: '25%', padding: '12px 15px' }}>Registered Date</th>
-                    <th style={{ width: '15%', padding: '12px 15px' }}>Actions</th>
+                    <th className="col-name">Name (ID)</th>
+                    <th className="col-ward">Ward</th>
+                    <th className="col-date">Registered Date</th>
+                    <th className="col-actions">Actions</th>
                   </tr>
                 </thead>
                 <tbody>
                   {filteredPatients.length === 0 ? (
-                    <tr><td colSpan="4" style={{textAlign: 'center', padding: '30px', color: '#64748b'}}>No matching patients found.</td></tr>
+                    <tr><td colSpan="4" className="table-empty-cell">No matching patients found.</td></tr>
                   ) : (
                     filteredPatients.map((patient, index) => (
-                      <tr key={index} style={searchQuery ? { backgroundColor: '#e0f2fe', transition: '0.3s' } : {}}>
-                        <td style={{ padding: '12px 15px' }}>
-                          <strong>{patient.name}</strong> <span style={{fontSize: '12px', color: '#64748b'}}>({patient.patient_id})</span>
+                      <tr key={index} className={searchQuery ? 'patient-row--highlight' : ''}>
+                        <td className="td-cell">
+                          <strong>{patient.name}</strong> <span className="patient-id-label">({patient.patient_id})</span>
                         </td>
-                        <td style={{ padding: '12px 15px' }}>{patient.ward || 'N/A'}</td>
-                        <td style={{ padding: '12px 15px' }}>{patient.registered_date}</td>
-                        <td style={{ padding: '12px 15px' }}>
-                          <span className="action-delete" style={{cursor: 'pointer', color: '#ef4444', fontWeight: 'bold'}} onClick={() => handleDeletePatient(patient.patient_id)}>Delete</span>
+                        <td className="td-cell">{patient.ward || 'N/A'}</td>
+                        <td className="td-cell">{patient.registered_date}</td>
+                        <td className="td-cell">
+                          <span className="action-delete" onClick={() => handleDeletePatient(patient.patient_id)}>Delete</span>
                         </td>
                       </tr>
                     ))

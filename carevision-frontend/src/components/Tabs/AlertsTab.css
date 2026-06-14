@@ -1,0 +1,116 @@
+/* ==========================================
+   AlertsTab Styles
+   ========================================== */
+
+/* Alert feed header */
+.alert-feed-header {
+  margin: 0;
+  font-size: 16px;
+  color: #1e293b;
+}
+
+/* Tab header row */
+.alerts-tab-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.alerts-tab-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* View Toggle buttons */
+.alerts-view-toggle {
+  display: flex;
+  gap: 8px;
+}
+
+.toggle-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 16px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  border: 1px solid #e2e8f0;
+  background-color: #f8fafc;
+  color: #64748b;
+  transition: all 0.15s ease;
+}
+
+.toggle-btn:hover {
+  background-color: #e2e8f0;
+  color: #334155;
+}
+
+.toggle-btn--active {
+  background-color: #0D6EFD;
+  color: white;
+  border-color: #0D6EFD;
+}
+
+.toggle-btn--active:hover {
+  background-color: #0b5ed7;
+}
+
+/* Empty state */
+.alerts-empty-state {
+  text-align: center;
+  padding: 50px 20px;
+  color: #94a3b8;
+}
+
+.alerts-empty-msg {
+  text-align: center;
+  padding: 0;
+  margin: 0;
+  color: #94a3b8;
+  font-size: 14px;
+}
+
+/* Alert feed card items */
+.alert-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* Top row with title and priority badge */
+.alert-feed-row-top {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 4px;
+}
+
+/* Icon background colors */
+.bg-fire    { background: linear-gradient(135deg, #ef4444, #dc2626); }
+.bg-patient { background: linear-gradient(135deg, #f97316, #ea580c); }
+.bg-mask    { background: linear-gradient(135deg, #3b82f6, #2563eb); }
+
+/* Small resolve button for table rows */
+.btn-resolve-sm {
+  background-color: transparent;
+  color: #0D6EFD;
+  border: 1px solid #0D6EFD;
+  padding: 5px 12px;
+  border-radius: 5px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.btn-resolve-sm:hover {
+  background-color: #0D6EFD;
+  color: white;
+}

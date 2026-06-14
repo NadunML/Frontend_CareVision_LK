@@ -1,0 +1,146 @@
+/* ==========================================
+   SettingsTab Styles
+   ========================================== */
+
+/* Page header override */
+.settings-header {
+  margin-bottom: 20px;
+}
+
+.settings-header h1 {
+  margin: 0 0 5px 0;
+}
+
+.settings-header p {
+  margin: 0;
+  color: #aaa;
+}
+
+/* Camera section heading */
+.camera-section-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 15px 0;
+  color: #333;
+}
+
+/* Individual camera row */
+.camera-config-row {
+  display: flex;
+  align-items: center;
+  margin-bottom: 15px;
+  background-color: #f8f9fa;
+  padding: 10px 15px;
+  border-radius: 8px;
+  border: 1px solid #e9ecef;
+}
+
+/* Camera label (e.g. "Camera 01 :") */
+.camera-config-label {
+  font-weight: bold;
+  width: 120px;
+  color: #495057;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* IP / URL input */
+.camera-url-input {
+  flex: 1;
+  margin-right: 15px;
+  padding: 8px 12px;
+  border: 1px solid #ced4da;
+  border-radius: 4px;
+}
+
+/* ---- Shared base for all camera action buttons ---- */
+.camera-action-btn {
+  min-width: 100px;
+  padding: 8px 16px;
+  font-size: 13px;
+  font-weight: 600;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  white-space: nowrap;
+  text-align: center;
+  transition: background-color 0.15s ease, opacity 0.15s ease;
+}
+
+/* Add button – primary blue */
+.camera-add-btn {
+  background-color: #0D6EFD;
+  color: #fff;
+  margin-right: 8px;
+}
+
+.camera-add-btn:not(:disabled):hover {
+  background-color: #0b5ed7;
+}
+
+/* "Added ✓" success state */
+.camera-add-btn--added {
+  background-color: #198754;
+  color: #fff;
+}
+
+/* Remove button – muted primary (outline-style secondary) */
+.camera-remove-btn {
+  background-color: #e9ecef;
+  color: #495057;
+  border: 1px solid #ced4da;
+}
+
+.camera-remove-btn:not(:disabled):hover {
+  background-color: #dee2e6;
+  color: #333;
+}
+
+/* Shared disabled state for both action buttons */
+.camera-add-btn:disabled,
+.camera-remove-btn:disabled {
+  background-color: #adb5bd;
+  color: #fff;
+  border-color: transparent;
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Contact support section header */
+.support-section-title {
+  margin-top: 20px;
+  margin-bottom: 15px;
+  color: #333;
+}
+
+/* Support buttons container override */
+.support-btn-container--settings {
+  display: flex;
+  gap: 15px;
+}
+
+/* Support phone button override — replaces the inline styles that override .support-phone-btn */
+.support-phone-btn--settings {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  border: 1px solid #dee2e6;
+  border-radius: 6px;
+  background: #fff;
+  cursor: pointer;
+  font-weight: bold;
+  color: #495057;
+
+  /* Reset the global .support-phone-btn defaults */
+  box-shadow: none;
+  font-size: 14px;
+}
+
+.support-phone-btn--settings:hover {
+  background-color: #f8f9fa;
+  transform: none;
+  box-shadow: none;
+}

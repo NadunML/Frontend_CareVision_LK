@@ -1,18 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import { auth } from '../firebase';
-import { Home, Camera, Users, ShieldAlert, Flame, BellRing, FileText, UserCog, Settings, LogOut, User } from 'lucide-react';
+import { Home, Camera, Users, ShieldAlert, Flame, FileText, UserCog, Settings, LogOut, User, Info } from 'lucide-react';
 import './Dashboard.css';
 
-// Import All Tabs
 import OverviewTab from './Tabs/OverviewTab';
 import CCTVFeedsTab from './Tabs/CCTVFeedsTab';
 import PatientManagementTab from './Tabs/PatientManagementTab';
 import MaskDetectionTab from './Tabs/MaskDetectionTab';
 import FireMonitoringTab from './Tabs/FireMonitoringTab';
-import AlertsTab from './Tabs/AlertsTab';
+
 import ReportsTab from './Tabs/ReportsTab';
 import UserManagementTab from './Tabs/UserManagementTab';
 import SettingsTab from './Tabs/SettingsTab';
+import AboutTab from './Tabs/AboutTab';
 
 const DashboardLayout = ({ onLogout }) => {
   const user = auth.currentUser;
@@ -56,7 +56,7 @@ const DashboardLayout = ({ onLogout }) => {
       ...prevConfigs,
       [camId]: {
         ...prevConfigs[camId],
-        [type]: newStatus 
+        [type]: newStatus
       }
     }));
 
@@ -172,9 +172,9 @@ const DashboardLayout = ({ onLogout }) => {
   };
 
   useEffect(() => {
-    if (activeTab === 'alerts' || activeTab === 'reports') {
+    if (activeTab === 'alerts' || activeTab === 'reports' || activeTab === 'dashboard') {
       fetchSystemAlerts();
-      const interval = setInterval(fetchSystemAlerts, 3000);
+      const interval = setInterval(fetchSystemAlerts, 5000);
       return () => clearInterval(interval);
     }
   }, [activeTab]);
@@ -250,7 +250,8 @@ const DashboardLayout = ({ onLogout }) => {
         } else {
           alert("Error: " + result.message);
         }
-      } catch (error) {
+      } catch (err) {
+        console.error("Delete patient error:", err);
         alert("Failed to delete patient. Check server.");
       }
     }
@@ -263,7 +264,8 @@ const DashboardLayout = ({ onLogout }) => {
         const data = await response.json();
         if (data.status === 'success') setAiControls(data.modes);
       }
-    } catch (error) {
+    } catch (err) {
+      console.error("AI Server error:", err);
       alert("AI Server connection failed! Make sure your Python backend is running.");
     }
   };
@@ -280,7 +282,8 @@ const DashboardLayout = ({ onLogout }) => {
         setCameraIps(prev => ({ ...prev, [camId]: url }));
         alert(`Camera 0${camId} connected successfully!`);
       }
-    } catch (error) {
+    } catch (err) {
+      console.error("Save camera error:", err);
       alert("Failed to save camera IP.");
     }
   };
@@ -295,7 +298,8 @@ const DashboardLayout = ({ onLogout }) => {
         setCameraIps(prev => ({ ...prev, [camId]: '' }));
         setInputIps(prev => ({ ...prev, [camId]: '' }));
       }
-    } catch (error) {
+    } catch (err) {
+      console.error("Remove camera error:", err);
       alert("Failed to remove camera.");
     }
   };
@@ -350,56 +354,58 @@ const DashboardLayout = ({ onLogout }) => {
         </div>
 
         <ul className="sidebar-menu">
-          <li className={activeTab === 'dashboard' ? 'active' : ''} onClick={() => handleTabChange('dashboard')}><Home size={18} style={{ marginRight: '12px' }} /> Dashboard</li>
-          <li className={activeTab === 'cctv' ? 'active' : ''} onClick={() => handleTabChange('cctv')}><Camera size={18} style={{ marginRight: '12px' }} /> Live CCTV Feeds</li>
-          <li className={activeTab === 'patient' ? 'active' : ''} onClick={() => handleTabChange('patient')}><Users size={18} style={{ marginRight: '12px' }} /> Patient Management</li>
-          <li className={activeTab === 'access' ? 'active' : ''} onClick={() => handleTabChange('access')}><ShieldAlert size={18} style={{ marginRight: '12px' }} /> Mask Detection</li>
-          <li className={activeTab === 'fire' ? 'active' : ''} onClick={() => handleTabChange('fire')}><Flame size={18} style={{ marginRight: '12px' }} /> Fire Monitoring</li>
-          <li className={activeTab === 'alerts' ? 'active' : ''} onClick={() => handleTabChange('alerts')}><BellRing size={18} style={{ marginRight: '12px' }} /> Alerts</li>
-          <li className={activeTab === 'reports' ? 'active' : ''} onClick={() => handleTabChange('reports')}><FileText size={18} style={{ marginRight: '12px' }} /> Reports & Logs</li>
-          <li className={activeTab === 'user' ? 'active' : ''} onClick={() => handleTabChange('user')}><UserCog size={18} style={{ marginRight: '12px' }} /> User Management</li>
-          <li className={activeTab === 'setting' ? 'active' : ''} onClick={() => handleTabChange('setting')}><Settings size={18} style={{ marginRight: '12px' }} /> Setting</li>
+          <li className={activeTab === 'dashboard' ? 'active' : ''} onClick={() => handleTabChange('dashboard')}><Home size={18} /> Dashboard</li>
+          <li className={activeTab === 'cctv' ? 'active' : ''} onClick={() => handleTabChange('cctv')}><Camera size={18} /> Live CCTV Feeds</li>
+          <li className={activeTab === 'patient' ? 'active' : ''} onClick={() => handleTabChange('patient')}><Users size={18} /> Patient Management</li>
+          <li className={activeTab === 'access' ? 'active' : ''} onClick={() => handleTabChange('access')}><ShieldAlert size={18} /> Mask Detection</li>
+          <li className={activeTab === 'fire' ? 'active' : ''} onClick={() => handleTabChange('fire')}><Flame size={18} /> Fire Monitoring</li>
+
+          <li className={activeTab === 'reports' ? 'active' : ''} onClick={() => handleTabChange('reports')}><FileText size={18} /> Reports & Logs</li>
+          <li className={activeTab === 'user' ? 'active' : ''} onClick={() => handleTabChange('user')}><UserCog size={18} /> User Management</li>
+          <li className={activeTab === 'setting' ? 'active' : ''} onClick={() => handleTabChange('setting')}><Settings size={18} /> Setting</li>
+          <li className={activeTab === 'about' ? 'active' : ''} onClick={() => handleTabChange('about')}><Info size={18} /> About</li>
         </ul>
 
         <div className="sidebar-footer">
-          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '15px', padding: '10px', backgroundColor: '#f8f9fa', borderRadius: '8px', border: '1px solid #e9ecef' }}>
-            <div style={{ width: '35px', height: '35px', borderRadius: '50%', backgroundColor: '#0D6EFD', display: 'flex', justifyContent: 'center', alignItems: 'center', color: 'white' }}>
+          <div className="user-profile-card">
+            <div className="user-avatar">
               <User size={20} />
             </div>
-            <div style={{ display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
-              <span style={{ color: '#333', fontSize: '14px', fontWeight: 'bold', whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' }}>
+            <div className="user-info">
+              <span className="user-name">
                 {user?.displayName || 'Admin User'}
               </span>
-              <span style={{ color: '#666', fontSize: '11px', whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' }}>
+              <span className="user-email">
                 {user?.email || 'admin@carevision.lk'}
               </span>
             </div>
           </div>
-          <button className="logout-btn" onClick={onLogout} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
+          <button className="logout-btn" onClick={onLogout}>
             <LogOut size={16} /> Logout
           </button>
         </div>
       </div>
 
       <div className="main-content">
-        {activeTab === 'dashboard' && <OverviewTab patientsCount={patientsList.length} pendingAlertsCount={pendingSystemAlerts.length} highPriorityCount={highPrioritySystemAlertsCount} deniedAccessCount={deniedAccess} aiControls={aiControls} toggleAI={toggleAI} />}
-        
+        {activeTab === 'dashboard' && <OverviewTab patientsCount={patientsList.length} pendingAlertsCount={pendingSystemAlerts.length} highPriorityCount={highPrioritySystemAlertsCount} deniedAccessCount={deniedAccess} aiControls={aiControls} toggleAI={toggleAI} pendingSystemAlerts={pendingSystemAlerts} handleResolveSystemAlert={handleResolveSystemAlert} />}
+
         {activeTab === 'cctv' && (
-          <CCTVFeedsTab 
-            cameraIps={cameraIps} 
-            toggleFullScreen={toggleFullScreen} 
-            aiConfigs={cameraAiConfigs} 
-            onToggleAI={handleToggleCameraAI} 
+          <CCTVFeedsTab
+            cameraIps={cameraIps}
+            toggleFullScreen={toggleFullScreen}
+            aiConfigs={cameraAiConfigs}
+            onToggleAI={handleToggleCameraAI}
           />
         )}
-        
+
         {activeTab === 'patient' && <PatientManagementTab showRegisterForm={showRegisterForm} setShowRegisterForm={setShowRegisterForm} patientData={patientData} setPatientData={setPatientData} handleImageChange={handleImageChange} imageFile={imageFile} handleRegisterPatient={handleRegisterPatient} isUploading={isUploading} patientsList={patientsList} searchQuery={searchQuery} setSearchQuery={setSearchQuery} handleDeletePatient={handleDeletePatient} />}
         {activeTab === 'access' && <MaskDetectionTab totalAccess={totalAccess} grantedAccess={grantedAccess} deniedAccess={deniedAccess} activeCamCount={activeCamCount} accessLogs={accessLogs} />}
         {activeTab === 'fire' && <FireMonitoringTab activeFireAlerts={activeFireAlerts} fireLogs={fireLogs} resolvedFireAlerts={resolvedFireAlerts} activeFireCamsCount={activeFireCamsCount} latestActiveFire={latestActiveFire} handleNotifyEmergency={handleNotifyEmergency} handleResolveFireAlert={handleResolveFireAlert} />}
-        {activeTab === 'alerts' && <AlertsTab totalSystemAlerts={totalSystemAlerts} highPrioritySystemAlertsCount={highPrioritySystemAlertsCount} pendingSystemAlerts={pendingSystemAlerts} resolvedSystemAlertsCount={resolvedSystemAlertsCount} handleResolveSystemAlert={handleResolveSystemAlert} />}
-        {activeTab === 'reports' && <ReportsTab reportDate={reportDate} setReportDate={setReportDate} handlePrintPDF={handlePrintPDF} filteredReports={filteredReports} fireLogs={fireLogs} systemAlerts={systemAlerts} accessLogs={accessLogs} />}
+
+        {activeTab === 'reports' && <ReportsTab reportDate={reportDate} setReportDate={setReportDate} filteredReports={filteredReports} fireLogs={fireLogs} systemAlerts={systemAlerts} accessLogs={accessLogs} />}
         {activeTab === 'user' && <UserManagementTab />}
-        {activeTab === 'setting' && <SettingsTab inputIps={inputIps} setInputIps={setInputIps} handleSaveCamera={handleSaveCamera} handleRemoveCamera={handleRemoveCamera} />}
+        {activeTab === 'setting' && <SettingsTab inputIps={inputIps} setInputIps={setInputIps} handleSaveCamera={handleSaveCamera} handleRemoveCamera={handleRemoveCamera} cameraIps={cameraIps} />}
+        {activeTab === 'about' && <AboutTab />}
       </div>
     </div>
   );
