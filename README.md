@@ -4,7 +4,8 @@ CareVision LK is an enterprise-grade, AI-powered surveillance and security manag
 
 ## 🚀 Key Features
 
-* **Intelligent Patient Monitoring (Cameras 1-3):** * Utilizes advanced facial recognition to identify high-risk or dementia patients.
+* **Intelligent Patient Monitoring (Cameras 1-3):** 
+    * Utilizes advanced facial recognition to identify high-risk or dementia patients.
     * Triggers instant alerts if a registered patient attempts to leave designated safe zones or wards.
 * **Automated Access Control & PPE Detection (Cameras 4-6):**
     * Monitors restricted areas (e.g., ICUs, Operation Theaters, Labs).
@@ -23,24 +24,19 @@ To minimize network latency and reduce cloud bandwidth costs, heavy video stream
 
 ## 🛠️ Technology Stack
 
-**Frontend (Client Dashboard):**
-* **React.js (Vite):** For a blazing-fast, component-based user interface.
-* **Lucide React:** Modern, lightweight iconography.
-* **Axios & Fetch API:** For seamless asynchronous data fetching.
+* **Frontend:** React.js (Vite), Lucide React, Axios.
+* **Backend:** Python, FastAPI, OpenCV, MySQL.
+* **AI Models:** YOLOv8 (Fire/Smoke), MobileNetV2 (Mask), Face_Recognition/dlib (Patients).
 
-**Backend (Edge AI Server):**
-* **Python & FastAPI:** Chosen for its high-performance asynchronous capabilities, perfect for handling multiple video streams without blocking.
-* **OpenCV:** For RTSP/HTTP video stream capturing and frame manipulation.
-* **MySQL:** Relational database for structured logs (Access, Fire, Alerts, Patients).
+## 📦 Installation & Setup
 
-**AI & Machine Learning Models:**
-* **YOLOv8 (Ultralytics):** State-of-the-art object detection for instantaneous Fire & Smoke recognition.
-* **MobileNetV2 (TensorFlow/Keras):** A lightweight CNN architecture optimized for edge devices, used for Mask Detection.
-* **Face_Recognition (dlib):** High-accuracy facial landmark detection for patient identification.
-
-## ⚙️ Getting Started
-
-### Prerequisites
+### 1. Prerequisites
 * Node.js (v18+)
 * Python (3.9+)
-* MySQL Server
+* MySQL Server (Ensure your database credentials match the `.env` file)
+
+### 2. Backend Server Initialization
+```bash
+cd backend
+pip install -r requirements.txt
+uvicorn main:app --host 0.0.0.0 --port 5000
