@@ -1,4 +1,8 @@
-.login-container { 
+/* ==========================================
+   CareVision LK - Authentication UI Styles
+   ========================================== */
+
+.cv-auth-layout { 
   display: flex; 
   justify-content: center; 
   align-items: center; 
@@ -7,7 +11,7 @@
   font-family: 'Inter', 'Segoe UI', sans-serif; 
 }
 
-.login-card { 
+.cv-login-card { 
   background: white; 
   padding: 40px; 
   border-radius: 12px; 
@@ -16,12 +20,12 @@
   max-width: 400px; 
 }
 
-.login-header { 
+.cv-login-heading { 
   text-align: center; 
   margin-bottom: 30px; 
 }
 
-.logo-box-large { 
+.cv-brand-icon { 
   background: #0D6EFD; 
   width: 60px; 
   height: 60px; 
@@ -33,23 +37,23 @@
   box-shadow: 0 4px 10px rgba(13, 110, 253, 0.3);
 }
 
-.login-header h2 { 
+.cv-login-heading h2 { 
   margin: 0; 
   color: #111; 
   font-size: 24px; 
 }
 
-.login-header p { 
+.cv-login-heading p { 
   color: #666; 
   font-size: 14px; 
   margin-top: 5px; 
 }
 
-.input-group { 
+.cv-input-field { 
   margin-bottom: 20px; 
 }
 
-.input-group label { 
+.cv-input-field label { 
   display: block; 
   margin-bottom: 8px; 
   font-size: 14px; 
@@ -57,7 +61,7 @@
   color: #333; 
 }
 
-.input-group input { 
+.cv-input-field input { 
   width: 100%; 
   padding: 12px 15px; 
   border: 1px solid #ddd; 
@@ -68,12 +72,12 @@
   transition: all 0.2s;
 }
 
-.input-group input:focus { 
+.cv-input-field input:focus { 
   border-color: #0D6EFD; 
   box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.1);
 }
 
-.login-btn { 
+.cv-primary-btn { 
   width: 100%; 
   padding: 12px; 
   background-color: #0D6EFD; 
@@ -87,17 +91,17 @@
   transition: all 0.2s;
 }
 
-.login-btn:hover:not(:disabled) { 
+.cv-primary-btn:hover:not(:disabled) { 
   background-color: #0b5ed7; 
 }
 
-.login-btn:disabled {
+.cv-primary-btn:disabled {
   background-color: #adb5bd;
   opacity: 0.6;
   cursor: not-allowed;
 }
 
-.error-message { 
+.cv-alert-danger { 
   background-color: #fee2e2; 
   color: #dc2626; 
   padding: 10px; 
@@ -108,13 +112,13 @@
   border: 1px solid #f87171;
 }
 
-.divider { 
+.cv-divider { 
   text-align: center; 
   margin: 25px 0; 
   position: relative; 
 }
 
-.divider::before { 
+.cv-divider::before { 
   content: ""; 
   position: absolute; 
   top: 50%; 
@@ -125,7 +129,7 @@
   z-index: 1; 
 }
 
-.divider span { 
+.cv-divider span { 
   background: white; 
   padding: 0 15px; 
   color: #888; 
@@ -134,34 +138,8 @@
   z-index: 2; 
 }
 
-.google-btn { 
-  width: 100%; 
-  padding: 12px; 
-  background-color: white; 
-  color: #333; 
-  border: 1px solid #ddd; 
-  border-radius: 8px; 
-  font-size: 15px; 
-  font-weight: 600; 
-  cursor: pointer; 
-  display: flex; 
-  justify-content: center; 
-  align-items: center; 
-  transition: all 0.2s;
-}
-
-.google-btn:hover:not(:disabled) { 
-  background-color: #f8f9fa; 
-  border-color: #ccc;
-}
-
-.google-btn:disabled {
-  opacity: 0.7;
-  cursor: not-allowed;
-}
-
-/* Microsoft sign-in button — dark themed override */
-.microsoft-btn {
+/* Microsoft SSO Sign-in button */
+.cv-ms-auth-btn {
   width: 100%;
   padding: 12px;
   background-color: #2F2F2F;
@@ -177,17 +155,16 @@
   transition: background-color 0.2s;
 }
 
-.microsoft-btn:hover:not(:disabled) {
+.cv-ms-auth-btn:hover:not(:disabled) {
   background-color: #1a1a1a;
 }
 
-.microsoft-btn:disabled {
+.cv-ms-auth-btn:disabled {
   opacity: 0.7;
   cursor: not-allowed;
 }
 
-/* SVG icon spacing inside the Microsoft button */
-.microsoft-svg-icon {
+.cv-ms-icon {
   margin-right: 10px;
   flex-shrink: 0;
-}
+}
