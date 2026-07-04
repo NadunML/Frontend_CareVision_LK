@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { auth } from '../firebase';
 import { Home, Camera, Users, ShieldAlert, Flame, FileText, UserCog, Settings, LogOut, User, Info } from 'lucide-react';
 import './Dashboard.css';
@@ -31,6 +31,7 @@ const DashboardLayout = ({ onLogout }) => {
 
   const [searchQuery, setSearchQuery] = useState('');
   const [reportDate, setReportDate] = useState('');
+  const [bannerDismissed, setBannerDismissed] = useState(false);
 
   const [aiControls, setAiControls] = useState({
     patientIdent: false,
@@ -84,6 +85,27 @@ const DashboardLayout = ({ onLogout }) => {
       }
     };
     fetchCurrentModes();
+  }, []);
+
+  useEffect(() => {
+    const fetchCameraAiConfigs = async () => {
+      try {
+        const response = await fetch('http://localhost:5000/api/get_camera_ai');
+        if (response.ok) {
+          const data = await response.json();
+          const formattedData = {};
+          Object.keys(data).forEach(key => {
+            formattedData[Number(key)] = data[key];
+          });
+          setCameraAiConfigs(formattedData);
+        }
+      } catch (error) {
+        console.error("Error fetching camera AI configurations:", error);
+      }
+    };
+    fetchCameraAiConfigs();
+    const interval = setInterval(fetchCameraAiConfigs, 1000);
+    return () => clearInterval(interval);
   }, []);
 
   useEffect(() => {
@@ -154,12 +176,10 @@ const DashboardLayout = ({ onLogout }) => {
   };
 
   useEffect(() => {
-    if (activeTab === 'fire' || activeTab === 'reports') {
-      fetchFireLogs();
-      const interval = setInterval(fetchFireLogs, 3000);
-      return () => clearInterval(interval);
-    }
-  }, [activeTab]);
+    fetchFireLogs();
+    const interval = setInterval(fetchFireLogs, 1000);
+    return () => clearInterval(interval);
+  }, []);
 
   const fetchSystemAlerts = async () => {
     try {
@@ -172,12 +192,35 @@ const DashboardLayout = ({ onLogout }) => {
   };
 
   useEffect(() => {
-    if (activeTab === 'alerts' || activeTab === 'reports' || activeTab === 'dashboard') {
-      fetchSystemAlerts();
-      const interval = setInterval(fetchSystemAlerts, 5000);
-      return () => clearInterval(interval);
+    fetchSystemAlerts();
+    const interval = setInterval(fetchSystemAlerts, 1000);
+    return () => clearInterval(interval);
+  }, []);
+
+  // ── Fire Emergency: one-shot disable when fire appears; resets when all clear ──
+  const didDisableRef = useRef(false);
+  useEffect(() => {
+    const hasActiveFire = fireLogs.some(log => log.status === 'Active');
+    if (hasActiveFire && !didDisableRef.current) {
+      // First time fire detected this session — disable patient+mask globally
+      didDisableRef.current = true;
+      setBannerDismissed(false); // always show banner when new fire appears
+      fetch('http://localhost:5000/api/disable_non_fire', { method: 'POST' })
+        .then(res => res.json())
+        .then(data => {
+          if (data.status === 'success') {
+            const formatted = {};
+            Object.keys(data.configs).forEach(k => { formatted[Number(k)] = data.configs[k]; });
+            setCameraAiConfigs(formatted);
+          }
+        })
+        .catch(() => { });
     }
-  }, [activeTab]);
+    if (!hasActiveFire) {
+      // All fires resolved — reset so next fire re-triggers
+      didDisableRef.current = false;
+    }
+  }, [fireLogs]);
 
   const handleResolveFireAlert = async (logId) => {
     try {
@@ -327,6 +370,11 @@ const DashboardLayout = ({ onLogout }) => {
   const activeFireCamsCount = ['7', '8', '9'].filter(cam => cameraIps[cam] !== '').length;
   const latestActiveFire = activeFireAlerts.length > 0 ? activeFireAlerts[0] : null;
 
+  // IMPORTANT: Calculate the isEmergencyLockdown state based on active fires
+  const isEmergencyLockdown = activeFireAlerts.length > 0;
+
+  const showFireBanner = activeFireAlerts.length > 0 && !bannerDismissed;
+
   const totalSystemAlerts = systemAlerts.length;
   const pendingSystemAlerts = systemAlerts.filter(a => a.status === 'Pending');
   const resolvedSystemAlertsCount = systemAlerts.filter(a => a.status === 'Resolved').length;
@@ -387,7 +435,26 @@ const DashboardLayout = ({ onLogout }) => {
       </div>
 
       <div className="main-content">
-        {activeTab === 'dashboard' && <OverviewTab patientsCount={patientsList.length} pendingAlertsCount={pendingSystemAlerts.length} highPriorityCount={highPrioritySystemAlertsCount} deniedAccessCount={deniedAccess} aiControls={aiControls} toggleAI={toggleAI} pendingSystemAlerts={pendingSystemAlerts} handleResolveSystemAlert={handleResolveSystemAlert} />}
+        {showFireBanner && (
+          <div className="emergency-alert-banner">
+            <Flame className="emergency-icon" size={24} />
+            <div className="emergency-alert-text">
+              <strong>CRITICAL EMERGENCY:</strong> Active fire or smoke hazard detected
+              {activeFireAlerts.length > 0 ? ` on ${activeFireAlerts.map(a => a.camera_id).join(', ')}` : ''}!
+              Patient Identification and Face Mask detection modules have been automatically disabled to prioritize hazard monitoring. Resolve the alert to restore them.
+            </div>
+            <button
+              className="emergency-banner-close"
+              onClick={() => setBannerDismissed(true)}
+              title="Dismiss notification"
+            >
+              ✕
+            </button>
+          </div>
+        )}
+
+        {/* 🚨 මෙතනට තමයි isEmergencyLockdown එක අලුතින් දැම්මේ 🚨 */}
+        {activeTab === 'dashboard' && <OverviewTab patientsCount={patientsList.length} pendingAlertsCount={pendingSystemAlerts.length} highPriorityCount={highPrioritySystemAlertsCount} deniedAccessCount={deniedAccess} aiControls={aiControls} toggleAI={toggleAI} pendingSystemAlerts={pendingSystemAlerts} handleResolveSystemAlert={handleResolveSystemAlert} cameraAiConfigs={cameraAiConfigs} cameraIps={cameraIps} isEmergencyLockdown={isEmergencyLockdown} />}
 
         {activeTab === 'cctv' && (
           <CCTVFeedsTab
@@ -395,16 +462,21 @@ const DashboardLayout = ({ onLogout }) => {
             toggleFullScreen={toggleFullScreen}
             aiConfigs={cameraAiConfigs}
             onToggleAI={handleToggleCameraAI}
+            isEmergencyLockdown={isEmergencyLockdown}
           />
         )}
 
-        {activeTab === 'patient' && <PatientManagementTab showRegisterForm={showRegisterForm} setShowRegisterForm={setShowRegisterForm} patientData={patientData} setPatientData={setPatientData} handleImageChange={handleImageChange} imageFile={imageFile} handleRegisterPatient={handleRegisterPatient} isUploading={isUploading} patientsList={patientsList} searchQuery={searchQuery} setSearchQuery={setSearchQuery} handleDeletePatient={handleDeletePatient} />}
+        {activeTab === 'patient' && <PatientManagementTab showRegisterForm={showRegisterForm} setShowRegisterForm={setShowRegisterForm} patientData={patientData} setPatientData={setPatientData} handleImageChange={handleImageChange} imageFile={imageFile} handleRegisterPatient={handleRegisterPatient} isUploading={isUploading} patientsList={patientsList} searchQuery={searchQuery} setSearchQuery={setSearchQuery} handleDeletePatient={handleDeletePatient} isEmergencyLockdown={isEmergencyLockdown} />}
+
         {activeTab === 'access' && <MaskDetectionTab totalAccess={totalAccess} grantedAccess={grantedAccess} deniedAccess={deniedAccess} activeCamCount={activeCamCount} accessLogs={accessLogs} />}
+
         {activeTab === 'fire' && <FireMonitoringTab activeFireAlerts={activeFireAlerts} fireLogs={fireLogs} resolvedFireAlerts={resolvedFireAlerts} activeFireCamsCount={activeFireCamsCount} latestActiveFire={latestActiveFire} handleNotifyEmergency={handleNotifyEmergency} handleResolveFireAlert={handleResolveFireAlert} />}
 
         {activeTab === 'reports' && <ReportsTab reportDate={reportDate} setReportDate={setReportDate} filteredReports={filteredReports} fireLogs={fireLogs} systemAlerts={systemAlerts} accessLogs={accessLogs} />}
         {activeTab === 'user' && <UserManagementTab />}
-        {activeTab === 'setting' && <SettingsTab inputIps={inputIps} setInputIps={setInputIps} handleSaveCamera={handleSaveCamera} handleRemoveCamera={handleRemoveCamera} cameraIps={cameraIps} />}
+
+        {activeTab === 'setting' && <SettingsTab inputIps={inputIps} setInputIps={setInputIps} handleSaveCamera={handleSaveCamera} handleRemoveCamera={handleRemoveCamera} cameraIps={cameraIps} isEmergencyLockdown={isEmergencyLockdown} />}
+
         {activeTab === 'about' && <AboutTab />}
       </div>
     </div>

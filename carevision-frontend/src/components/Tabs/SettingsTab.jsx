@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import { Camera, Phone, Settings2 } from 'lucide-react';
+import { Camera, Phone, Settings2, Wifi, CheckCircle } from 'lucide-react';
 import './SettingsTab.css';
 
-const SettingsTab = ({ inputIps, setInputIps, handleSaveCamera, handleRemoveCamera, cameraIps }) => {
+const SettingsTab = ({ inputIps, setInputIps, handleSaveCamera, handleRemoveCamera, cameraIps, isEmergencyLockdown = false }) => {
   const [loadingAdd, setLoadingAdd] = useState({});
   const [loadingRemove, setLoadingRemove] = useState({});
 
@@ -24,20 +24,40 @@ const SettingsTab = ({ inputIps, setInputIps, handleSaveCamera, handleRemoveCame
     }
   };
 
+  const configuredCount = [1, 2, 3, 4, 5].filter(cam => !!cameraIps[String(cam)]).length;
+
   return (
     <div className="setting-wrapper">
-      <div className="header settings-header">
+      <div className="header">
         <h1>System Settings</h1>
         <p>Configure 5 optimized cameras with integrated AI features</p>
       </div>
-      
+
+      <div className="stats-grid">
+        {[
+          { label: 'Total Camera Slots', value: 5, icon: <Camera size={20} color="#0D6EFD" />, iconBg: '#eff6ff', accent: '#0D6EFD' },
+          { label: 'Configured Cameras', value: configuredCount, icon: <Wifi size={20} color="#10b981" />, iconBg: '#f0fdf4', accent: '#10b981' },
+          { label: 'Available Slots', value: 5 - configuredCount, icon: <CheckCircle size={20} color="#f97316" />, iconBg: '#fff7ed', accent: '#f97316' },
+        ].map((s, i) => (
+          <div
+            className="stat-card"
+            key={i}
+            style={{ '--icon-bg': s.iconBg, '--stat-accent': s.accent }}
+          >
+            <div className="stat-card-icon-corner">{s.icon}</div>
+            <h4 className="stat-card-label">{s.label}</h4>
+            <h2 className="stat-card-value">{s.value}</h2>
+          </div>
+        ))}
+      </div>
+
       <div className="card-box mt-4">
         <div className="camera-header-wrap mb-4">
           <h3 className="camera-section-title">
             <Settings2 size={20} /> Centralized Camera Configuration
           </h3>
         </div>
-        
+
         {[1, 2, 3, 4, 5].map(cam => {
           const camId = String(cam);
           const currentInput = inputIps[camId] || '';
@@ -50,42 +70,49 @@ const SettingsTab = ({ inputIps, setInputIps, handleSaveCamera, handleRemoveCame
           const isAnyLoading = isAddLoading || isRemoveLoading;
 
           let addBtnText = 'Add';
-          if (isAddLoading) {
+          if (isEmergencyLockdown) {
+            addBtnText = 'Disabled 🚨';
+          } else if (isAddLoading) {
             addBtnText = 'Adding...';
           } else if (isAdded) {
             addBtnText = 'Added ✓';
           }
 
-          let removeBtnText = isRemoveLoading ? 'Removing...' : 'Remove';
+          let removeBtnText = 'Remove';
+          if (isEmergencyLockdown) {
+            removeBtnText = 'Disabled 🚨';
+          } else if (isRemoveLoading) {
+            removeBtnText = 'Removing...';
+          }
 
           const isInputEmpty = currentInput.trim() === '';
-          const isAddDisabled = isAnyLoading || isAdded || isInputEmpty;
-          const isRemoveDisabled = isAnyLoading || !hasSavedConfig;
+          const isAddDisabled = isAnyLoading || isAdded || isInputEmpty || isEmergencyLockdown;
+          const isRemoveDisabled = isAnyLoading || !hasSavedConfig || isEmergencyLockdown;
 
           return (
             <div key={cam} className="camera-config-row">
               <span className="camera-config-label">
                 <Camera size={14} /> Camera 0{cam} :
               </span>
-              
-              <input 
-                type="text" 
-                value={currentInput} 
-                onChange={(e) => setInputIps({...inputIps, [camId]: e.target.value})} 
-                placeholder="Enter video URL (e.g., http://192.168.1.100:8080/video)" 
+
+              <input
+                type="text"
+                value={currentInput}
+                onChange={(e) => setInputIps({ ...inputIps, [camId]: e.target.value })}
+                placeholder="Enter video URL (e.g., http://192.168.1.100:8080/video)"
                 className="form-input camera-url-input"
-                disabled={isAnyLoading}
+                disabled={isAnyLoading || isEmergencyLockdown}
               />
-              
-              <button 
-                onClick={() => onAddCamera(camId)} 
-                className={`camera-action-btn camera-add-btn${isAdded ? ' camera-add-btn--added' : ''}`}
+
+              <button
+                onClick={() => onAddCamera(camId)}
+                className={`camera-action-btn camera-add-btn${isAdded && !isEmergencyLockdown ? ' camera-add-btn--added' : ''}`}
                 disabled={isAddDisabled}
               >
                 {addBtnText}
               </button>
-              <button 
-                onClick={() => onRemoveCamera(camId)} 
+              <button
+                onClick={() => onRemoveCamera(camId)}
                 className="camera-action-btn camera-remove-btn"
                 disabled={isRemoveDisabled}
               >

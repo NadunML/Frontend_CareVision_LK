@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Download, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Download, ChevronLeft, ChevronRight, FileText, Flame, User, ShieldAlert, Activity } from 'lucide-react';
 import './ReportsTab.css';
 
 const ROWS_PER_PAGE = 10;
@@ -12,19 +12,16 @@ const ReportsTab = ({ reportDate, setReportDate, filteredReports, fireLogs, syst
 
   const handleTodayToggle = () => {
     if (isTodayActive) {
-      // Second press — deactivate, show all
       setIsTodayActive(false);
       setReportDate('');
       setCurrentPage(0);
     } else {
-      // First press — activate, filter to today
       setIsTodayActive(true);
       setReportDate(todayStr);
       setCurrentPage(0);
     }
   };
 
-  // When user manually changes date, deactivate today toggle
   const handleDateChange = (e) => {
     setReportDate(e.target.value);
     setIsTodayActive(false);
@@ -49,15 +46,14 @@ const ReportsTab = ({ reportDate, setReportDate, filteredReports, fireLogs, syst
   const startRow = filteredReports.length === 0 ? 0 : safePage * ROWS_PER_PAGE + 1;
   const endRow   = Math.min((safePage + 1) * ROWS_PER_PAGE, filteredReports.length);
 
-  /* ── Custom PDF print: table only, all records ── */
   const handleDownloadPDF = () => {
     if (filteredReports.length === 0) {
       alert('No alert records to export.');
       return;
     }
 
-    const dateLabel = reportDate ? ` — ${reportDate}` : '';
-    const generatedAt = new Date().toLocaleString('en-GB');
+    const dateLabel    = reportDate ? ` — ${reportDate}` : '';
+    const generatedAt  = new Date().toLocaleString('en-GB');
 
     const rows = filteredReports.map((alert, i) => `
       <tr class="${i % 2 === 0 ? 'even' : 'odd'}">
@@ -76,110 +72,34 @@ const ReportsTab = ({ reportDate, setReportDate, filteredReports, fireLogs, syst
   <title>CareVision LK — Alert Report${dateLabel}</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
-    body {
-      font-family: 'Segoe UI', Arial, sans-serif;
-      font-size: 13px;
-      color: #1e293b;
-      background: #fff;
-      padding: 32px 40px;
-    }
-
-    /* ── Header ── */
-    .report-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      margin-bottom: 28px;
-      padding-bottom: 16px;
-      border-bottom: 2px solid #0D6EFD;
-    }
-    .report-logo {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-    .logo-box {
-      width: 36px; height: 36px;
-      background: #0D6EFD;
-      border-radius: 8px;
-      display: flex; align-items: center; justify-content: center;
-    }
+    body { font-family: 'Segoe UI', Arial, sans-serif; font-size: 13px; color: #1e293b; background: #fff; padding: 32px 40px; }
+    .report-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 28px; padding-bottom: 16px; border-bottom: 2px solid #0D6EFD; }
+    .report-logo { display: flex; align-items: center; gap: 10px; }
+    .logo-box { width: 36px; height: 36px; background: #0D6EFD; border-radius: 8px; display: flex; align-items: center; justify-content: center; }
     .logo-box svg { width: 20px; height: 20px; }
     .brand-name { font-size: 18px; font-weight: 800; color: #0D6EFD; }
     .brand-sub  { font-size: 11px; color: #64748b; margin-top: 2px; }
     .report-meta { text-align: right; }
     .report-title { font-size: 16px; font-weight: 700; color: #1e293b; }
     .report-date  { font-size: 12px; color: #64748b; margin-top: 4px; }
-
-    /* ── Summary chips ── */
-    .summary-row {
-      display: flex;
-      gap: 16px;
-      margin-bottom: 24px;
-    }
-    .chip {
-      flex: 1;
-      background: #f8fafc;
-      border: 1px solid #e2e8f0;
-      border-radius: 8px;
-      padding: 12px 16px;
-      text-align: center;
-    }
+    .summary-row { display: flex; gap: 16px; margin-bottom: 24px; }
+    .chip { flex: 1; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 12px 16px; text-align: center; }
     .chip-num  { font-size: 22px; font-weight: 800; color: #0D6EFD; }
     .chip-label{ font-size: 11px; color: #64748b; margin-top: 2px; }
-
-    /* ── Table ── */
-    .section-title {
-      font-size: 14px;
-      font-weight: 700;
-      color: #1e293b;
-      margin-bottom: 10px;
-    }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 12px;
-    }
-    thead tr {
-      background: #0D6EFD;
-      color: white;
-    }
-    thead th {
-      padding: 10px 14px;
-      text-align: left;
-      font-weight: 700;
-      letter-spacing: 0.03em;
-      font-size: 11px;
-      text-transform: uppercase;
-    }
+    .section-title { font-size: 14px; font-weight: 700; color: #1e293b; margin-bottom: 10px; }
+    table { width: 100%; border-collapse: collapse; font-size: 12px; }
+    thead tr { background: #0D6EFD; color: white; }
+    thead th { padding: 10px 14px; text-align: left; font-weight: 700; letter-spacing: 0.03em; font-size: 11px; text-transform: uppercase; }
     tbody tr.even { background: #f8fafc; }
     tbody tr.odd  { background: #ffffff; }
-    tbody td {
-      padding: 9px 14px;
-      border-bottom: 1px solid #e2e8f0;
-      vertical-align: middle;
-    }
+    tbody td { padding: 9px 14px; border-bottom: 1px solid #e2e8f0; vertical-align: middle; }
     .status-pending  { color: #ea580c; font-weight: 700; }
     .status-resolved { color: #16a34a; font-weight: 700; }
-
-    /* ── Footer ── */
-    .report-footer {
-      margin-top: 24px;
-      padding-top: 12px;
-      border-top: 1px solid #e2e8f0;
-      font-size: 11px;
-      color: #94a3b8;
-      display: flex;
-      justify-content: space-between;
-    }
-
-    @media print {
-      body { padding: 16px 24px; }
-    }
+    .report-footer { margin-top: 24px; padding-top: 12px; border-top: 1px solid #e2e8f0; font-size: 11px; color: #94a3b8; display: flex; justify-content: space-between; }
+    @media print { body { padding: 16px 24px; } }
   </style>
 </head>
 <body>
-
   <div class="report-header">
     <div class="report-logo">
       <div class="logo-box">
@@ -197,50 +117,22 @@ const ReportsTab = ({ reportDate, setReportDate, filteredReports, fireLogs, syst
       <div class="report-date">Generated: ${generatedAt}</div>
     </div>
   </div>
-
   <div class="summary-row">
-    <div class="chip">
-      <div class="chip-num">${filteredReports.length}</div>
-      <div class="chip-label">Total Alerts</div>
-    </div>
-    <div class="chip">
-      <div class="chip-num">${filteredReports.filter(a => a.status === 'Pending' || a.status === 'Active').length}</div>
-      <div class="chip-label">Pending</div>
-    </div>
-    <div class="chip">
-      <div class="chip-num">${filteredReports.filter(a => a.status === 'Resolved').length}</div>
-      <div class="chip-label">Resolved</div>
-    </div>
-    <div class="chip">
-      <div class="chip-num">${filteredReports.filter(a => a.alert_type === 'Fire').length}</div>
-      <div class="chip-label">Fire Events</div>
-    </div>
+    <div class="chip"><div class="chip-num">${filteredReports.length}</div><div class="chip-label">Total Alerts</div></div>
+    <div class="chip"><div class="chip-num">${filteredReports.filter(a => a.status === 'Pending' || a.status === 'Active').length}</div><div class="chip-label">Pending</div></div>
+    <div class="chip"><div class="chip-num">${filteredReports.filter(a => a.status === 'Resolved').length}</div><div class="chip-label">Resolved</div></div>
+    <div class="chip"><div class="chip-num">${filteredReports.filter(a => a.alert_type === 'Fire').length}</div><div class="chip-label">Fire Events</div></div>
   </div>
-
   <div class="section-title">Alert Details — ${filteredReports.length} record${filteredReports.length !== 1 ? 's' : ''}</div>
-
   <table>
-    <thead>
-      <tr>
-        <th>Date &amp; Time</th>
-        <th>Alert Type</th>
-        <th>Description</th>
-        <th>Status</th>
-      </tr>
-    </thead>
-    <tbody>
-      ${rows}
-    </tbody>
+    <thead><tr><th>Date &amp; Time</th><th>Alert Type</th><th>Description</th><th>Status</th></tr></thead>
+    <tbody>${rows}</tbody>
   </table>
-
   <div class="report-footer">
     <span>CareVision LK &nbsp;·&nbsp; Confidential</span>
     <span>Total ${filteredReports.length} records exported</span>
   </div>
-
-  <script>
-    window.onload = function() { window.print(); }
-  </script>
+  <script>window.onload = function() { window.print(); }</script>
 </body>
 </html>`;
 
@@ -249,6 +141,37 @@ const ReportsTab = ({ reportDate, setReportDate, filteredReports, fireLogs, syst
     printWindow.document.close();
   };
 
+  const stats = [
+    {
+      label: 'Total Alerts',
+      value: filteredReports.length,
+      icon: <Activity size={20} color="#0D6EFD" />,
+      iconBg: '#eff6ff',
+      accent: '#0D6EFD',
+    },
+    {
+      label: 'Fire Events',
+      value: fireLogs.length,
+      icon: <Flame size={20} color="#ef4444" />,
+      iconBg: '#fff1f2',
+      accent: '#ef4444',
+    },
+    {
+      label: 'Patient Exits',
+      value: systemAlerts.filter(a => a.alert_type === 'Patient Wandering').length,
+      icon: <User size={20} color="#f97316" />,
+      iconBg: '#fff7ed',
+      accent: '#f97316',
+    },
+    {
+      label: 'Access Logs',
+      value: accessLogs.length,
+      icon: <ShieldAlert size={20} color="#10b981" />,
+      iconBg: '#f0fdf4',
+      accent: '#10b981',
+    },
+  ];
+
   return (
     <div className="reports-wrapper">
       <div className="header">
@@ -256,7 +179,7 @@ const ReportsTab = ({ reportDate, setReportDate, filteredReports, fireLogs, syst
         <p>Generate and download detailed system reports</p>
       </div>
 
-      {/* Filter card */}
+      {/* Date filter card */}
       <div className="reports-filter-card card-box">
         <div className="filter-group">
           <label>Select Date</label>
@@ -272,7 +195,7 @@ const ReportsTab = ({ reportDate, setReportDate, filteredReports, fireLogs, syst
               onClick={handleTodayToggle}
               title={isTodayActive ? 'Click to show all records' : 'Click to filter by today'}
             >
-              {isTodayActive ? '✓ Today' : 'Today'}
+              {isTodayActive ? 'Today (active)' : 'Today'}
             </button>
           </div>
         </div>
@@ -283,15 +206,22 @@ const ReportsTab = ({ reportDate, setReportDate, filteredReports, fireLogs, syst
         </div>
       </div>
 
-      {/* Stats cards */}
-      <div className="reports-stats-grid">
-        <div className="report-stat-card"><h2 className="text-black">{filteredReports.length}</h2><p>Total Alerts</p></div>
-        <div className="report-stat-card"><h2 className="text-red">{fireLogs.length}</h2><p>Fire Events</p></div>
-        <div className="report-stat-card"><h2 className="text-orange">{systemAlerts.filter(a => a.alert_type === 'Patient Wandering').length}</h2><p>Patient Exits</p></div>
-        <div className="report-stat-card"><h2 className="text-blue">{accessLogs.length}</h2><p>Access Logs</p></div>
+      {/* Stat summary row */}
+      <div className="stats-grid">
+        {stats.map((s, i) => (
+          <div
+            className="stat-card"
+            key={i}
+            style={{ '--icon-bg': s.iconBg, '--stat-accent': s.accent }}
+          >
+            <div className="stat-card-icon-corner">{s.icon}</div>
+            <h4 className="stat-card-label">{s.label}</h4>
+            <h2 className="stat-card-value">{s.value}</h2>
+          </div>
+        ))}
       </div>
 
-      {/* Table */}
+      {/* Paginated alert log table */}
       <div className="table-container card-box mt-4">
         <div className="pag-table-topbar">
           <h3>Alert Details {reportDate && `(${reportDate})`}</h3>
@@ -313,21 +243,29 @@ const ReportsTab = ({ reportDate, setReportDate, filteredReports, fireLogs, syst
           </thead>
           <tbody>
             {filteredReports.length === 0 ? (
-              <tr><td colSpan="4" className="empty-state-text">No alerts for selected date</td></tr>
+              <tr>
+                <td colSpan="4" className="empty-state-text">No alerts for selected date</td>
+              </tr>
             ) : (
               displayedReports.map((alert) => (
                 <tr key={alert.id}>
                   <td>{alert.timestamp}</td>
                   <td><strong>{alert.alert_type}</strong></td>
                   <td>{alert.description}</td>
-                  <td className={alert.status === 'Active' || alert.status === 'Pending' ? 'text-red font-bold' : 'text-green font-bold'}>{alert.status}</td>
+                  <td className={
+                    alert.status === 'Active' || alert.status === 'Pending'
+                      ? 'text-red font-bold'
+                      : 'text-green font-bold'
+                  }>
+                    {alert.status}
+                  </td>
                 </tr>
               ))
             )}
           </tbody>
         </table>
 
-        {/* Pagination bar */}
+        {/* Pagination controls */}
         <div className="pag-bar">
           <button
             className={`pag-btn pag-btn--nav ${safePage === 0 ? 'pag-btn--disabled' : ''}`}
