@@ -3,31 +3,32 @@ import {
   Cpu, Camera, Users, ShieldAlert, Flame, BellRing,
   FileText, Settings, ChevronDown, ChevronUp,
   CheckCircle, AlertTriangle, Zap, BookOpen,
-  MonitorPlay, UserCheck, Activity, Lock
+  MonitorPlay, UserCheck, Activity, Lock,
+  LayoutDashboard, Video, ShieldCheck, Info, User
 } from 'lucide-react';
 import './AboutTab.css';
 
 /* ── FAQ Data ───────────────────────────────────── */
 const FAQ_ITEMS = [
   {
-    q: 'What happens when a fire is detected?',
-    a: 'The YOLOv8 model instantly triggers a critical alert in the system. The Dashboard and Fire Monitoring tab both flash the active alert. The admin can then notify emergency services directly from the Fire Monitoring tab with a single click.'
+    q: 'How does the system ensure patient data privacy under medical regulations?',
+    a: 'CareVision LK is deployed as a fully on-premise edge appliance. All live video stream processing, face detection encoding, and hazard analysis are computed locally. No video footage, patient face photographs, or analytical data are transmitted outside the hospital\'s private local network. This aligns with standard data protection protocols for medical environments.'
   },
   {
-    q: 'How does Patient Identification work?',
-    a: 'When a patient is registered, their facial embedding is stored in the database. The live CCTV feed is continuously cross-referenced against this database. If a high-risk patient is detected in an unauthorized zone, an alert is immediately created.'
+    q: 'What is the average latency of the live AI monitoring modules?',
+    a: 'The platform\'s processing loop averages between 150ms to 350ms per frame depending on server hardware load. By utilizing frame-skipping and local CPU scheduling, the system remains highly responsive without bottlenecking network bandwidth, refreshing telemetry to the frontend feed every 3 to 5 seconds.'
   },
   {
-    q: 'Can multiple AI modules run at the same time?',
-    a: 'Yes. Patient Identification, Mask Detection, and Fire & Smoke Detection can all run simultaneously on each camera node. Each can be individually toggled per camera in the Live CCTV Feeds tab.'
+    q: 'Can we configure different AI monitoring zones for individual cameras?',
+    a: 'Yes. AI modules can be toggled independently for each CCTV node in the \'Live CCTV Feeds\' interface. For example, you can enable Face Mask compliance only on entrance cameras, Patient Identification on ward cameras, and Fire & Smoke Detection globally.'
   },
   {
-    q: 'How do I resolve an alert?',
-    a: 'Pending alerts appear in the Dashboard\'s Alert Notifications Feed. Click the "✓ Resolve" button next to an alert to mark it as resolved. Resolved alerts are moved to history and counted in Reports & Logs.'
+    q: 'How are alerts handled and documented in the platform database?',
+    a: 'When a violation is detected (e.g. fire/smoke trigger or unauthorized ward wander), a persistent record is generated in the system database. The event flashes red across the dashboard in real-time. Admins must manually mark events as \'Resolved\' after verification, automatically updating the historical archive for PDF generation.'
   },
   {
-    q: 'Who can access this system?',
-    a: 'Access is restricted to pre-authorized administrator email addresses only. Unauthorized accounts are automatically signed out and denied entry. This list is managed in the source code ACL.'
+    q: 'What are the network requirements for high-resolution cameras?',
+    a: 'The system processes streams dynamically. To prevent network overhead, high-resolution cameras (1080p and higher) are downscaled to 320px width internally before inference, meaning standard IP/RTSP cameras require less than 4 Mbps bandwidth on the hospital intranet.'
   },
 ];
 
@@ -54,7 +55,7 @@ const AI_MODULES = [
     color: 'red',
     title: 'Fire & Smoke Detection',
     tech: 'YOLOv8 Nano Model',
-    desc: 'Real-time bounding-box processing to detect fire or smoke hazards within milliseconds.',
+    desc: 'Real-time bounding-box processing to detect fire or smoke hazards. On detection, other active AI modules (Patient ID & Mask Detection) are automatically turned off to prioritize hazard monitoring.',
     cams: 'Cameras 1 – 5',
   },
 ];
@@ -109,22 +110,20 @@ const AboutTab = () => {
       {/* ── Hero Banner ── */}
       <div className="about-hero">
         <div className="about-hero-badge">
-          <Lock size={13} /> Authorized Admins Only
+          <ShieldCheck size={13} /> Local Deployment Instance
         </div>
         <h1 className="about-hero-title">CareVision LK</h1>
         <p className="about-hero-subtitle">
           Hospital Edge AI Security &amp; Monitoring Platform
         </p>
         <p className="about-hero-desc">
-          An advanced real-time surveillance system powered by deep learning, designed
-          to protect patients, staff, and hospital infrastructure through intelligent
-          multi-camera analysis and instant alert management.
+          Enterprise edge intelligence designed for continuous patient safety monitoring, real-time fire and hazard warnings, and PPE compliance enforcement across ward zones. Powered by lightweight deep learning architectures optimized for local hospital server infrastructure.
         </p>
         <div className="about-hero-pills">
-          <span className="about-pill about-pill--blue"><Zap size={12} /> AI-Powered</span>
-          <span className="about-pill about-pill--green"><CheckCircle size={12} /> Real-Time</span>
-          <span className="about-pill about-pill--red"><AlertTriangle size={12} /> Multi-Hazard</span>
-          <span className="about-pill about-pill--grey"><Camera size={12} /> Multi-Camera</span>
+          <span className="about-pill about-pill--blue"><Zap size={12} /> Edge Intel</span>
+          <span className="about-pill about-pill--green"><CheckCircle size={12} /> Local Processing</span>
+          <span className="about-pill about-pill--red"><AlertTriangle size={12} /> Hazard Monitoring</span>
+          <span className="about-pill about-pill--grey"><Camera size={12} /> Intranet Streams</span>
         </div>
       </div>
 
@@ -208,18 +207,21 @@ const AboutTab = () => {
             </thead>
             <tbody>
               {[
-                { tab: '🏠 Dashboard', purpose: 'Central command view — live stats & alert feed', actions: 'Resolve alerts, view AI module status' },
-                { tab: '📷 Live CCTV Feeds', purpose: 'View all connected camera streams', actions: 'Toggle AI modules per camera' },
-                { tab: '👥 Patient Management', purpose: 'Register and manage patient records', actions: 'Add / delete patients, upload face photos' },
-                { tab: '🛡️ Mask Detection', purpose: 'Real-time mask compliance logs', actions: 'Review access granted / denied events' },
-                { tab: '🔥 Fire Monitoring', purpose: 'Fire & smoke detection events', actions: 'Resolve alerts, notify emergency services' },
-                { tab: '📄 Reports & Logs', purpose: 'Historical data and incident reports', actions: 'Filter by date, download PDF reports' },
-                { tab: '👤 User Management', purpose: 'View authorized admin accounts', actions: 'Review system access list' },
-                { tab: '⚙️ Settings', purpose: 'Camera IP configuration', actions: 'Add / update / remove camera streams' },
-                { tab: 'ℹ️ About', purpose: 'System documentation & usage guide', actions: 'Read this guide' },
+                { icon: <LayoutDashboard size={14} color="#0D6EFD" />, tab: 'Dashboard',          purpose: 'Central command view — live stats & alert feed',      actions: 'Resolve alerts, view AI module status' },
+                { icon: <Video         size={14} color="#0D6EFD" />, tab: 'Live CCTV Feeds',     purpose: 'View all connected camera streams',                  actions: 'Toggle AI modules per camera' },
+                { icon: <Users         size={14} color="#0D6EFD" />, tab: 'Patient Management',  purpose: 'Register and manage patient records',                actions: 'Add / delete patients, upload face photos' },
+                { icon: <ShieldCheck   size={14} color="#0D6EFD" />, tab: 'Mask Detection',       purpose: 'Real-time mask compliance logs',                     actions: 'Review access granted / denied events' },
+                { icon: <Flame         size={14} color="#ef4444" />, tab: 'Fire Monitoring',      purpose: 'Fire & smoke detection events',                      actions: 'Resolve alerts, notify emergency services' },
+                { icon: <FileText      size={14} color="#0D6EFD" />, tab: 'Reports & Logs',       purpose: 'Historical data and incident reports',               actions: 'Filter by date, download PDF reports' },
+                { icon: <User          size={14} color="#0D6EFD" />, tab: 'User Management',      purpose: 'View authorized admin accounts',                     actions: 'Review system access list' },
+                { icon: <Settings      size={14} color="#0D6EFD" />, tab: 'Settings',             purpose: 'Camera IP configuration',                            actions: 'Add / update / remove camera streams' },
+                { icon: <Info          size={14} color="#0D6EFD" />, tab: 'About',                purpose: 'System documentation & usage guide',                 actions: 'Read this guide' },
               ].map((row) => (
                 <tr key={row.tab}>
-                  <td className="about-nav-tab-cell">{row.tab}</td>
+                  <td className="about-nav-tab-cell">
+                    <span className="about-nav-tab-icon">{row.icon}</span>
+                    {row.tab}
+                  </td>
                   <td>{row.purpose}</td>
                   <td className="about-nav-action-cell">{row.actions}</td>
                 </tr>

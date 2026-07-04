@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Users, ShieldAlert, AlertTriangle, Camera, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Users, AlertTriangle, Camera, ChevronLeft, ChevronRight, ShieldCheck } from 'lucide-react';
 import './MaskDetectionTab.css';
 
 const ROWS_PER_PAGE = 10;
@@ -12,9 +12,8 @@ const MaskDetectionTab = ({ totalAccess, grantedAccess, deniedAccess, activeCamC
 
   const handleNext = () => { if (currentPage < totalPages - 1) setCurrentPage(p => p + 1); };
   const handlePrev = () => { if (currentPage > 0) setCurrentPage(p => p - 1); };
-  const handlePage = (n)  => setCurrentPage(n);
+  const handlePage = (n) => setCurrentPage(n);
 
-  /* Build page numbers to display (max 5 visible) */
   const getPageNumbers = () => {
     if (totalPages <= 5) return Array.from({ length: totalPages }, (_, i) => i);
     if (currentPage <= 2) return [0, 1, 2, 3, 4];
@@ -25,22 +24,60 @@ const MaskDetectionTab = ({ totalAccess, grantedAccess, deniedAccess, activeCamC
   const startRow = accessLogs.length === 0 ? 0 : currentPage * ROWS_PER_PAGE + 1;
   const endRow   = Math.min((currentPage + 1) * ROWS_PER_PAGE, accessLogs.length);
 
+  const stats = [
+    {
+      label: 'Total Access Attempts',
+      value: totalAccess > 0 ? totalAccess : 0,
+      icon: <Users size={20} color="#0D6EFD" />,
+      iconBg: '#eff6ff',
+      accent: '#0D6EFD',
+    },
+    {
+      label: 'Access Granted',
+      value: grantedAccess,
+      icon: <ShieldCheck size={20} color="#10b981" />,
+      iconBg: '#f0fdf4',
+      accent: '#10b981',
+    },
+    {
+      label: 'Access Denied',
+      value: deniedAccess,
+      icon: <AlertTriangle size={20} color="#ef4444" />,
+      iconBg: '#fff1f2',
+      accent: '#ef4444',
+    },
+    {
+      label: 'Active Cameras',
+      value: activeCamCount,
+      icon: <Camera size={20} color="#f59e0b" />,
+      iconBg: '#fffbeb',
+      accent: '#f59e0b',
+    },
+  ];
+
   return (
     <div className="access-wrapper">
       <div className="header">
         <h1>Mask Detection</h1>
-        <p>Real-time hospital monitoring and security status</p>
+        <p>Real-time PPE compliance monitoring and access control</p>
       </div>
 
+      {/* Stat summary row */}
       <div className="stats-grid">
-        <div className="stat-card"><div className="flex-between align-start"><div><h4>Total Access Attempts</h4><h2>{totalAccess > 0 ? totalAccess : 0}</h2></div><div className="outline-icon-box border-blue"><Users size={20} /></div></div></div>
-        <div className="stat-card"><div className="flex-between align-start"><div><h4>Access Granted</h4><h2>{grantedAccess}</h2></div><div className="outline-icon-box border-green"><ShieldAlert size={20} /></div></div></div>
-        <div className="stat-card"><div className="flex-between align-start"><div><h4>Access Denied</h4><h2>{deniedAccess}</h2></div><div className="outline-icon-box border-red"><AlertTriangle size={20} /></div></div></div>
-        <div className="stat-card"><div className="flex-between align-start"><div><h4>Active Cameras</h4><h2>{activeCamCount}</h2></div><div className="outline-icon-box border-yellow"><Camera size={20} /></div></div></div>
+        {stats.map((s, i) => (
+          <div
+            className="stat-card"
+            key={i}
+            style={{ '--icon-bg': s.iconBg, '--stat-accent': s.accent }}
+          >
+            <div className="stat-card-icon-corner">{s.icon}</div>
+            <h4 className="stat-card-label">{s.label}</h4>
+            <h2 className="stat-card-value">{s.value}</h2>
+          </div>
+        ))}
       </div>
 
       <div className="table-container card-box mt-4">
-        {/* Table header row */}
         <div className="pag-table-topbar">
           <h3>Access Control Logs</h3>
           <span className="pag-record-info">
@@ -50,7 +87,6 @@ const MaskDetectionTab = ({ totalAccess, grantedAccess, deniedAccess, activeCamC
           </span>
         </div>
 
-        {/* Table */}
         <div className="mask-table-wrapper">
           <table className="data-table">
             <thead className="mask-table-head">
@@ -78,7 +114,7 @@ const MaskDetectionTab = ({ totalAccess, grantedAccess, deniedAccess, activeCamC
           </table>
         </div>
 
-        {/* Pagination bar */}
+        {/* Pagination controls */}
         <div className="pag-bar">
           <button
             className={`pag-btn pag-btn--nav ${currentPage === 0 ? 'pag-btn--disabled' : ''}`}

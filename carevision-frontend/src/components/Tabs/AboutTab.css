@@ -9,76 +9,55 @@
   gap: 24px;
 }
 
-/* ── Hero Banner ──────────────────────────────── */
+/* Hero banner — sophisticated off-white card style */
 .about-hero {
-  background: linear-gradient(135deg, #0D6EFD 0%, #1a3a6b 100%);
+  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+  border: 1px solid #e2e8f0;
   border-radius: 14px;
-  padding: 48px 40px;
-  color: white;
+  padding: 40px;
+  color: #1e293b;
   position: relative;
   overflow: hidden;
-}
-
-.about-hero::before {
-  content: '';
-  position: absolute;
-  top: -60px;
-  right: -60px;
-  width: 280px;
-  height: 280px;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.05);
-  pointer-events: none;
-}
-
-.about-hero::after {
-  content: '';
-  position: absolute;
-  bottom: -80px;
-  left: -40px;
-  width: 220px;
-  height: 220px;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.04);
-  pointer-events: none;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.02);
 }
 
 .about-hero-badge {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  background: rgba(255, 255, 255, 0.15);
-  border: 1px solid rgba(255, 255, 255, 0.25);
+  background: #eff6ff;
+  border: 1px solid #bfdbfe;
   border-radius: 20px;
   padding: 5px 14px;
+  color: #0d6efd;
   font-size: 12px;
   font-weight: 600;
   letter-spacing: 0.04em;
   margin-bottom: 18px;
-  backdrop-filter: blur(6px);
 }
 
 .about-hero-title {
   margin: 0 0 6px 0;
-  font-size: 38px;
+  font-size: 34px;
   font-weight: 800;
   letter-spacing: -0.02em;
   line-height: 1.1;
+  color: #0f172a;
 }
 
 .about-hero-subtitle {
   margin: 0 0 16px 0;
   font-size: 16px;
-  font-weight: 500;
-  opacity: 0.85;
+  font-weight: 600;
+  color: #475569;
 }
 
 .about-hero-desc {
   margin: 0 0 24px 0;
-  font-size: 14px;
+  font-size: 14.5px;
   line-height: 1.7;
-  opacity: 0.78;
-  max-width: 680px;
+  color: #64748b;
+  max-width: 760px;
 }
 
 .about-hero-pills {
@@ -98,10 +77,10 @@
   letter-spacing: 0.03em;
 }
 
-.about-pill--blue  { background: rgba(255,255,255,0.18); color: #fff; border: 1px solid rgba(255,255,255,0.3); }
-.about-pill--green { background: rgba(16,185,129,0.25);  color: #6ee7b7; border: 1px solid rgba(16,185,129,0.4); }
-.about-pill--red   { background: rgba(239,68,68,0.22);   color: #fca5a5; border: 1px solid rgba(239,68,68,0.4); }
-.about-pill--grey  { background: rgba(255,255,255,0.10); color: #cbd5e1;  border: 1px solid rgba(255,255,255,0.2); }
+.about-pill--blue  { background: #eff6ff; color: #1e40af; border: 1px solid #bfdbfe; }
+.about-pill--green { background: #e8f5e9; color: #1b5e20; border: 1px solid #c8e6c9; }
+.about-pill--red   { background: #ffebee; color: #c62828; border: 1px solid #ffcdd2; }
+.about-pill--grey  { background: #f1f5f9; color: #475569; border: 1px solid #e2e8f0; }
 
 /* ── Quick Stats Row ──────────────────────────── */
 .about-quick-stats {
@@ -345,6 +324,20 @@
   font-weight: 700;
   color: #1e293b !important;
   white-space: nowrap;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.about-nav-tab-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 6px;
+  background: #f1f5f9;
+  flex-shrink: 0;
 }
 
 .about-nav-action-cell {
