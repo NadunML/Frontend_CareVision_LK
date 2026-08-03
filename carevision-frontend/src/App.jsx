@@ -13,6 +13,7 @@ import DashboardLayout from './components/DashboardLayout';
 const AUTHORIZED_ADMIN_EMAILS = [
   'liyanage2021@gmail.com', 
   'mlndliyanage9@gmail.com',
+  'lakshanikaveesha2003@gmail.com',
   '22cis0263@ms.sab.ac.lk'
 ];
 
