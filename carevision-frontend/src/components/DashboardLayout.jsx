@@ -62,7 +62,7 @@ const DashboardLayout = ({ onLogout }) => {
     }));
 
     try {
-      await fetch(`http://localhost:5000/api/set_camera_ai`, {
+      await fetch(`${import.meta.env.VITE_API_URL}/api/set_camera_ai`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ camId: String(camId), module: type, status: newStatus })
@@ -75,7 +75,7 @@ const DashboardLayout = ({ onLogout }) => {
   useEffect(() => {
     const fetchCurrentModes = async () => {
       try {
-        const response = await fetch('http://localhost:5000/api/get_modes');
+        const response = await fetch(`${import.meta.env.VITE_API_URL}/api/get_modes`);
         if (response.ok) {
           const data = await response.json();
           setAiControls(data);
@@ -90,7 +90,7 @@ const DashboardLayout = ({ onLogout }) => {
   useEffect(() => {
     const fetchCameraAiConfigs = async () => {
       try {
-        const response = await fetch('http://localhost:5000/api/get_camera_ai');
+        const response = await fetch(`${import.meta.env.VITE_API_URL}/api/get_camera_ai`);
         if (response.ok) {
           const data = await response.json();
           const formattedData = {};
@@ -109,7 +109,7 @@ const DashboardLayout = ({ onLogout }) => {
   }, []);
 
   useEffect(() => {
-    fetch('http://localhost:5000/api/get_cameras')
+    fetch(`${import.meta.env.VITE_API_URL}/api/get_cameras`)
       .then(res => res.json())
       .then(data => {
         setCameraIps(prev => ({ ...prev, ...data }));
@@ -127,7 +127,7 @@ const DashboardLayout = ({ onLogout }) => {
 
   const fetchPatients = async () => {
     try {
-      const response = await fetch('http://localhost:5000/api/patients');
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/patients`);
       const data = await response.json();
       if (response.ok) {
         if (Array.isArray(data)) {
@@ -149,7 +149,7 @@ const DashboardLayout = ({ onLogout }) => {
 
   const fetchAccessLogs = async () => {
     try {
-      const response = await fetch('http://localhost:5000/api/access_logs');
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/access_logs`);
       const data = await response.json();
       if (response.ok && Array.isArray(data)) setAccessLogs(data);
     } catch (error) {
@@ -167,7 +167,7 @@ const DashboardLayout = ({ onLogout }) => {
 
   const fetchFireLogs = async () => {
     try {
-      const response = await fetch('http://localhost:5000/api/fire_logs');
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/fire_logs`);
       const data = await response.json();
       if (response.ok && Array.isArray(data)) setFireLogs(data);
     } catch (error) {
@@ -183,7 +183,7 @@ const DashboardLayout = ({ onLogout }) => {
 
   const fetchSystemAlerts = async () => {
     try {
-      const response = await fetch('http://localhost:5000/api/system_alerts');
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/system_alerts`);
       const data = await response.json();
       if (response.ok && Array.isArray(data)) setSystemAlerts(data);
     } catch (error) {
@@ -205,7 +205,7 @@ const DashboardLayout = ({ onLogout }) => {
       // First time fire detected this session — disable patient+mask globally
       didDisableRef.current = true;
       setBannerDismissed(false); // always show banner when new fire appears
-      fetch('http://localhost:5000/api/disable_non_fire', { method: 'POST' })
+      fetch(`${import.meta.env.VITE_API_URL}/api/disable_non_fire`, { method: 'POST' })
         .then(res => res.json())
         .then(data => {
           if (data.status === 'success') {
@@ -224,14 +224,14 @@ const DashboardLayout = ({ onLogout }) => {
 
   const handleResolveFireAlert = async (logId) => {
     try {
-      const response = await fetch(`http://localhost:5000/api/resolve_fire_alert/${logId}`, { method: 'POST' });
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/resolve_fire_alert/${logId}`, { method: 'POST' });
       if (response.ok) fetchFireLogs();
     } catch (error) { console.error("Error resolving alert:", error); }
   };
 
   const handleResolveSystemAlert = async (alertId) => {
     try {
-      const response = await fetch(`http://localhost:5000/api/resolve_system_alert/${alertId}`, { method: 'POST' });
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/resolve_system_alert/${alertId}`, { method: 'POST' });
       if (response.ok) fetchSystemAlerts();
     } catch (error) { console.error("Error resolving system alert:", error); }
   };
@@ -260,7 +260,7 @@ const DashboardLayout = ({ onLogout }) => {
     formData.append('image', imageFile);
 
     try {
-      const response = await fetch('http://localhost:5000/api/register-patient', {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/register-patient`, {
         method: 'POST',
         body: formData,
       });
@@ -285,7 +285,7 @@ const DashboardLayout = ({ onLogout }) => {
   const handleDeletePatient = async (patientId) => {
     if (window.confirm("Are you sure you want to delete this patient?")) {
       try {
-        const response = await fetch(`http://localhost:5000/api/delete-patient/${patientId}`, { method: 'DELETE' });
+        const response = await fetch(`${import.meta.env.VITE_API_URL}/api/delete-patient/${patientId}`, { method: 'DELETE' });
         const result = await response.json();
         if (response.ok && result.status === 'success') {
           alert("Patient deleted successfully!");
@@ -302,7 +302,7 @@ const DashboardLayout = ({ onLogout }) => {
 
   const toggleAI = async (feature) => {
     try {
-      const response = await fetch(`http://localhost:5000/toggle_mode/${feature}`, { method: 'POST' });
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/toggle_mode/${feature}`, { method: 'POST' });
       if (response.ok) {
         const data = await response.json();
         if (data.status === 'success') setAiControls(data.modes);
@@ -320,7 +320,7 @@ const DashboardLayout = ({ onLogout }) => {
     formData.append('url', url);
 
     try {
-      const response = await fetch('http://localhost:5000/api/update_camera', { method: 'POST', body: formData });
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/update_camera`, { method: 'POST', body: formData });
       if (response.ok) {
         setCameraIps(prev => ({ ...prev, [camId]: url }));
         alert(`Camera 0${camId} connected successfully!`);
@@ -336,7 +336,7 @@ const DashboardLayout = ({ onLogout }) => {
     formData.append('cam_id', camId);
     formData.append('url', '');
     try {
-      const response = await fetch('http://localhost:5000/api/update_camera', { method: 'POST', body: formData });
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/update_camera`, { method: 'POST', body: formData });
       if (response.ok) {
         setCameraIps(prev => ({ ...prev, [camId]: '' }));
         setInputIps(prev => ({ ...prev, [camId]: '' }));
