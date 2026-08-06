@@ -5,6 +5,8 @@ import {
 } from 'lucide-react';
 import './PatientManagementTab.css';
 
+const API_URL = import.meta.env.VITE_API_URL;
+
 const PatientManagementTab = ({
   showRegisterForm,
   setShowRegisterForm,
@@ -323,7 +325,7 @@ const PatientManagementTab = ({
                   ) : (
                     filteredPatients.map((patient, index) => {
                       const imageUrl = patient.image_path
-                        ? `http://localhost:5000/uploads/${patient.image_path}`
+                        ? `${API_URL}/uploads/${patient.image_path}`
                         : null;
 
                       return (

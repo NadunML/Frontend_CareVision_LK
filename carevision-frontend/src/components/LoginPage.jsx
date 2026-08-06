@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { signInWithEmailAndPassword, signInWithPopup } from 'firebase/auth';
-import { auth, googleProvider } from '../firebase'; 
-import './LoginPage.css'; 
+import { signInWithEmailAndPassword, signInWithPopup, OAuthProvider } from 'firebase/auth';
+import { auth } from '../firebase';
+import './LoginPage.css';
 
 const LoginPage = ({ onLoginSuccess }) => {
   const [email, setEmail] = useState('');
@@ -9,13 +9,30 @@ const LoginPage = ({ onLoginSuccess }) => {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
+  // Backend එකට Login History එක යවන Function එක
+  const saveLoginHistory = async (userEmail) => {
+    try {
+      await fetch(`${import.meta.env.VITE_API_URL}/api/login-history`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email: userEmail })
+      });
+    } catch (err) {
+      console.error('Failed to save login history:', err);
+    }
+  };
+
+  // Email/Password Login
   const handleEmailLogin = async (e) => {
     e.preventDefault();
     setLoading(true);
     setError('');
     try {
-      await signInWithEmailAndPassword(auth, email, password);
-      onLoginSuccess();
+      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      await saveLoginHistory(userCredential.user.email); // මෙතනින් ඉතිහාසය සේව් වෙනවා
+      // App.jsx will handle the domain checking logic
     } catch (err) {
       setError('Invalid email or password. Please try again.');
       console.error(err);
@@ -24,14 +41,24 @@ const LoginPage = ({ onLoginSuccess }) => {
     }
   };
 
-  const handleGoogleLogin = async () => {
+  // Microsoft Login
+  const handleMicrosoftLogin = async () => {
     setLoading(true);
     setError('');
     try {
-      await signInWithPopup(auth, googleProvider);
-      onLoginSuccess();
+      const provider = new OAuthProvider('microsoft.com');
+      // Hint to Microsoft that we want the university email
+      provider.setCustomParameters({
+        tenant: import.meta.env.VITE_MICROSOFT_TENANT_ID,
+        prompt: 'consent',
+        login_hint: 'user@ms.sab.ac.lk'
+      });
+
+      const result = await signInWithPopup(auth, provider);
+      await saveLoginHistory(result.user.email); // මෙතනින් ඉතිහාසය සේව් වෙනවා
+      // App.jsx will automatically catch the state change and verify the domain
     } catch (err) {
-      setError('Google sign-in failed. Please try again.');
+      setError('Microsoft sign-in failed. Please try again.');
       console.error(err);
     } finally {
       setLoading(false);
@@ -41,7 +68,7 @@ const LoginPage = ({ onLoginSuccess }) => {
   return (
     <div className="login-container">
       <div className="login-card">
-        
+
         <div className="login-header">
           <div className="logo-box-large">
             <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -57,22 +84,22 @@ const LoginPage = ({ onLoginSuccess }) => {
         <form onSubmit={handleEmailLogin} className="login-form">
           <div className="input-group">
             <label>Email Address</label>
-            <input 
-              type="email" 
-              placeholder="admin@hospital.lk" 
-              value={email} 
-              onChange={(e) => setEmail(e.target.value)} 
-              required 
+            <input
+              type="email"
+              placeholder="admin@hospital.lk"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
             />
           </div>
           <div className="input-group">
             <label>Password</label>
-            <input 
-              type="password" 
-              placeholder="Enter your password" 
-              value={password} 
-              onChange={(e) => setPassword(e.target.value)} 
-              required 
+            <input
+              type="password"
+              placeholder="Enter your password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
             />
           </div>
           <button type="submit" className="login-btn" disabled={loading}>
@@ -82,9 +109,16 @@ const LoginPage = ({ onLoginSuccess }) => {
 
         <div className="divider"><span>OR</span></div>
 
-        <button onClick={handleGoogleLogin} className="google-btn" disabled={loading}>
-          <img src="https://upload.wikimedia.org/wikipedia/commons/c/c1/Google_%22G%22_logo.svg" alt="Google logo" style={{width: '20px', marginRight: '10px'}} />
-          Sign in with Google
+        {/* Microsoft Sign-In Button */}
+        <button onClick={handleMicrosoftLogin} className="google-btn" disabled={loading} style={{ backgroundColor: '#2F2F2F', color: 'white' }}>
+          {/* Microsoft Icon */}
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 21 21" style={{ marginRight: '10px' }}>
+            <rect x="1" y="1" width="9" height="9" fill="#f25022" />
+            <rect x="11" y="1" width="9" height="9" fill="#7fba00" />
+            <rect x="1" y="11" width="9" height="9" fill="#00a4ef" />
+            <rect x="11" y="11" width="9" height="9" fill="#ffb900" />
+          </svg>
+          Sign in with Microsoft
         </button>
 
       </div>

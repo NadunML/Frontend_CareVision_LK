@@ -151,16 +151,27 @@ const OverviewTab = ({
 
       {/* ── AI Models Status (read-only) ── */}
       <div className="card-box ai-status-card">
-        <div className="ai-status-header">
-          <div className="ai-status-header-title">
-            <div className="ai-status-icon-wrap">
-              <Activity size={17} color="#0D6EFD" />
+        <div className="ai-status-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+
+          {/* FIX: Properly Aligned Header Section */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+            <div style={{
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              width: '42px', height: '42px', backgroundColor: '#eff6ff',
+              borderRadius: '10px', color: '#0d6efd', flexShrink: 0
+            }}>
+              <Activity size={20} />
             </div>
-            <div>
-              <h3 className="ai-status-heading">AI Models Status</h3>
-              <p className="ai-status-subtitle">Live view — manage AI modules from Live CCTV Feeds</p>
+            <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+              <h3 style={{ margin: 0, fontSize: '1.25rem', fontWeight: 'bold', color: '#0f172a', lineHeight: '1.2' }}>
+                AI Models Status
+              </h3>
+              <p style={{ margin: '4px 0 0 0', fontSize: '0.875rem', color: '#64748b', lineHeight: '1.2' }}>
+                Live view — manage AI modules from Live CCTV Feeds
+              </p>
             </div>
           </div>
+
           <span className={`ai-status-badge ${isEmergencyLockdown ? 'emergency-badge' : ''}`} style={isEmergencyLockdown ? { backgroundColor: '#fee2e2', color: '#ef4444', borderColor: '#fca5a5' } : {}}>
             {totalActiveCamsCount > 0
               ? `${totalActiveCamsCount} Camera(s) Active`
@@ -311,8 +322,8 @@ const OverviewTab = ({
                   {pageAlerts.map((alert) => (
                     <div className="alert-feed-item" key={alert.id}>
                       <div className={`alert-icon-box ${alert.alert_type === 'Fire' ? 'bg-fire' :
-                          alert.alert_type === 'Patient Wandering' ? 'bg-patient' :
-                            'bg-mask'
+                        alert.alert_type === 'Patient Wandering' ? 'bg-patient' :
+                          'bg-mask'
                         }`}>
                         {alert.alert_type === 'Fire' && <Flame size={20} color="#ffffff" />}
                         {alert.alert_type === 'Patient Wandering' && <User size={20} color="#ffffff" />}

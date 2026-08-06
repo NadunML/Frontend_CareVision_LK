@@ -1,12 +1,34 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import {
-  Camera, AlertTriangle, Maximize, UserSearch,
+  Camera, AlertTriangle, Maximize, Minimize, UserSearch,
   Shield, Flame, Video, Wifi, WifiOff, Activity, Lock
 } from 'lucide-react';
 import './CCTVFeedsTab.css';
 
+const API_URL = import.meta.env.VITE_API_URL;
+
+
 const CCTVFeedsTab = ({ cameraIps, toggleFullScreen, aiConfigs, onToggleAI, isEmergencyLockdown = false }) => {
   const [hoveredCam, setHoveredCam] = useState(null);
+  const [isGridFullscreen, setIsGridFullscreen] = useState(false);
+  const gridRef = useRef(null);
+
+  // Keep toggle icon in sync when user exits fullscreen via Escape key
+  useEffect(() => {
+    const handleFsChange = () => {
+      setIsGridFullscreen(!!document.fullscreenElement);
+    };
+    document.addEventListener('fullscreenchange', handleFsChange);
+    return () => document.removeEventListener('fullscreenchange', handleFsChange);
+  }, []);
+
+  const handleGridFullscreen = () => {
+    if (!document.fullscreenElement) {
+      gridRef.current?.requestFullscreen();
+    } else {
+      document.exitFullscreen();
+    }
+  };
 
   // Count how many cameras have an IP configured
   const configuredCameras = [1, 2, 3, 4, 5].filter(
@@ -136,10 +158,20 @@ const CCTVFeedsTab = ({ cameraIps, toggleFullScreen, aiConfigs, onToggleAI, isEm
               <span className="cctv-chip-dot cctv-chip-dot--red" />
               {5 - configuredCameras} Offline
             </span>
+            <button
+              className="cctv-fullscreen-btn"
+              onClick={handleGridFullscreen}
+              title={isGridFullscreen ? 'Exit fullscreen grid' : 'Fullscreen grid'}
+            >
+              {isGridFullscreen
+                ? <Minimize size={13} />
+                : <Maximize size={13} />}
+              {isGridFullscreen ? 'Exit' : 'Fullscreen'}
+            </button>
           </div>
         </div>
 
-        <div className="cctv-camera-grid">
+        <div className="cctv-camera-grid" ref={gridRef}>
           {[1, 2, 3, 4, 5].map((cam) => (
             <div
               key={cam}
@@ -159,7 +191,7 @@ const CCTVFeedsTab = ({ cameraIps, toggleFullScreen, aiConfigs, onToggleAI, isEm
                   </div>
 
                   <img
-                    src={`http://localhost:5000/video_feed/${cam}`}
+                    src={`${API_URL}/video_feed/${cam}`}
                     className="cam-video-feed"
                     alt={`Camera ${cam} live feed`}
                   />

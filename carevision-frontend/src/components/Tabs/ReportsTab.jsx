@@ -47,8 +47,8 @@ const ReportsTab = ({ reportDate, setReportDate, filteredReports, fireLogs, syst
   const endRow   = Math.min((safePage + 1) * ROWS_PER_PAGE, filteredReports.length);
 
   const handleDownloadPDF = () => {
+    // Silently return if no data — the UI stat cards already communicate the empty state
     if (filteredReports.length === 0) {
-      alert('No alert records to export.');
       return;
     }
 

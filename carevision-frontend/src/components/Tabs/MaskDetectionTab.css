@@ -21,16 +21,39 @@
 }
 
 /* Column widths */
-.col-camera-id   { padding: 12px 15px; text-align: left; width: 20%; }
-.col-mask        { padding: 12px 15px; text-align: left; width: 25%; }
-.col-access      { padding: 12px 15px; text-align: left; width: 25%; }
-.col-timestamp   { padding: 12px 15px; text-align: left; width: 30%; }
+.col-camera-id {
+  padding: 12px 15px;
+  text-align: left;
+  width: 20%;
+}
+
+.col-mask {
+  padding: 12px 15px;
+  text-align: left;
+  width: 25%;
+}
+
+.col-access {
+  padding: 12px 15px;
+  text-align: left;
+  width: 25%;
+}
+
+.col-timestamp {
+  padding: 12px 15px;
+  text-align: left;
+  width: 30%;
+}
 
 /* Standard table cell */
-.mask-td { padding: 12px 15px; }
+.mask-td {
+  padding: 12px 15px;
+}
 
 /* Row separator */
-.mask-row { border-bottom: 1px solid #e2e8f0; }
+.mask-row {
+  border-bottom: 1px solid #e2e8f0;
+}
 
 /* Empty state */
 .mask-empty-cell {

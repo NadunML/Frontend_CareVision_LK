@@ -3,14 +3,14 @@ import { auth } from '../../firebase';
 import { Users, ShieldCheck, Clock } from 'lucide-react';
 import './UserManagementTab.css';
 
-const AUTHORIZED_ADMIN_EMAILS = [
-  'liyanage2021@gmail.com',
-  'mlndliyanage9@gmail.com',
-  '22cis0263@ms.sab.ac.lk',
-];
+// Authorized admin emails are managed via the VITE_AUTHORIZED_ADMIN_EMAILS env variable
+const AUTHORIZED_ADMIN_EMAILS = import.meta.env.VITE_AUTHORIZED_ADMIN_EMAILS
+  ? import.meta.env.VITE_AUTHORIZED_ADMIN_EMAILS.split(',').map((e) => e.trim())
+  : [];
 
 const UserManagementTab = () => {
   const [currentUser, setCurrentUser] = useState(null);
+  const [loginHistory, setLoginHistory] = useState([]);
 
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged((user) => {
@@ -20,24 +20,22 @@ const UserManagementTab = () => {
         setCurrentUser(null);
       }
     });
+
+    // Backend එකෙන් Login History ඩේටා ටික ගෙනෙන Function එක
+    const fetchLoginHistory = async () => {
+      try {
+        const res = await fetch(`${import.meta.env.VITE_API_URL}/api/login-history`);
+        const data = await res.json();
+        setLoginHistory(data);
+      } catch (error) {
+        console.error('Failed to fetch login history', error);
+      }
+    };
+
+    fetchLoginHistory();
+
     return () => unsubscribe();
   }, []);
-
-  const displayUsers = AUTHORIZED_ADMIN_EMAILS.map((email) => {
-    const isCurrent = currentUser && currentUser.email === email;
-    return {
-      username: isCurrent && currentUser.displayName
-        ? currentUser.displayName
-        : email.split('@')[0],
-      email,
-      role: email.includes('sab.ac.lk') ? 'System Admin / Lead' : 'System Admin',
-      status: 'Active',
-      created: isCurrent && currentUser.metadata?.creationTime
-        ? new Date(currentUser.metadata.creationTime).toISOString().split('T')[0]
-        : '2024-01-10',
-      isCurrent,
-    };
-  }).sort((a, b) => (b.isCurrent ? 1 : 0) - (a.isCurrent ? 1 : 0));
 
   const stats = [
     {
@@ -85,39 +83,44 @@ const UserManagementTab = () => {
         ))}
       </div>
 
-      <div className="table-container card-box mt-4 border-blue-wrap">
-        <h3 className="mb-4">Authorized Login Accounts</h3>
+      {/* අලුතින් එකතු කරපු Login History Table එක */}
+      <div className="table-container card-box border-blue-wrap" style={{ marginTop: '2rem' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+          <h3 style={{ margin: 0 }}>Recent Login Activity</h3>
+          {currentUser && (
+            <span style={{ fontSize: '0.875rem', color: '#10b981', backgroundColor: '#f0fdf4', padding: '0.25rem 0.75rem', borderRadius: '9999px', fontWeight: 'bold' }}>
+              Currently active as: {currentUser.email}
+            </span>
+          )}
+        </div>
         <table className="data-table">
           <thead className="user-table-head">
             <tr>
-              <th className="user-th">Username</th>
-              <th className="user-th">Email</th>
-              <th className="user-th">Access Role</th>
-              <th className="user-th">Status</th>
-              <th className="user-th">Access Granted</th>
+              <th className="user-th">Log ID</th>
+              <th className="user-th">Email Address</th>
+              <th className="user-th">Login Time</th>
             </tr>
           </thead>
           <tbody>
-            {displayUsers.map((user, index) => (
-              <tr
-                key={index}
-                className={`user-row ${user.isCurrent ? 'user-row--current' : 'user-row--default'}`}
-              >
-                <td className="user-td">
-                  <strong>{user.username}</strong>
-                  {user.isCurrent && <span className="you-badge">You</span>}
+            {loginHistory.length > 0 ? (
+              loginHistory.map((record) => (
+                <tr key={record.id} className="user-row user-row--default">
+                  <td className="user-td" style={{ fontWeight: 'bold', color: '#6b7280' }}>#{record.id}</td>
+                  <td className="user-td">{record.email}</td>
+                  <td className="user-td">{new Date(record.login_time).toLocaleString()}</td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td colSpan="3" className="user-td" style={{ textAlign: 'center', padding: '1rem', color: '#6b7280' }}>
+                  No recent login activity found.
                 </td>
-                <td className="user-td">{user.email}</td>
-                <td className="user-td">
-                  <span className="role-badge">{user.role}</span>
-                </td>
-                <td className="user-td text-green font-bold">{user.status}</td>
-                <td className="user-td">{user.created}</td>
               </tr>
-            ))}
+            )}
           </tbody>
         </table>
       </div>
+
     </div>
   );
 };

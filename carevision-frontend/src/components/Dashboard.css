@@ -1,6 +1,8 @@
 .dashboard-container {
   display: flex;
   height: 100vh;
+  /* Prevent the container itself from scrolling — only .main-content scrolls */
+  overflow: hidden;
   background-color: #E2E8F0;
   font-family: 'Inter', 'Segoe UI', sans-serif;
 }
@@ -21,11 +23,18 @@
 
 /* Sidebar Styles */
 .sidebar {
+  /* Fixed width — never shrinks or grows regardless of tab content */
   width: 260px;
+  min-width: 260px;
+  max-width: 260px;
+  flex-shrink: 0;
   background-color: white;
   display: flex;
   flex-direction: column;
   border-right: 1px solid #ddd;
+  /* Allow sidebar menu to scroll internally if items overflow */
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 
 .sidebar-header {
@@ -182,9 +191,13 @@
 
 /* Main Content Styles */
 .main-content {
-  flex-grow: 1;
+  /* Fill exactly the space remaining after the fixed 260px sidebar */
+  flex: 1;
+  min-width: 0;        /* Prevents content from overflowing into the sidebar */
+  width: 0;            /* Forces flex to calculate width from remaining space only */
   padding: 30px;
-  overflow-y: auto;
+  overflow-y: auto;    /* Single scroll point for all tab content */
+  overflow-x: hidden;
 }
 
 .header h1 {
@@ -1140,19 +1153,27 @@
   cursor: not-allowed !important;
 }
 
-/* Flashing Emergency Banner */
+/* Emergency Fire Toast — fixed overlay, never shifts layout */
 .emergency-alert-banner {
-  background: linear-gradient(90deg, #dc3545 0%, #c5303f 50%, #90202a 100%);
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 9998;             /* just below the toast stack (9999) */
+  width: max-content;
+  max-width: 560px;
+  min-width: 300px;
+  background: linear-gradient(135deg, #dc3545 0%, #991b1b 100%);
   color: white;
   padding: 16px 20px;
-  border-radius: 12px;
-  margin-bottom: 24px;
+  border-radius: 14px;
   display: flex;
-  align-items: center;
-  gap: 16px;
-  font-size: 14.5px;
-  box-shadow: 0 4px 20px rgba(220, 53, 69, 0.4);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  align-items: flex-start;
+  gap: 14px;
+  font-size: 13.5px;
+  box-shadow: 0 8px 32px rgba(220, 53, 69, 0.55), 0 2px 8px rgba(0,0,0,0.2);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  backdrop-filter: blur(4px);
   animation: pulseEmergency 2.5s infinite alternate;
 }
 
@@ -1177,26 +1198,74 @@
   filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.6));
 }
 
-.emergency-banner-close {
+/* 'View' action button inside emergency toast */
+.emergency-banner-view {
   flex-shrink: 0;
-  background: rgba(255, 255, 255, 0.15);
-  border: 1px solid rgba(255, 255, 255, 0.35);
-  color: #fff;
-  border-radius: 50%;
-  width: 30px;
-  height: 30px;
+  background: rgba(255, 255, 255, 0.95);
+  border: none;
+  color: #991b1b;
+  border-radius: 8px;
+  padding: 7px 14px;
   display: flex;
   align-items: center;
-  justify-content: center;
+  gap: 5px;
   cursor: pointer;
-  font-size: 15px;
-  line-height: 1;
-  transition: background 0.2s ease;
-  padding: 0;
+  font-size: 12.5px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+  transition: background 0.18s ease, transform 0.15s ease;
 }
 
-.emergency-banner-close:hover {
-  background: rgba(255, 255, 255, 0.3);
+.emergency-banner-view:hover {
+  background: #ffffff;
+  transform: translateY(-1px);
+}
+
+.emergency-banner-view:active {
+  transform: translateY(0);
+}
+
+/* Two-button row container */
+.emergency-banner-actions {
+  display: flex;
+  gap: 8px;
+  flex-shrink: 0;
+  align-items: center;
+}
+
+/* 'Resolve' button — outline style to contrast with solid View button */
+.emergency-banner-resolve {
+  flex-shrink: 0;
+  background: transparent;
+  border: 1.5px solid rgba(255, 255, 255, 0.75);
+  color: #ffffff;
+  border-radius: 8px;
+  padding: 6px 14px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  cursor: pointer;
+  font-size: 12.5px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+  transition: background 0.18s ease, border-color 0.18s ease, transform 0.15s ease;
+}
+
+.emergency-banner-resolve:hover {
+  background: rgba(255, 255, 255, 0.18);
+  border-color: #ffffff;
+  transform: translateY(-1px);
+}
+
+.emergency-banner-resolve:active {
+  transform: translateY(0);
+}
+
+/* Legacy close button — kept for safety, no longer rendered */
+.emergency-banner-close {
+  display: none;
 }
 
 @keyframes pulseEmergency {

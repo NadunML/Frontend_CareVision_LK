@@ -11,7 +11,7 @@
 
 /* Camera feed section card */
 .cctv-feeds-card {
-  margin-top: 24px;
+  margin-top: 5px;
 }
 
 /* Section header row inside the feed card */
@@ -57,7 +57,31 @@
 /* Status chip row */
 .cctv-status-chips {
   display: flex;
+  align-items: center;
   gap: 8px;
+}
+
+/* Fullscreen Grid button — matches chip height and outline style */
+.cctv-fullscreen-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  background: #f8fafc;
+  color: #475569;
+  border: 1px solid #e2e8f0;
+  transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+  white-space: nowrap;
+}
+
+.cctv-fullscreen-btn:hover {
+  background: #0D6EFD;
+  color: #ffffff;
+  border-color: #0D6EFD;
 }
 
 .cctv-chip {
@@ -70,8 +94,17 @@
   font-weight: 600;
 }
 
-.cctv-chip--online  { background: #f0fdf4; color: #15803d; border: 1px solid #bbf7d0; }
-.cctv-chip--offline { background: #fff1f2; color: #b91c1c; border: 1px solid #fecaca; }
+.cctv-chip--online {
+  background: #f0fdf4;
+  color: #15803d;
+  border: 1px solid #bbf7d0;
+}
+
+.cctv-chip--offline {
+  background: #fff1f2;
+  color: #b91c1c;
+  border: 1px solid #fecaca;
+}
 
 .cctv-chip-dot {
   width: 7px;
@@ -80,14 +113,29 @@
   flex-shrink: 0;
 }
 
-.cctv-chip-dot--green { background: #22c55e; }
-.cctv-chip-dot--red   { background: #ef4444; }
+.cctv-chip-dot--green {
+  background: #22c55e;
+}
+
+.cctv-chip-dot--red {
+  background: #ef4444;
+}
 
 /* Responsive camera grid — 2 columns on wide screens */
 .cctv-camera-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
   gap: 16px;
+}
+
+/* When the grid itself is in native fullscreen, fill the screen cleanly */
+.cctv-camera-grid:fullscreen {
+  background-color: #0a0a0a;
+  padding: 20px;
+  gap: 16px;
+  grid-template-columns: repeat(3, 1fr);
+  align-content: start;
+  overflow-y: auto;
 }
 
 /* Individual camera card */
@@ -176,8 +224,17 @@
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
 }
 
-.cam-ai-controls--hidden  { transform: translateY(15px); opacity: 0; pointer-events: none; }
-.cam-ai-controls--visible { transform: translateY(0);    opacity: 1; pointer-events: auto; }
+.cam-ai-controls--hidden {
+  transform: translateY(15px);
+  opacity: 0;
+  pointer-events: none;
+}
+
+.cam-ai-controls--visible {
+  transform: translateY(0);
+  opacity: 1;
+  pointer-events: auto;
+}
 
 /* Individual AI toggle pill */
 .ai-toggle-btn {
@@ -246,6 +303,7 @@
   color: #60a5fa;
   box-shadow: 0 0 12px rgba(59, 130, 246, 0.15);
 }
+
 .ai-toggle-btn--patient.ai-toggle-btn--active .ai-status-indicator {
   background: #3b82f6;
   opacity: 1;
@@ -259,6 +317,7 @@
   color: #34d399;
   box-shadow: 0 0 12px rgba(16, 185, 129, 0.15);
 }
+
 .ai-toggle-btn--mask.ai-toggle-btn--active .ai-status-indicator {
   background: #10b981;
   opacity: 1;
@@ -272,6 +331,7 @@
   color: #f87171;
   box-shadow: 0 0 12px rgba(239, 68, 68, 0.15);
 }
+
 .ai-toggle-btn--fire.ai-toggle-btn--active .ai-status-indicator {
   background: #ef4444;
   opacity: 1;
@@ -279,7 +339,7 @@
 }
 
 /* Disabled/Emergency State */
-.ai-toggle-btn--disabled, 
+.ai-toggle-btn--disabled,
 .ai-toggle-btn--disabled:hover {
   background: rgba(15, 23, 42, 0.6) !important;
   border-color: rgba(255, 255, 255, 0.04) !important;
@@ -373,6 +433,15 @@
 }
 
 @keyframes livePulse {
-  0%, 100% { opacity: 1; transform: scale(1); }
-  50%       { opacity: 0.5; transform: scale(0.8); }
+
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  50% {
+    opacity: 0.5;
+    transform: scale(0.8);
+  }
 }

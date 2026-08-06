@@ -1,22 +1,18 @@
-
 import { initializeApp } from "firebase/app";
-import { getAuth, GoogleAuthProvider } from "firebase/auth";
-
+import { getAuth, OAuthProvider } from "firebase/auth";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyBMPN7Y1pFaQtDDiiCeAVGCoRrqTFwOozY",
-  authDomain: "carevision-lk.firebaseapp.com",
-  projectId: "carevision-lk",
-  storageBucket: "carevision-lk.firebasestorage.app",
-  messagingSenderId: "255751491699",
-  appId: "1:255751491699:web:ef9884b9b5444d75921a06"
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+  appId: import.meta.env.VITE_FIREBASE_APP_ID,
 };
-
 
 const app = initializeApp(firebaseConfig);
 
-
 export const auth = getAuth(app);
 
-
-export const googleProvider = new GoogleAuthProvider();
+// Microsoft Authentication Provider
+export const microsoftProvider = new OAuthProvider('microsoft.com');

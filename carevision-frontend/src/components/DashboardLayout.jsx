@@ -1,7 +1,10 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { auth } from '../firebase';
-import { Home, Camera, Users, ShieldAlert, Flame, FileText, UserCog, Settings, LogOut, User, Info } from 'lucide-react';
+import { Home, Camera, Users, ShieldAlert, Flame, FileText, UserCog, Settings, LogOut, User, Info, ExternalLink } from 'lucide-react';
 import './Dashboard.css';
+import ToastNotification from './ToastNotification';
+
+const API_URL = import.meta.env.VITE_API_URL;
 
 import OverviewTab from './Tabs/OverviewTab';
 import CCTVFeedsTab from './Tabs/CCTVFeedsTab';
@@ -33,6 +36,20 @@ const DashboardLayout = ({ onLogout }) => {
   const [reportDate, setReportDate] = useState('');
   const [bannerDismissed, setBannerDismissed] = useState(false);
 
+  // ── Toast notification system ──────────────────────────────────────────────
+  // Replaces the old single inline banner with a proper fixed-overlay stack.
+  const [toasts, setToasts] = useState([]);
+
+  const showToast = useCallback((type, text) => {
+    const id = crypto.randomUUID();
+    setToasts(prev => [...prev, { id, type, text }]);
+  }, []);
+
+  const dismissToast = useCallback((id) => {
+    setToasts(prev => prev.filter(t => t.id !== id));
+  }, []);
+  // ────────────────────────────────────────────────────────────────────────────
+
   const [aiControls, setAiControls] = useState({
     patientIdent: false,
     maskDetect: false,
@@ -62,7 +79,7 @@ const DashboardLayout = ({ onLogout }) => {
     }));
 
     try {
-      await fetch(`http://localhost:5000/api/set_camera_ai`, {
+      await fetch(`${API_URL}/api/set_camera_ai`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ camId: String(camId), module: type, status: newStatus })
@@ -75,7 +92,7 @@ const DashboardLayout = ({ onLogout }) => {
   useEffect(() => {
     const fetchCurrentModes = async () => {
       try {
-        const response = await fetch('http://localhost:5000/api/get_modes');
+        const response = await fetch(`${API_URL}/api/get_modes`);
         if (response.ok) {
           const data = await response.json();
           setAiControls(data);
@@ -90,7 +107,7 @@ const DashboardLayout = ({ onLogout }) => {
   useEffect(() => {
     const fetchCameraAiConfigs = async () => {
       try {
-        const response = await fetch('http://localhost:5000/api/get_camera_ai');
+        const response = await fetch(`${API_URL}/api/get_camera_ai`);
         if (response.ok) {
           const data = await response.json();
           const formattedData = {};
@@ -109,13 +126,13 @@ const DashboardLayout = ({ onLogout }) => {
   }, []);
 
   useEffect(() => {
-    fetch('http://localhost:5000/api/get_cameras')
+    fetch(`${API_URL}/api/get_cameras`)
       .then(res => res.json())
       .then(data => {
         setCameraIps(prev => ({ ...prev, ...data }));
         setInputIps(prev => ({ ...prev, ...data }));
       })
-      .catch(err => console.log(err));
+      .catch(err => console.error("Error fetching camera list:", err));
   }, []);
 
   const handleTabChange = (tabName) => {
@@ -127,7 +144,7 @@ const DashboardLayout = ({ onLogout }) => {
 
   const fetchPatients = async () => {
     try {
-      const response = await fetch('http://localhost:5000/api/patients');
+      const response = await fetch(`${API_URL}/api/patients`);
       const data = await response.json();
       if (response.ok) {
         if (Array.isArray(data)) {
@@ -149,7 +166,7 @@ const DashboardLayout = ({ onLogout }) => {
 
   const fetchAccessLogs = async () => {
     try {
-      const response = await fetch('http://localhost:5000/api/access_logs');
+      const response = await fetch(`${API_URL}/api/access_logs`);
       const data = await response.json();
       if (response.ok && Array.isArray(data)) setAccessLogs(data);
     } catch (error) {
@@ -167,7 +184,7 @@ const DashboardLayout = ({ onLogout }) => {
 
   const fetchFireLogs = async () => {
     try {
-      const response = await fetch('http://localhost:5000/api/fire_logs');
+      const response = await fetch(`${API_URL}/api/fire_logs`);
       const data = await response.json();
       if (response.ok && Array.isArray(data)) setFireLogs(data);
     } catch (error) {
@@ -183,7 +200,7 @@ const DashboardLayout = ({ onLogout }) => {
 
   const fetchSystemAlerts = async () => {
     try {
-      const response = await fetch('http://localhost:5000/api/system_alerts');
+      const response = await fetch(`${API_URL}/api/system_alerts`);
       const data = await response.json();
       if (response.ok && Array.isArray(data)) setSystemAlerts(data);
     } catch (error) {
@@ -205,7 +222,7 @@ const DashboardLayout = ({ onLogout }) => {
       // First time fire detected this session — disable patient+mask globally
       didDisableRef.current = true;
       setBannerDismissed(false); // always show banner when new fire appears
-      fetch('http://localhost:5000/api/disable_non_fire', { method: 'POST' })
+      fetch(`${API_URL}/api/disable_non_fire`, { method: 'POST' })
         .then(res => res.json())
         .then(data => {
           if (data.status === 'success') {
@@ -224,20 +241,21 @@ const DashboardLayout = ({ onLogout }) => {
 
   const handleResolveFireAlert = async (logId) => {
     try {
-      const response = await fetch(`http://localhost:5000/api/resolve_fire_alert/${logId}`, { method: 'POST' });
+      const response = await fetch(`${API_URL}/api/resolve_fire_alert/${logId}`, { method: 'POST' });
       if (response.ok) fetchFireLogs();
     } catch (error) { console.error("Error resolving alert:", error); }
   };
 
   const handleResolveSystemAlert = async (alertId) => {
     try {
-      const response = await fetch(`http://localhost:5000/api/resolve_system_alert/${alertId}`, { method: 'POST' });
+      const response = await fetch(`${API_URL}/api/resolve_system_alert/${alertId}`, { method: 'POST' });
       if (response.ok) fetchSystemAlerts();
     } catch (error) { console.error("Error resolving system alert:", error); }
   };
 
   const handleNotifyEmergency = (location) => {
-    alert(`🚨 URGENT: Emergency Services have been notified for ${location}!`);
+    // Display toast notification instead of blocking native alert dialog
+    showToast('emergency', `🚨 URGENT: Emergency Services have been notified for ${location}!`);
   };
 
   const handleImageChange = (e) => {
@@ -247,7 +265,7 @@ const DashboardLayout = ({ onLogout }) => {
   const handleRegisterPatient = async (e) => {
     e.preventDefault();
     if (!patientData.patientId || !patientData.name || !imageFile) {
-      alert("Please fill all required fields and select an image!");
+      showToast('error', 'Please fill all required fields and select an image.');
       return;
     }
     setIsUploading(true);
@@ -260,56 +278,55 @@ const DashboardLayout = ({ onLogout }) => {
     formData.append('image', imageFile);
 
     try {
-      const response = await fetch('http://localhost:5000/api/register-patient', {
+      const response = await fetch(`${API_URL}/api/register-patient`, {
         method: 'POST',
         body: formData,
       });
       const result = await response.json();
       if (response.ok) {
-        alert("Patient Registered Successfully in MySQL!");
+        showToast('success', 'Patient registered successfully.');
         setPatientData({ patientId: '', name: '', ward: '', wardId: '', risk: 'Low' });
         setImageFile(null);
         setShowRegisterForm(false);
         fetchPatients();
       } else {
-        alert("Error: " + result.error);
+        showToast('error', `Registration failed: ${result.error}`);
       }
     } catch (error) {
       console.error("Error saving patient: ", error);
-      alert("Server connection failed. Is Python running?");
+      showToast('error', 'Server connection failed. Is the Python backend running?');
     } finally {
       setIsUploading(false);
     }
   };
 
   const handleDeletePatient = async (patientId) => {
-    if (window.confirm("Are you sure you want to delete this patient?")) {
-      try {
-        const response = await fetch(`http://localhost:5000/api/delete-patient/${patientId}`, { method: 'DELETE' });
-        const result = await response.json();
-        if (response.ok && result.status === 'success') {
-          alert("Patient deleted successfully!");
-          fetchPatients();
-        } else {
-          alert("Error: " + result.message);
-        }
-      } catch (err) {
-        console.error("Delete patient error:", err);
-        alert("Failed to delete patient. Check server.");
+    // Inline confirmation is handled in the UI; proceed directly with deletion
+    try {
+      const response = await fetch(`${API_URL}/api/delete-patient/${patientId}`, { method: 'DELETE' });
+      const result = await response.json();
+      if (response.ok && result.status === 'success') {
+        showToast('success', 'Patient record deleted successfully.');
+        fetchPatients();
+      } else {
+        showToast('error', `Delete failed: ${result.message}`);
       }
+    } catch (err) {
+      console.error("Delete patient error:", err);
+      showToast('error', 'Failed to delete patient. Check server connection.');
     }
   };
 
   const toggleAI = async (feature) => {
     try {
-      const response = await fetch(`http://localhost:5000/toggle_mode/${feature}`, { method: 'POST' });
+      const response = await fetch(`${API_URL}/toggle_mode/${feature}`, { method: 'POST' });
       if (response.ok) {
         const data = await response.json();
         if (data.status === 'success') setAiControls(data.modes);
       }
     } catch (err) {
       console.error("AI Server error:", err);
-      alert("AI Server connection failed! Make sure your Python backend is running.");
+      showToast('error', 'AI Server connection failed. Ensure the Python backend is running.');
     }
   };
 
@@ -320,14 +337,14 @@ const DashboardLayout = ({ onLogout }) => {
     formData.append('url', url);
 
     try {
-      const response = await fetch('http://localhost:5000/api/update_camera', { method: 'POST', body: formData });
+      const response = await fetch(`${API_URL}/api/update_camera`, { method: 'POST', body: formData });
       if (response.ok) {
         setCameraIps(prev => ({ ...prev, [camId]: url }));
-        alert(`Camera 0${camId} connected successfully!`);
+        showToast('success', `Camera 0${camId} connected successfully.`);
       }
     } catch (err) {
       console.error("Save camera error:", err);
-      alert("Failed to save camera IP.");
+      showToast('error', 'Failed to save camera configuration. Check server connection.');
     }
   };
 
@@ -336,14 +353,14 @@ const DashboardLayout = ({ onLogout }) => {
     formData.append('cam_id', camId);
     formData.append('url', '');
     try {
-      const response = await fetch('http://localhost:5000/api/update_camera', { method: 'POST', body: formData });
+      const response = await fetch(`${API_URL}/api/update_camera`, { method: 'POST', body: formData });
       if (response.ok) {
         setCameraIps(prev => ({ ...prev, [camId]: '' }));
         setInputIps(prev => ({ ...prev, [camId]: '' }));
       }
     } catch (err) {
       console.error("Remove camera error:", err);
-      alert("Failed to remove camera.");
+      showToast('error', 'Failed to remove camera. Check server connection.');
     }
   };
 
@@ -387,6 +404,7 @@ const DashboardLayout = ({ onLogout }) => {
   }) : [];
 
   return (
+    <>
     <div className="dashboard-container">
       <div className="sidebar">
         <div className="sidebar-header">
@@ -435,23 +453,7 @@ const DashboardLayout = ({ onLogout }) => {
       </div>
 
       <div className="main-content">
-        {showFireBanner && (
-          <div className="emergency-alert-banner">
-            <Flame className="emergency-icon" size={24} />
-            <div className="emergency-alert-text">
-              <strong>CRITICAL EMERGENCY:</strong> Active fire or smoke hazard detected
-              {activeFireAlerts.length > 0 ? ` on ${activeFireAlerts.map(a => a.camera_id).join(', ')}` : ''}!
-              Patient Identification and Face Mask detection modules have been automatically disabled to prioritize hazard monitoring. Resolve the alert to restore them.
-            </div>
-            <button
-              className="emergency-banner-close"
-              onClick={() => setBannerDismissed(true)}
-              title="Dismiss notification"
-            >
-              ✕
-            </button>
-          </div>
-        )}
+
 
         {/* 🚨 මෙතනට තමයි isEmergencyLockdown එක අලුතින් දැම්මේ 🚨 */}
         {activeTab === 'dashboard' && <OverviewTab patientsCount={patientsList.length} pendingAlertsCount={pendingSystemAlerts.length} highPriorityCount={highPrioritySystemAlertsCount} deniedAccessCount={deniedAccess} aiControls={aiControls} toggleAI={toggleAI} pendingSystemAlerts={pendingSystemAlerts} handleResolveSystemAlert={handleResolveSystemAlert} cameraAiConfigs={cameraAiConfigs} cameraIps={cameraIps} isEmergencyLockdown={isEmergencyLockdown} />}
@@ -480,6 +482,49 @@ const DashboardLayout = ({ onLogout }) => {
         {activeTab === 'about' && <AboutTab />}
       </div>
     </div>
+
+      {/* Emergency fire overlay — position:fixed, floats above all content */}
+      {showFireBanner && (
+        <div className="emergency-alert-banner">
+          <Flame className="emergency-icon" size={22} />
+          <div className="emergency-alert-text">
+            <strong>CRITICAL EMERGENCY:</strong> Active fire or smoke hazard detected
+            {activeFireAlerts.length > 0
+              ? ` on ${activeFireAlerts.map(a => a.camera_id).join(', ')}`
+              : ''}!
+            &nbsp;AI modules auto-disabled.
+          </div>
+          <div className="emergency-banner-actions">
+            {/* View: navigate to CCTV tab — banner stays visible */}
+            <button
+              className="emergency-banner-view"
+              onClick={() => handleTabChange('cctv')}
+              title="Go to Live CCTV Feeds"
+            >
+              <ExternalLink size={13} />
+              View
+            </button>
+            {/* Resolve: navigate to Fire Monitoring tab — banner dismissed */}
+            <button
+              className="emergency-banner-resolve"
+              onClick={() => {
+                handleTabChange('fire');
+                setBannerDismissed(true);
+              }}
+              title="Go to Fire Monitoring and resolve"
+            >
+              <Flame size={13} />
+              Resolve
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Toast notification overlay — position:fixed, hidden on About tab */}
+      {activeTab !== 'about' && (
+        <ToastNotification toasts={toasts} onDismiss={dismissToast} />
+      )}
+    </>
   );
 };
 

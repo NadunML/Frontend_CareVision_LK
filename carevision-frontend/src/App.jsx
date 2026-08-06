@@ -5,18 +5,6 @@ import { auth } from './firebase';
 import LoginPage from './components/LoginPage'; 
 import DashboardLayout from './components/DashboardLayout';
 
-/**
- * System Access Control List (ACL)
- * Only these predefined administrative email addresses are granted access 
- * to the CareVision Edge AI Dashboard.
- */
-const AUTHORIZED_ADMIN_EMAILS = [
-  'liyanage2021@gmail.com', 
-  'mlndliyanage9@gmail.com',
-  'lakshanikaveesha2003@gmail.com',
-  '22cis0263@ms.sab.ac.lk'
-];
-
 function App() {
   const [user, setUser] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -25,13 +13,19 @@ function App() {
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
       if (currentUser) {
-        if (AUTHORIZED_ADMIN_EMAILS.includes(currentUser.email)) {
+        // --- The Ultimate Security Check ---
+        // Only allows emails matching the pattern: 2 numbers + 'cis' + 4 numbers + '@ms.sab.ac.lk'
+        // Example allowed: 22cis0263@ms.sab.ac.lk
+        const staffEmailPattern = /^\d{2}cis\d{4}@ms\.sab\.ac\.lk$/i;
+
+        if (staffEmailPattern.test(currentUser.email)) {
           setUser(currentUser); 
           setAuthError('');
         } else {
+          // If the email doesn't match the pattern, force logout
           await signOut(auth);
           setUser(null);
-          setAuthError('Access Denied: Your account is not authorized to access the CareVision system.');
+          setAuthError('Access Denied: Only Sabaragamuwa University CIS students can access this system.');
         }
       } else {
         setUser(null);
@@ -72,7 +66,7 @@ function App() {
               ⚠️ {authError}
             </div>
           )}
-          <LoginPage onLoginSuccess={() => console.log("Authentication attempt registered")} />
+          <LoginPage onLoginSuccess={() => {}} />
         </>
       )}
     </div>
