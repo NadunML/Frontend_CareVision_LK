@@ -193,10 +193,13 @@
 .main-content {
   /* Fill exactly the space remaining after the fixed 260px sidebar */
   flex: 1;
-  min-width: 0;        /* Prevents content from overflowing into the sidebar */
-  width: 0;            /* Forces flex to calculate width from remaining space only */
+  min-width: 0;           /* Prevents content from overflowing into the sidebar */
+  width: 0;               /* Forces flex to calculate width from remaining space only */
+  min-height: 0;          /* Allows flex children to shrink below intrinsic size */
+  display: flex;          /* Flex column so child tabs can use flex:1 to fill height */
+  flex-direction: column;
   padding: 30px;
-  overflow-y: auto;    /* Single scroll point for all tab content */
+  overflow-y: auto;       /* Single scroll point for all tab content */
   overflow-x: hidden;
 }
 

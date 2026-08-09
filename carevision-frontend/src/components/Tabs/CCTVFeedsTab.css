@@ -1,27 +1,33 @@
 /* ==========================================
-   CCTVFeedsTab Styles
+   CCTVFeedsTab Styles — Viewport-Fit Layout
+   No page scroll; 3×3 grid fills all space.
    ========================================== */
 
-/* Top-level page wrapper */
+/*
+ * Top-level wrapper for the CCTV tab.
+ * Fills all the vertical space given by .main-content
+ * (which is a flex column). overflow: hidden prevents any
+ * inner content from leaking a scrollbar onto the page.
+ */
 .cctv-wrapper-pro {
   display: flex;
   flex-direction: column;
+  flex: 1;              /* grow to fill .main-content */
+  min-height: 0;        /* allow flex children to shrink below content size */
+  height: 100%;
+  overflow: hidden;
   gap: 0;
 }
 
-/* Camera feed section card */
-.cctv-feeds-card {
-  margin-top: 5px;
-}
-
-/* Section header row inside the feed card */
+/* ── Compact header row ──────────────────────────────────────────── */
 .cctv-grid-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 20px;
+  margin-bottom: 12px;
   flex-wrap: wrap;
-  gap: 12px;
+  gap: 10px;
+  flex-shrink: 0;       /* never let the header shrink away */
 }
 
 .cctv-grid-title {
@@ -31,8 +37,8 @@
 }
 
 .cctv-grid-title-icon {
-  width: 36px;
-  height: 36px;
+  width: 34px;
+  height: 34px;
   border-radius: 9px;
   background: #eff6ff;
   display: flex;
@@ -61,7 +67,7 @@
   gap: 8px;
 }
 
-/* Fullscreen Grid button — matches chip height and outline style */
+/* Fullscreen Grid button */
 .cctv-fullscreen-btn {
   display: inline-flex;
   align-items: center;
@@ -113,36 +119,36 @@
   flex-shrink: 0;
 }
 
-.cctv-chip-dot--green {
-  background: #22c55e;
-}
+.cctv-chip-dot--green { background: #22c55e; }
+.cctv-chip-dot--red   { background: #ef4444; }
 
-.cctv-chip-dot--red {
-  background: #ef4444;
-}
-
-/* Responsive camera grid — 2 columns on wide screens */
+/* ── 3×3 Camera Grid — strict viewport fit ───────────────────────── */
 .cctv-camera-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 16px;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(3, 1fr);
+  gap: 10px;
+  flex: 1;              /* fill all remaining vertical space in the wrapper */
+  min-height: 0;        /* critical: prevents overflow pushing the grid taller */
+  overflow: hidden;
 }
 
-/* When the grid itself is in native fullscreen, fill the screen cleanly */
+/* Native fullscreen: dark background, same strict 3×3 */
 .cctv-camera-grid:fullscreen {
   background-color: #0a0a0a;
-  padding: 20px;
-  gap: 16px;
+  padding: 16px;
+  gap: 10px;
   grid-template-columns: repeat(3, 1fr);
-  align-content: start;
-  overflow-y: auto;
+  grid-template-rows: repeat(3, 1fr);
+  overflow: hidden;
 }
 
-/* Individual camera card */
+/* ── Individual camera card ─────────────────────────────────────── */
 .camera-wrapper {
   position: relative;
-  height: 240px;
-  border-radius: 12px;
+  width: 100%;
+  height: 100%;         /* fills its grid cell completely */
+  border-radius: 10px;
   overflow: hidden;
   border: 1px solid #2d2d2d;
   background-color: #0a0a0a;
@@ -158,9 +164,9 @@
 /* Top overlay bar: camera label + fullscreen button */
 .cam-overlay-top {
   position: absolute;
-  top: 10px;
-  left: 10px;
-  right: 10px;
+  top: 8px;
+  left: 8px;
+  right: 8px;
   z-index: 10;
   display: flex;
   justify-content: space-between;
@@ -172,9 +178,9 @@
   color: #ffffff;
   display: flex;
   align-items: center;
-  padding: 4px 10px;
+  padding: 3px 8px;
   border-radius: 6px;
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 600;
   letter-spacing: 0.02em;
   backdrop-filter: blur(6px);
@@ -185,7 +191,7 @@
   background: rgba(0, 0, 0, 0.65);
   color: white;
   border: 1px solid rgba(255, 255, 255, 0.08);
-  padding: 6px;
+  padding: 5px;
   border-radius: 6px;
   cursor: pointer;
   display: flex;
@@ -199,33 +205,34 @@
   background: rgba(13, 110, 253, 0.75);
 }
 
-/* Live video stream element */
+/* Live video stream — fills the entire camera card */
 .cam-video-feed {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  display: block;
 }
 
-/* AI controls overlay at the bottom of each feed - Floating glass card style */
+/* ── AI controls overlay ─────────────────────────────────────────── */
 .cam-ai-controls {
   position: absolute;
-  bottom: 12px;
-  left: 12px;
-  right: 12px;
-  padding: 10px;
+  bottom: 10px;
+  left: 10px;
+  right: 10px;
+  padding: 8px;
   background: rgba(15, 23, 42, 0.75);
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 10px;
   backdrop-filter: blur(12px) saturate(160%);
   display: flex;
-  gap: 8px;
+  gap: 6px;
   z-index: 20;
   transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.28s ease;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
 }
 
 .cam-ai-controls--hidden {
-  transform: translateY(15px);
+  transform: translateY(12px);
   opacity: 0;
   pointer-events: none;
 }
@@ -241,13 +248,13 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 6px;
-  padding: 8px 10px 10px 10px;
+  gap: 5px;
+  padding: 6px 8px 8px 8px;
   border-radius: 6px;
   border: 1px solid rgba(255, 255, 255, 0.08);
   background: rgba(30, 41, 59, 0.4);
   cursor: pointer;
-  font-size: 11px;
+  font-size: 10px;
   font-weight: 600;
   letter-spacing: 0.01em;
   flex: 1;
@@ -268,7 +275,7 @@
   transform: translateY(0);
 }
 
-/* Icon and Label styles */
+/* Icon and Label */
 .ai-btn-icon {
   flex-shrink: 0;
   transition: transform 0.2s ease;
@@ -338,7 +345,7 @@
   box-shadow: 0 -1px 8px rgba(239, 68, 68, 0.8);
 }
 
-/* Disabled/Emergency State */
+/* Disabled / Emergency State */
 .ai-toggle-btn--disabled,
 .ai-toggle-btn--disabled:hover {
   background: rgba(15, 23, 42, 0.6) !important;
@@ -353,24 +360,25 @@
   opacity: 0 !important;
 }
 
-/* No-signal placeholder */
+/* ── No-signal placeholder ─────────────────────────────────────── */
 .no-signal-box {
   background: linear-gradient(135deg, #0f0f0f 0%, #1a1a1a 100%);
   display: flex;
   justify-content: center;
   align-items: center;
   flex-direction: column;
-  height: 240px;
-  border-radius: 12px;
+  width: 100%;
+  height: 100%;          /* fills the camera-wrapper grid cell */
+  border-radius: 10px;
   border: 1px dashed #2d2d2d;
   position: relative;
 }
 
 .no-signal-top {
   position: absolute;
-  top: 10px;
-  left: 10px;
-  right: 10px;
+  top: 8px;
+  left: 8px;
+  right: 8px;
   z-index: 2;
 }
 
@@ -381,9 +389,9 @@
   display: flex;
   align-items: center;
   gap: 6px;
-  padding: 4px 10px;
+  padding: 3px 8px;
   border-radius: 6px;
-  font-size: 12px;
+  font-size: 11px;
   width: fit-content;
 }
 
@@ -393,13 +401,13 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
 }
 
 .no-signal-icon-wrap {
-  width: 52px;
-  height: 52px;
-  border-radius: 14px;
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
   background: rgba(255, 255, 255, 0.04);
   border: 1px solid #2a2a2a;
   display: flex;
@@ -408,23 +416,23 @@
 }
 
 .no-signal-text {
-  font-size: 13px;
+  font-size: 11px;
   font-weight: 800;
   letter-spacing: 3px;
   color: #3a3a3a;
 }
 
 .no-signal-sub {
-  font-size: 11px;
+  font-size: 10px;
   color: #2d2d2d;
   letter-spacing: 0.02em;
 }
 
-/* Animated live indicator dot */
+/* ── Animated live indicator dot ──────────────────────────────── */
 .live-dot {
   display: inline-block;
-  width: 7px;
-  height: 7px;
+  width: 6px;
+  height: 6px;
   border-radius: 50%;
   background-color: #ef4444;
   margin-right: 5px;
@@ -433,7 +441,6 @@
 }
 
 @keyframes livePulse {
-
   0%,
   100% {
     opacity: 1;

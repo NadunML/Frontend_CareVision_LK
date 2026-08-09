@@ -237,21 +237,19 @@ const ReportsTab = ({ reportDate, setReportDate, filteredReports, fireLogs, syst
             <tr>
               <th>Time</th>
               <th>Type</th>
-              <th>Message</th>
               <th>Status</th>
             </tr>
           </thead>
           <tbody>
             {filteredReports.length === 0 ? (
               <tr>
-                <td colSpan="4" className="empty-state-text">No alerts for selected date</td>
+                <td colSpan="3" className="empty-state-text">No alerts for selected date</td>
               </tr>
             ) : (
               displayedReports.map((alert) => (
                 <tr key={alert.id}>
                   <td>{alert.timestamp}</td>
                   <td><strong>{alert.alert_type}</strong></td>
-                  <td>{alert.description}</td>
                   <td className={
                     alert.status === 'Active' || alert.status === 'Pending'
                       ? 'text-red font-bold'
