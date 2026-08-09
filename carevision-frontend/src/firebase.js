@@ -16,6 +16,3 @@ export const auth = getAuth(app);
 
 // Microsoft Authentication Provider
 export const microsoftProvider = new OAuthProvider('microsoft.com');
-microsoftProvider.setCustomParameters({
-  tenant: '77fd3202-9001-4147-b67d-4d5a95612546'
-});
