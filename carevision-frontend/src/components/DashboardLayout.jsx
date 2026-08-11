@@ -23,7 +23,7 @@ const DashboardLayout = ({ onLogout }) => {
   const [activeTab, setActiveTab] = useState('dashboard');
   const [showRegisterForm, setShowRegisterForm] = useState(false);
 
-  const [patientData, setPatientData] = useState({ patientId: '', name: '', ward: '', wardId: '', risk: 'Low' });
+  const [patientData, setPatientData] = useState({ patientId: '', name: '', ward: '', wardId: '' });
   const [imageFile, setImageFile] = useState(null);
   const [isUploading, setIsUploading] = useState(false);
   const [patientsList, setPatientsList] = useState([]);
@@ -274,7 +274,7 @@ const DashboardLayout = ({ onLogout }) => {
     formData.append('name', patientData.name);
     formData.append('ward', patientData.ward);
     formData.append('wardId', patientData.wardId);
-    formData.append('riskLevel', patientData.risk);
+
     formData.append('image', imageFile);
 
     try {
@@ -285,7 +285,7 @@ const DashboardLayout = ({ onLogout }) => {
       const result = await response.json();
       if (response.ok) {
         showToast('success', 'Patient registered successfully.');
-        setPatientData({ patientId: '', name: '', ward: '', wardId: '', risk: 'Low' });
+        setPatientData({ patientId: '', name: '', ward: '', wardId: '' });
         setImageFile(null);
         setShowRegisterForm(false);
         fetchPatients();
@@ -399,8 +399,8 @@ const DashboardLayout = ({ onLogout }) => {
 
   const filteredReports = Array.isArray(systemAlerts) ? systemAlerts.filter(alert => {
     if (!reportDate) return true;
-    const alertDate = alert.timestamp ? alert.timestamp.split(' ')[0] : '';
-    return alertDate === reportDate;
+    const ts = alert.timestamp ? String(alert.timestamp) : '';
+    return ts.startsWith(reportDate);
   }) : [];
 
   return (
@@ -455,7 +455,7 @@ const DashboardLayout = ({ onLogout }) => {
       <div className="main-content">
 
 
-        {/* 🚨 මෙතනට තමයි isEmergencyLockdown එක අලුතින් දැම්මේ 🚨 */}
+    
         {activeTab === 'dashboard' && <OverviewTab patientsCount={patientsList.length} pendingAlertsCount={pendingSystemAlerts.length} highPriorityCount={highPrioritySystemAlertsCount} deniedAccessCount={deniedAccess} aiControls={aiControls} toggleAI={toggleAI} pendingSystemAlerts={pendingSystemAlerts} handleResolveSystemAlert={handleResolveSystemAlert} cameraAiConfigs={cameraAiConfigs} cameraIps={cameraIps} isEmergencyLockdown={isEmergencyLockdown} />}
 
         {activeTab === 'cctv' && (

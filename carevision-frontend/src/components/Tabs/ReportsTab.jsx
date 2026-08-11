@@ -8,7 +8,8 @@ const ReportsTab = ({ reportDate, setReportDate, filteredReports, fireLogs, syst
   const [currentPage, setCurrentPage] = useState(0);
   const [isTodayActive, setIsTodayActive] = useState(false);
 
-  const todayStr = new Date().toISOString().split('T')[0];
+  const today = new Date();
+  const todayStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
 
   const handleTodayToggle = () => {
     if (isTodayActive) {

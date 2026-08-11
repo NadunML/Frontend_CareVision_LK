@@ -24,20 +24,20 @@ const SettingsTab = ({ inputIps, setInputIps, handleSaveCamera, handleRemoveCame
     }
   };
 
-  const configuredCount = [1, 2, 3, 4, 5].filter(cam => !!cameraIps[String(cam)]).length;
+  const configuredCount = [1, 2, 3, 4, 5, 6, 7, 8, 9].filter(cam => !!cameraIps[String(cam)]).length;
 
   return (
     <div className="setting-wrapper">
       <div className="header">
         <h1>System Settings</h1>
-        <p>Configure 5 optimized cameras with integrated AI features</p>
+        <p>Configure 9 optimized cameras with integrated AI features</p>
       </div>
 
       <div className="stats-grid">
         {[
-          { label: 'Total Camera Slots', value: 5, icon: <Camera size={20} color="#0D6EFD" />, iconBg: '#eff6ff', accent: '#0D6EFD' },
+          { label: 'Total Camera Slots', value: 9, icon: <Camera size={20} color="#0D6EFD" />, iconBg: '#eff6ff', accent: '#0D6EFD' },
           { label: 'Configured Cameras', value: configuredCount, icon: <Wifi size={20} color="#10b981" />, iconBg: '#f0fdf4', accent: '#10b981' },
-          { label: 'Available Slots', value: 5 - configuredCount, icon: <CheckCircle size={20} color="#f97316" />, iconBg: '#fff7ed', accent: '#f97316' },
+          { label: 'Available Slots', value: 9 - configuredCount, icon: <CheckCircle size={20} color="#f97316" />, iconBg: '#fff7ed', accent: '#f97316' },
         ].map((s, i) => (
           <div
             className="stat-card"
@@ -58,7 +58,7 @@ const SettingsTab = ({ inputIps, setInputIps, handleSaveCamera, handleRemoveCame
           </h3>
         </div>
 
-        {[1, 2, 3, 4, 5].map(cam => {
+        {[1, 2, 3, 4, 5, 6, 7, 8, 9].map(cam => {
           const camId = String(cam);
           const currentInput = inputIps[camId] || '';
           const savedUrl = cameraIps[camId] || '';

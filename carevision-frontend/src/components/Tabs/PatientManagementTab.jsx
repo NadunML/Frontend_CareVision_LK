@@ -24,6 +24,12 @@ const PatientManagementTab = ({
 }) => {
   const [imagePreview, setImagePreview] = useState(null);
 
+  const WARD_ID_MAP = {
+    Dementia: 'WD01',
+    Dengue: 'WD02',
+    Covid: 'WD03',
+  };
+
   useEffect(() => {
     if (!imageFile) {
       setImagePreview(null);
@@ -33,6 +39,15 @@ const PatientManagementTab = ({
     setImagePreview(objectUrl);
     return () => URL.revokeObjectURL(objectUrl);
   }, [imageFile]);
+
+  // Auto-generate Patient ID when the registration form is opened
+  useEffect(() => {
+    if (showRegisterForm) {
+      const nextNum = (Array.isArray(patientsList) ? patientsList.length : 0) + 1;
+      const generatedId = `PT-${String(nextNum).padStart(3, '0')}`;
+      setPatientData(prev => ({ ...prev, patientId: generatedId, ward: '', wardId: '' }));
+    }
+  }, [showRegisterForm]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const filteredPatients = Array.isArray(patientsList)
     ? patientsList.filter((patient) => {
@@ -68,22 +83,8 @@ const PatientManagementTab = ({
       iconBg: '#fff7ed',
       accent: '#f97316',
     },
-    {
-      label: 'High Risk Patients',
-      value: patientsList.filter((p) => p.risk_level === 'High').length,
-      icon: <ShieldAlert size={20} color="#ef4444" />,
-      iconBg: '#fef2f2',
-      accent: '#ef4444',
-    },
   ];
 
-  const renderRiskBadge = (risk) => {
-    const riskVal = risk || 'Low';
-    let className = 'risk-badge risk-low';
-    if (riskVal === 'High') className = 'risk-badge risk-high';
-    else if (riskVal === 'Medium') className = 'risk-badge risk-medium';
-    return <span className={className}>{riskVal}</span>;
-  };
 
   return (
     <div className="patient-wrapper">
@@ -119,8 +120,10 @@ const PatientManagementTab = ({
                       placeholder="e.g. PT-204"
                       required
                       value={patientData.patientId}
-                      onChange={(e) => setPatientData({ ...patientData, patientId: e.target.value })}
-                      disabled={isEmergencyLockdown}
+                      onChange={() => {}}
+                      disabled
+                      readOnly
+                      style={{ cursor: 'not-allowed', background: '#f1f5f9' }}
                     />
                   </div>
                 </div>
@@ -145,14 +148,21 @@ const PatientManagementTab = ({
                   <label className="form-label-custom">Ward Name</label>
                   <div className="input-with-icon-wrap">
                     <Building className="input-inner-icon" size={16} color="#64748b" />
-                    <input
-                      type="text"
+                    <select
                       className="form-input-custom"
-                      placeholder="e.g. ICU, General Ward"
                       value={patientData.ward}
-                      onChange={(e) => setPatientData({ ...patientData, ward: e.target.value })}
+                      onChange={(e) => {
+                        const selectedWard = e.target.value;
+                        const autoWardId = WARD_ID_MAP[selectedWard] || '';
+                        setPatientData({ ...patientData, ward: selectedWard, wardId: autoWardId });
+                      }}
                       disabled={isEmergencyLockdown}
-                    />
+                    >
+                      <option value="">Select Ward</option>
+                      <option value="Dementia">Dementia</option>
+                      <option value="Dengue">Dengue</option>
+                      <option value="Covid">Covid</option>
+                    </select>
                   </div>
                 </div>
 
@@ -163,35 +173,17 @@ const PatientManagementTab = ({
                     <input
                       type="text"
                       className="form-input-custom"
-                      placeholder="e.g. WD-02"
+                      placeholder="Auto-filled on ward selection"
                       value={patientData.wardId}
-                      onChange={(e) => setPatientData({ ...patientData, wardId: e.target.value })}
-                      disabled={isEmergencyLockdown}
+                      onChange={() => {}}
+                      disabled
+                      readOnly
+                      style={{ cursor: 'not-allowed', background: '#f1f5f9' }}
                     />
                   </div>
                 </div>
               </div>
 
-              <div className="form-group-custom risk-select-group">
-                <label className="form-label-custom">Wandering Risk Level</label>
-                <div className="risk-options-row">
-                  {['Low', 'Medium', 'High'].map((level) => {
-                    const isActive = patientData.risk === level;
-                    return (
-                      <button
-                        type="button"
-                        key={level}
-                        onClick={() => setPatientData({ ...patientData, risk: level })}
-                        className={`risk-option-btn risk-option-${level.toLowerCase()} ${isActive ? 'active' : ''}`}
-                        disabled={isEmergencyLockdown}
-                      >
-                        <ShieldAlert size={14} />
-                        {level} Risk
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
             </div>
 
             <div className="form-upload-section">
@@ -305,7 +297,6 @@ const PatientManagementTab = ({
                 <thead>
                   <tr>
                     <th className="col-avatar-name">Patient Info</th>
-                    <th className="col-risk">Risk Level</th>
                     <th className="col-ward-id">Ward Zone</th>
                     <th className="col-date-registered">Registered Date</th>
                     <th className="col-actions-delete">Actions</th>
@@ -314,7 +305,7 @@ const PatientManagementTab = ({
                 <tbody>
                   {filteredPatients.length === 0 ? (
                     <tr>
-                      <td colSpan="5" className="table-empty-cell-pro">
+                      <td colSpan="4" className="table-empty-cell-pro">
                         <div className="empty-state-icon">
                           <Users size={28} color="#94a3b8" />
                         </div>
@@ -351,9 +342,6 @@ const PatientManagementTab = ({
                                 <span className="patient-id-sub">ID: {patient.patient_id}</span>
                               </div>
                             </div>
-                          </td>
-                          <td>
-                            {renderRiskBadge(patient.risk_level)}
                           </td>
                           <td>
                             <div className="ward-display">

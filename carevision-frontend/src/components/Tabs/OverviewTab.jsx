@@ -333,9 +333,11 @@ const OverviewTab = ({
                       <div className="alert-details">
                         <div className="alert-feed-row-top">
                           <h4 className="alert-item-title">{alert.alert_type}</h4>
-                          <span className={getPriorityClass(alert.priority)}>
-                            {alert.priority || 'Low'}
-                          </span>
+                          {alert.alert_type !== 'Patient Wandering' && alert.alert_type !== 'Mask Violation' && (
+                            <span className={getPriorityClass(alert.priority)}>
+                              {alert.priority || 'Low'}
+                            </span>
+                          )}
                         </div>
                         <p className="alert-item-desc">{alert.description}</p>
                         <p className="alert-item-meta">
@@ -347,7 +349,7 @@ const OverviewTab = ({
                         className="btn-resolve-green"
                         onClick={() => handleResolveSystemAlert && handleResolveSystemAlert(alert.id)}
                       >
-                        Resolve
+                        Noted
                       </button>
                     </div>
                   ))}
