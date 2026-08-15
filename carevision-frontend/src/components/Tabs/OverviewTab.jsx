@@ -83,7 +83,7 @@ const OverviewTab = ({
   const stats = [
     {
       label: 'Total Cameras',
-      value: 5,
+      value: 9,
       sub: 'Optimized Nodes',
       icon: <Camera size={20} color="#0D6EFD" />,
       iconBg: '#eff6ff',

@@ -135,7 +135,7 @@ const PatientManagementTab = ({
                     <input
                       type="text"
                       className="form-input-custom"
-                      placeholder="e.g. John Doe"
+                      placeholder="e.g. Patient ABC"
                       required
                       value={patientData.name}
                       onChange={(e) => setPatientData({ ...patientData, name: e.target.value })}
