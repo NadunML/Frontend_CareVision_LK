@@ -161,7 +161,7 @@ const CCTVFeedsTab = ({ cameraIps, toggleFullScreen, aiConfigs, onToggleAI, isEm
                     icon={Flame}
                     label="Fire"
                     isActive={aiConfigs?.[cam]?.fire}
-                    isEmergencyDisabled={false} // Fire button NEVER disables!
+                    isEmergencyDisabled={false}
                   />
                 </div>
               </>

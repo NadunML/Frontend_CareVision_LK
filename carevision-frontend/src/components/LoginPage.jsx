@@ -9,7 +9,7 @@ const LoginPage = ({ onLoginSuccess }) => {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
-  // Backend එකට Login History එක යවන Function එක
+  // Sends the authenticated user's email to the backend login history API.
   const saveLoginHistory = async (userEmail) => {
     try {
       await fetch(`${import.meta.env.VITE_API_URL}/api/login-history`, {
@@ -31,8 +31,8 @@ const LoginPage = ({ onLoginSuccess }) => {
     setError('');
     try {
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
-      await saveLoginHistory(userCredential.user.email); // මෙතනින් ඉතිහාසය සේව් වෙනවා
-      // App.jsx will handle the domain checking logic
+      await saveLoginHistory(userCredential.user.email);
+      // App.jsx handles domain validation after auth state changes.
     } catch (err) {
       setError('Invalid email or password. Please try again.');
       console.error(err);
@@ -55,8 +55,8 @@ const LoginPage = ({ onLoginSuccess }) => {
       });
 
       const result = await signInWithPopup(auth, provider);
-      await saveLoginHistory(result.user.email); // මෙතනින් ඉතිහාසය සේව් වෙනවා
-      // App.jsx will automatically catch the state change and verify the domain
+      await saveLoginHistory(result.user.email);
+      // App.jsx handles domain validation after auth state changes.
     } catch (err) {
       setError('Microsoft sign-in failed. Please try again.');
       console.error(err);
@@ -110,9 +110,8 @@ const LoginPage = ({ onLoginSuccess }) => {
         <div className="divider"><span>OR</span></div>
 
         {/* Microsoft Sign-In Button */}
-        <button onClick={handleMicrosoftLogin} className="google-btn" disabled={loading} style={{ backgroundColor: '#2F2F2F', color: 'white' }}>
-          {/* Microsoft Icon */}
-          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 21 21" style={{ marginRight: '10px' }}>
+        <button onClick={handleMicrosoftLogin} className="microsoft-btn" disabled={loading}>
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 21 21" className="microsoft-svg-icon">
             <rect x="1" y="1" width="9" height="9" fill="#f25022" />
             <rect x="11" y="1" width="9" height="9" fill="#7fba00" />
             <rect x="1" y="11" width="9" height="9" fill="#00a4ef" />

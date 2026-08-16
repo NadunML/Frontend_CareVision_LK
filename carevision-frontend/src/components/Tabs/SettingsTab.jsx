@@ -71,7 +71,7 @@ const SettingsTab = ({ inputIps, setInputIps, handleSaveCamera, handleRemoveCame
 
           let addBtnText = 'Add';
           if (isEmergencyLockdown) {
-            addBtnText = 'Disabled 🚨';
+          addBtnText = 'Disabled';
           } else if (isAddLoading) {
             addBtnText = 'Adding...';
           } else if (isAdded) {
@@ -80,7 +80,7 @@ const SettingsTab = ({ inputIps, setInputIps, handleSaveCamera, handleRemoveCame
 
           let removeBtnText = 'Remove';
           if (isEmergencyLockdown) {
-            removeBtnText = 'Disabled 🚨';
+            removeBtnText = 'Disabled';
           } else if (isRemoveLoading) {
             removeBtnText = 'Removing...';
           }

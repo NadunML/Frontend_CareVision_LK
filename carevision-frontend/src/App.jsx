@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { onAuthStateChanged, signOut } from 'firebase/auth';
-import { auth } from './firebase'; 
+import { auth } from './firebase';
+import './App.css';
 
 import LoginPage from './components/LoginPage'; 
 import DashboardLayout from './components/DashboardLayout';
@@ -13,9 +14,8 @@ function App() {
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
       if (currentUser) {
-        // --- The Ultimate Security Check ---
-        // Only allows emails matching the pattern: 2 numbers + 'cis' + 4 numbers + '@ms.sab.ac.lk'
-        // Example allowed: 22cis0263@ms.sab.ac.lk
+        // Email domain restriction: only allows university CIS staff accounts.
+        // Pattern: 2 digits + 'cis' + 4 digits + '@ms.sab.ac.lk' (e.g. 22cis0263@ms.sab.ac.lk)
         const staffEmailPattern = /^\d{2}cis\d{4}@ms\.sab\.ac\.lk$/i;
 
         if (staffEmailPattern.test(currentUser.email)) {
@@ -45,10 +45,10 @@ function App() {
 
   if (isLoading) {
     return (
-      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', backgroundColor: '#f8fafc', fontFamily: 'Inter, sans-serif' }}>
-        <div style={{ textAlign: 'center' }}>
-          <h2 style={{ color: '#0D6EFD', marginBottom: '8px' }}>Initializing CareVision LK...</h2>
-          <p style={{ color: '#64748b', fontSize: '14px', margin: 0 }}>Securing connection to edge servers</p>
+      <div className="app-loading-screen">
+        <div className="app-loading-inner">
+          <h2 className="app-loading-title">Initializing CareVision LK...</h2>
+          <p className="app-loading-sub">Securing connection to edge servers</p>
         </div>
       </div>
     );
@@ -62,8 +62,8 @@ function App() {
         <>
           {/* Unauthorized access alert banner */}
           {authError && (
-            <div style={{ backgroundColor: '#fef2f2', borderBottom: '1px solid #fecaca', color: '#dc2626', padding: '12px', textAlign: 'center', fontSize: '14px', fontWeight: '600', fontFamily: 'Inter, sans-serif' }}>
-              ⚠️ {authError}
+            <div className="auth-error-banner">
+              {authError}
             </div>
           )}
           <LoginPage onLoginSuccess={() => {}} />

@@ -90,7 +90,7 @@ const GUIDE_STEPS = [
     num: '05',
     icon: <BellRing size={22} color="#0D6EFD" />,
     title: 'Respond to Alerts',
-    desc: 'When an alert appears, review the type and priority. Use "✓ Resolve" to close it, or for fire alerts navigate to Fire Monitoring to notify emergency services.',
+    desc: 'When an alert appears, review the type and priority. Use "Resolve" to close it, or for fire alerts navigate to Fire Monitoring to notify emergency services.',
   },
   {
     num: '06',

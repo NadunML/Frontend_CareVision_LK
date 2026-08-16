@@ -36,8 +36,7 @@ const DashboardLayout = ({ onLogout }) => {
   const [reportDate, setReportDate] = useState('');
   const [bannerDismissed, setBannerDismissed] = useState(false);
 
-  // ── Toast notification system ──────────────────────────────────────────────
-  // Replaces the old single inline banner with a proper fixed-overlay stack.
+  // Toast notification stack — fixed-position overlay for non-blocking alerts.
   const [toasts, setToasts] = useState([]);
 
   const showToast = useCallback((type, text) => {
@@ -48,7 +47,6 @@ const DashboardLayout = ({ onLogout }) => {
   const dismissToast = useCallback((id) => {
     setToasts(prev => prev.filter(t => t.id !== id));
   }, []);
-  // ────────────────────────────────────────────────────────────────────────────
 
   const [aiControls, setAiControls] = useState({
     patientIdent: false,
@@ -214,14 +212,14 @@ const DashboardLayout = ({ onLogout }) => {
     return () => clearInterval(interval);
   }, []);
 
-  // ── Fire Emergency: one-shot disable when fire appears; resets when all clear ──
+  // Fire emergency: on first active fire detection, disable non-fire AI modules.
+  // Resets automatically when all fires are resolved.
   const didDisableRef = useRef(false);
   useEffect(() => {
     const hasActiveFire = fireLogs.some(log => log.status === 'Active');
     if (hasActiveFire && !didDisableRef.current) {
-      // First time fire detected this session — disable patient+mask globally
       didDisableRef.current = true;
-      setBannerDismissed(false); // always show banner when new fire appears
+      setBannerDismissed(false);
       fetch(`${API_URL}/api/disable_non_fire`, { method: 'POST' })
         .then(res => res.json())
         .then(data => {
@@ -234,7 +232,6 @@ const DashboardLayout = ({ onLogout }) => {
         .catch(() => { });
     }
     if (!hasActiveFire) {
-      // All fires resolved — reset so next fire re-triggers
       didDisableRef.current = false;
     }
   }, [fireLogs]);
@@ -254,8 +251,7 @@ const DashboardLayout = ({ onLogout }) => {
   };
 
   const handleNotifyEmergency = (location) => {
-    // Display toast notification instead of blocking native alert dialog
-    showToast('emergency', `🚨 URGENT: Emergency Services have been notified for ${location}!`);
+    showToast('emergency', `URGENT: Emergency Services have been notified for ${location}.`);
   };
 
   const handleImageChange = (e) => {
@@ -387,7 +383,7 @@ const DashboardLayout = ({ onLogout }) => {
   const activeFireCamsCount = ['7', '8', '9'].filter(cam => cameraIps[cam] !== '').length;
   const latestActiveFire = activeFireAlerts.length > 0 ? activeFireAlerts[0] : null;
 
-  // IMPORTANT: Calculate the isEmergencyLockdown state based on active fires
+  // Lockdown is active whenever there is at least one unresolved fire alert.
   const isEmergencyLockdown = activeFireAlerts.length > 0;
 
   const showFireBanner = activeFireAlerts.length > 0 && !bannerDismissed;
@@ -495,8 +491,7 @@ const DashboardLayout = ({ onLogout }) => {
             &nbsp;AI modules auto-disabled.
           </div>
           <div className="emergency-banner-actions">
-            {/* View: navigate to CCTV tab — banner stays visible */}
-            <button
+              <button
               className="emergency-banner-view"
               onClick={() => handleTabChange('cctv')}
               title="Go to Live CCTV Feeds"
@@ -504,7 +499,6 @@ const DashboardLayout = ({ onLogout }) => {
               <ExternalLink size={13} />
               View
             </button>
-            {/* Resolve: navigate to Fire Monitoring tab — banner dismissed */}
             <button
               className="emergency-banner-resolve"
               onClick={() => {
@@ -520,7 +514,6 @@ const DashboardLayout = ({ onLogout }) => {
         </div>
       )}
 
-      {/* Toast notification overlay — position:fixed, hidden on About tab */}
       {activeTab !== 'about' && (
         <ToastNotification toasts={toasts} onDismiss={dismissToast} />
       )}

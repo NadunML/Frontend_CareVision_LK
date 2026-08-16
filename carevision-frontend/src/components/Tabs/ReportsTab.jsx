@@ -159,7 +159,7 @@ const ReportsTab = ({ reportDate, setReportDate, filteredReports, fireLogs, syst
     },
     {
       label: 'Patient Exits',
-      value: systemAlerts.filter(a => a.alert_type === 'Patient Wandering').length,
+      value: systemAlerts.filter(a => a.alert_type.startsWith('Patient Wandering')).length,
       icon: <User size={20} color="#f97316" />,
       iconBg: '#fff7ed',
       accent: '#f97316',

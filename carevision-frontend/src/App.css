@@ -1,0 +1,42 @@
+/* ==========================================================================
+   App — Loading Screen & Auth Error Banner
+   ========================================================================== */
+
+/* Full-viewport centered loading screen shown during Firebase auth initialisation */
+.app-loading-screen {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background-color: #f8fafc;
+  font-family: 'Inter', sans-serif;
+}
+
+.app-loading-inner {
+  text-align: center;
+}
+
+.app-loading-title {
+  color: #0D6EFD;
+  margin-bottom: 8px;
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+.app-loading-sub {
+  color: #64748b;
+  font-size: 14px;
+  margin: 0;
+}
+
+/* Banner shown when an unauthorised domain email attempts to log in */
+.auth-error-banner {
+  background-color: #fef2f2;
+  border-bottom: 1px solid #fecaca;
+  color: #dc2626;
+  padding: 12px;
+  text-align: center;
+  font-size: 14px;
+  font-weight: 600;
+  font-family: 'Inter', sans-serif;
+}

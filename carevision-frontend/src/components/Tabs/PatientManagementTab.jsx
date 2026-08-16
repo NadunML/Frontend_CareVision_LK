@@ -116,14 +116,13 @@ const PatientManagementTab = ({
                     <span className="input-inner-icon">ID</span>
                     <input
                       type="text"
-                      className="form-input-custom"
+                      className="form-input-custom input-readonly"
                       placeholder="e.g. PT-204"
                       required
                       value={patientData.patientId}
                       onChange={() => {}}
                       disabled
                       readOnly
-                      style={{ cursor: 'not-allowed', background: '#f1f5f9' }}
                     />
                   </div>
                 </div>
@@ -172,13 +171,12 @@ const PatientManagementTab = ({
                     <span className="input-inner-icon">#</span>
                     <input
                       type="text"
-                      className="form-input-custom"
+                      className="form-input-custom input-readonly"
                       placeholder="Auto-filled on ward selection"
                       value={patientData.wardId}
                       onChange={() => {}}
                       disabled
                       readOnly
-                      style={{ cursor: 'not-allowed', background: '#f1f5f9' }}
                     />
                   </div>
                 </div>
@@ -228,7 +226,7 @@ const PatientManagementTab = ({
                 {isEmergencyLockdown ? (
                   <>
                     <ShieldAlert size={16} />
-                    <span>Disabled 🚨</span>
+                    <span>Disabled</span>
                   </>
                 ) : isUploading ? (
                   <>
@@ -287,7 +285,7 @@ const PatientManagementTab = ({
                   disabled={isEmergencyLockdown}
                 >
                   {isEmergencyLockdown ? <ShieldAlert size={16} /> : <UserPlus size={16} />}
-                  {isEmergencyLockdown ? ' Disabled 🚨' : ' Register Patient'}
+                  {isEmergencyLockdown ? ' Disabled' : ' Register Patient'}
                 </button>
               </div>
             </div>

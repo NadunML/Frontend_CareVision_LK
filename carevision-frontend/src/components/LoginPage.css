@@ -159,3 +159,35 @@
   opacity: 0.7;
   cursor: not-allowed;
 }
+
+/* Microsoft sign-in button — dark themed override */
+.microsoft-btn {
+  width: 100%;
+  padding: 12px;
+  background-color: #2F2F2F;
+  color: white;
+  border: 1px solid #444;
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: background-color 0.2s;
+}
+
+.microsoft-btn:hover:not(:disabled) {
+  background-color: #1a1a1a;
+}
+
+.microsoft-btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+/* SVG icon spacing inside the Microsoft button */
+.microsoft-svg-icon {
+  margin-right: 10px;
+  flex-shrink: 0;
+}

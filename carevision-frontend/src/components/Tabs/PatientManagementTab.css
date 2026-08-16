@@ -681,3 +681,10 @@
 .col-ward-id { width: 22%; }
 .col-date-registered { width: 18%; }
 .col-actions-delete { width: 10%; }
+
+/* Read-only inputs (auto-generated Patient ID and Ward ID fields) */
+.input-readonly {
+  cursor: not-allowed;
+  background: #f1f5f9;
+}
+

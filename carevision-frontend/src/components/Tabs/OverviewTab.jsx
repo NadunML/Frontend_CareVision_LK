@@ -13,7 +13,7 @@ const OverviewTab = ({
   handleResolveSystemAlert,
   cameraAiConfigs = {},
   cameraIps = {},
-  isEmergencyLockdown = false // NEW PROP
+  isEmergencyLockdown = false
 }) => {
 
   const [alertPage, setAlertPage] = useState(0);
@@ -151,22 +151,17 @@ const OverviewTab = ({
 
       {/* ── AI Models Status (read-only) ── */}
       <div className="card-box ai-status-card">
-        <div className="ai-status-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <div className="ai-status-header">
 
-          {/* FIX: Properly Aligned Header Section */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-            <div style={{
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              width: '42px', height: '42px', backgroundColor: '#eff6ff',
-              borderRadius: '10px', color: '#0d6efd', flexShrink: 0
-            }}>
+          <div className="ai-status-header-inner">
+            <div className="ai-status-icon-box">
               <Activity size={20} />
             </div>
-            <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
-              <h3 style={{ margin: 0, fontSize: '1.25rem', fontWeight: 'bold', color: '#0f172a', lineHeight: '1.2' }}>
+            <div className="ai-status-text-group">
+              <h3 className="ai-status-heading-lg">
                 AI Models Status
               </h3>
-              <p style={{ margin: '4px 0 0 0', fontSize: '0.875rem', color: '#64748b', lineHeight: '1.2' }}>
+              <p className="ai-status-subtext">
                 Live view — manage AI modules from Live CCTV Feeds
               </p>
             </div>
@@ -259,7 +254,7 @@ const OverviewTab = ({
                   </div>
                 ) : isPausedByLockdown ? (
                   <div className="ai-status-idle">
-                    <span className="ai-status-idle-text" style={{ color: '#ef4444' }}>Auto-disabled during fire emergency</span>
+                    <span className="ai-status-idle-text ai-status-idle-text--lockdown">Auto-disabled during fire emergency</span>
                   </div>
                 ) : (
                   <div className="ai-status-idle">
@@ -322,18 +317,18 @@ const OverviewTab = ({
                   {pageAlerts.map((alert) => (
                     <div className="alert-feed-item" key={alert.id}>
                       <div className={`alert-icon-box ${alert.alert_type === 'Fire' ? 'bg-fire' :
-                        alert.alert_type === 'Patient Wandering' ? 'bg-patient' :
+                        alert.alert_type.startsWith('Patient Wandering') ? 'bg-patient' :
                           'bg-mask'
                         }`}>
                         {alert.alert_type === 'Fire' && <Flame size={20} color="#ffffff" />}
-                        {alert.alert_type === 'Patient Wandering' && <User size={20} color="#ffffff" />}
+                        {alert.alert_type.startsWith('Patient Wandering') && <User size={20} color="#ffffff" />}
                         {alert.alert_type === 'Mask Violation' && <ShieldAlert size={20} color="#ffffff" />}
                       </div>
 
                       <div className="alert-details">
                         <div className="alert-feed-row-top">
                           <h4 className="alert-item-title">{alert.alert_type}</h4>
-                          {alert.alert_type !== 'Patient Wandering' && alert.alert_type !== 'Mask Violation' && (
+                          {!alert.alert_type.startsWith('Patient Wandering') && alert.alert_type !== 'Mask Violation' && (
                             <span className={getPriorityClass(alert.priority)}>
                               {alert.priority || 'Low'}
                             </span>
