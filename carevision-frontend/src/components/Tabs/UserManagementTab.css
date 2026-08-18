@@ -50,3 +50,50 @@
   font-size: 12px;
   font-weight: bold;
 }
+
+/* ==========================================
+   Login History Section
+   (extracted from inline styles in UserManagementTab.jsx)
+   ========================================== */
+
+/* Top spacing for the login history card container */
+.login-history-card {
+  margin-top: 2rem;
+}
+
+/* Flex header row inside the login history card */
+.login-history-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+/* Section heading inside login history */
+.login-history-title {
+  margin: 0;
+}
+
+/* Active session badge showing the current user's email */
+.active-user-badge {
+  font-size: 0.875rem;
+  color: #10b981;
+  background-color: #f0fdf4;
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  font-weight: bold;
+}
+
+/* Log ID column — bold muted style */
+.log-id-cell {
+  font-weight: bold;
+  color: #6b7280;
+}
+
+/* Empty state cell in the login history table */
+.empty-activity-cell {
+  text-align: center;
+  padding: 1rem;
+  color: #6b7280;
+}
+

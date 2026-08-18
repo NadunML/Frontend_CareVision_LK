@@ -21,7 +21,7 @@ const UserManagementTab = () => {
       }
     });
 
-    // Backend එකෙන් Login History ඩේටා ටික ගෙනෙන Function එක
+    // Fetches login history records from the backend API.
     const fetchLoginHistory = async () => {
       try {
         const res = await fetch(`${import.meta.env.VITE_API_URL}/api/login-history`);
@@ -83,12 +83,11 @@ const UserManagementTab = () => {
         ))}
       </div>
 
-      {/* අලුතින් එකතු කරපු Login History Table එක */}
-      <div className="table-container card-box border-blue-wrap" style={{ marginTop: '2rem' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
-          <h3 style={{ margin: 0 }}>Recent Login Activity</h3>
+      <div className="table-container card-box border-blue-wrap login-history-card">
+        <div className="login-history-header">
+          <h3 className="login-history-title">Recent Login Activity</h3>
           {currentUser && (
-            <span style={{ fontSize: '0.875rem', color: '#10b981', backgroundColor: '#f0fdf4', padding: '0.25rem 0.75rem', borderRadius: '9999px', fontWeight: 'bold' }}>
+            <span className="active-user-badge">
               Currently active as: {currentUser.email}
             </span>
           )}
@@ -105,14 +104,14 @@ const UserManagementTab = () => {
             {loginHistory.length > 0 ? (
               loginHistory.map((record) => (
                 <tr key={record.id} className="user-row user-row--default">
-                  <td className="user-td" style={{ fontWeight: 'bold', color: '#6b7280' }}>#{record.id}</td>
+                  <td className="user-td log-id-cell">#{record.id}</td>
                   <td className="user-td">{record.email}</td>
                   <td className="user-td">{new Date(record.login_time).toLocaleString()}</td>
                 </tr>
               ))
             ) : (
               <tr>
-                <td colSpan="3" className="user-td" style={{ textAlign: 'center', padding: '1rem', color: '#6b7280' }}>
+                <td colSpan="3" className="user-td empty-activity-cell">
                   No recent login activity found.
                 </td>
               </tr>

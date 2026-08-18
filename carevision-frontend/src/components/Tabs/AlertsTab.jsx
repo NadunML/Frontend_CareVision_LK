@@ -17,7 +17,7 @@ const AlertsTab = ({
 
   const getTypeIcon = (type) => {
     if (type === 'Fire')              return <Flame      size={16} />;
-    if (type === 'Patient Wandering') return <User       size={16} />;
+    if (type.startsWith('Patient Wandering')) return <User       size={16} />;
     return                                   <ShieldAlert size={16} />;
   };
 
@@ -133,12 +133,12 @@ const AlertsTab = ({
                 <div className="alert-feed-item" key={alert.id}>
 
                   <div className={`alert-icon-box ${
-                    alert.alert_type === 'Fire'              ? 'bg-fire'    :
-                    alert.alert_type === 'Patient Wandering' ? 'bg-patient' :
+                    alert.alert_type === 'Fire'                           ? 'bg-fire'    :
+                    alert.alert_type.startsWith('Patient Wandering') ? 'bg-patient' :
                     'bg-mask'
                   }`}>
                     {alert.alert_type === 'Fire'              && <Flame       size={20} color="#ffffff" />}
-                    {alert.alert_type === 'Patient Wandering' && <User        size={20} color="#ffffff" />}
+                    {alert.alert_type.startsWith('Patient Wandering') && <User        size={20} color="#ffffff" />}
                     {alert.alert_type === 'Mask Violation'    && <ShieldAlert  size={20} color="#ffffff" />}
                   </div>
 

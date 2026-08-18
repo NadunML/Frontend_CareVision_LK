@@ -497,3 +497,58 @@
   background-color: #dcfce7;
   color: #16a34a;
 }
+
+/* ==========================================
+   AI Status Card — Header Layout Classes
+   (extracted from inline styles in OverviewTab.jsx)
+   ========================================== */
+
+/* Inner flex row containing icon + text block */
+.ai-status-header-inner {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+/* Square icon container for the Activity icon */
+.ai-status-icon-box {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  background-color: #eff6ff;
+  border-radius: 10px;
+  color: #0d6efd;
+  flex-shrink: 0;
+}
+
+/* Vertical text column next to the icon */
+.ai-status-text-group {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+/* Primary heading inside the AI status header */
+.ai-status-heading-lg {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #0f172a;
+  line-height: 1.2;
+}
+
+/* Subtext below the heading */
+.ai-status-subtext {
+  margin: 4px 0 0 0;
+  font-size: 0.875rem;
+  color: #64748b;
+  line-height: 1.2;
+}
+
+/* Modifier: red text for the idle message during emergency lockdown */
+.ai-status-idle-text--lockdown {
+  color: #ef4444;
+}
+
