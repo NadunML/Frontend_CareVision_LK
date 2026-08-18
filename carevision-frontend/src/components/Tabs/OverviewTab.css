@@ -500,7 +500,6 @@
 
 /* ==========================================
    AI Status Card — Header Layout Classes
-   (extracted from inline styles in OverviewTab.jsx)
    ========================================== */
 
 /* Inner flex row containing icon + text block */
@@ -551,4 +550,3 @@
 .ai-status-idle-text--lockdown {
   color: #ef4444;
 }
-

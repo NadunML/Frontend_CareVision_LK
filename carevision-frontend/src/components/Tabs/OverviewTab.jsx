@@ -151,28 +151,43 @@ const OverviewTab = ({
 
       {/* ── AI Models Status (read-only) ── */}
       <div className="card-box ai-status-card">
-        <div className="ai-status-header">
-
-          <div className="ai-status-header-inner">
-            <div className="ai-status-icon-box">
+        
+        {/* =======================================================
+            100% BULLETPROOF HEADER FIX (INLINE STYLES)
+        ======================================================== */}
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px', width: '100%' }}>
+          
+          <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+            
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '42px', height: '42px', backgroundColor: '#eff6ff', color: '#0d6efd', borderRadius: '10px', flexShrink: 0 }}>
               <Activity size={20} />
             </div>
-            <div className="ai-status-text-group">
-              <h3 className="ai-status-heading-lg">
+            
+            <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+              <h3 style={{ margin: 0, fontSize: '1.25rem', fontWeight: 700, color: '#0f172a', lineHeight: 1.2 }}>
                 AI Models Status
               </h3>
-              <p className="ai-status-subtext">
+              <p style={{ margin: '4px 0 0 0', fontSize: '0.875rem', color: '#64748b', lineHeight: 1.2 }}>
                 Live view — manage AI modules from Live CCTV Feeds
               </p>
             </div>
+
           </div>
 
-          <span className={`ai-status-badge ${isEmergencyLockdown ? 'emergency-badge' : ''}`} style={isEmergencyLockdown ? { backgroundColor: '#fee2e2', color: '#ef4444', borderColor: '#fca5a5' } : {}}>
+          <span 
+            className={`ai-status-badge ${isEmergencyLockdown ? 'emergency-badge' : ''}`} 
+            style={{
+              whiteSpace: 'nowrap',
+              ...(isEmergencyLockdown ? { backgroundColor: '#fee2e2', color: '#ef4444', borderColor: '#fca5a5' } : {})
+            }}
+          >
             {totalActiveCamsCount > 0
               ? `${totalActiveCamsCount} Camera(s) Active`
               : 'All Modules Off'}
           </span>
+
         </div>
+        {/* ======================================================= */}
 
         <div className="ai-status-grid">
           {aiModules.map((mod) => {
