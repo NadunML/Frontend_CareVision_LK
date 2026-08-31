@@ -28,15 +28,3 @@ To minimize network latency and reduce cloud bandwidth costs, heavy video stream
 * **Backend:** Python, FastAPI, OpenCV, MySQL.
 * **AI Models:** YOLOv8 (Fire/Smoke), MobileNetV2 (Mask), Face_Recognition/dlib (Patients).
 
-## 📦 Installation & Setup
-
-### 1. Prerequisites
-* Node.js (v18+)
-* Python (3.9+)
-* MySQL Server (Ensure your database credentials match the `.env` file)
-
-### 2. Backend Server Initialization
-```bash
-cd backend
-pip install -r requirements.txt
-uvicorn main:app --host 0.0.0.0 --port 5000
